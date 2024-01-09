@@ -1,6 +1,6 @@
-## An R package for analysis of the nf-core/PathogenSurveillance pipeline
+## `Psminer`, an R package for analysis of the nf-core/PathogenSurveillance pipeline
 
-`psminer` is an R package for reading, plotting, and manipulating data produced by the nextflow pipeline `pathogensurvillance`. 
+`psminer` is an R package for reading, plotting, and manipulating data produced by the nextflow pipeline `pathogensurveillance`. 
 
 ## License
 
