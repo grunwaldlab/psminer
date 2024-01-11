@@ -9,7 +9,7 @@ bugs, and bug fixes in R as follows:
 
 ``` r
 install.packages("devtools")
-devtools::install_github("grunwaldlab/metacoder")
+devtools::install_github("grunwaldlab/psminer")
 ```
 
 ## License
