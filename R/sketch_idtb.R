@@ -22,9 +22,12 @@ sketch_idtb <- function(sketch_data, sort_columns = c("sample_id", "WKID", "ANI"
   sketch_data$ANI <- as.numeric(gsub("%", "", sketch_data$ANI))
   sketch_data$Complt <- as.numeric(gsub("%", "", sketch_data$Complt))
 
+  # Prepare sorting expressions
+  sorting_exprs <- purrr::map(sort_columns, ~ rlang::sym(.x) %>% dplyr::desc())
+
   # Sort and filter data
   final_table <- sketch_data %>%
-    arrange(desc(!!!rlang::syms(sort_columns))) %>%
+    arrange(!!!sorting_exprs) %>%
     group_by(sample_id) %>%
     slice_head(n = top_n) %>%
     ungroup() %>%
