@@ -22,21 +22,18 @@ sketch_idtb <- function(sketch_data, sort_columns = c("sample_id", "WKID", "ANI"
   sketch_data$ANI <- as.numeric(gsub("%", "", sketch_data$ANI))
   sketch_data$Complt <- as.numeric(gsub("%", "", sketch_data$Complt))
 
-  # Prepare sorting expressions
-  sorting_exprs <- purrr::map(sort_columns, ~ rlang::sym(.x) %>% dplyr::desc())
-
   # Sort and filter data
   final_table <- sketch_data %>%
-    arrange(!!!sorting_exprs) %>%
-    group_by(sample_id) %>%
-    slice_head(n = top_n) %>%
-    ungroup() %>%
-    select(sample_id, WKID, ANI, Complt, taxName) %>%
+    arrange(desc(sample_id), desc(WKID), desc(ANI), desc(Complt)) %>%  # Sort by sample_id, WKID, ANI, and Complt in descending order
+    group_by(sample_id) %>%  # Group by sample_id
+    slice_head(n = 1) %>%  # Take the first entry per group
+    ungroup() %>%  # Remove grouping
+    select(sample_id, WKID, ANI, Complt, taxName) %>%  # Select required columns
     rename(Sample = sample_id,
            `WKID (%)` = WKID,
            `ANI (%)` = ANI,
            `Completeness (%)` = Complt,
-           `Top Hit` = taxName)
+           `Top Hit` = taxName)  # Rename columns
 
   # Define a function called 'bordered_bar'
   bordered_bar <- function(value, color) {
