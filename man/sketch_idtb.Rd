@@ -2,7 +2,7 @@
 % Please edit documentation in R/sketch_idtb.R
 \name{sketch_idtb}
 \alias{sketch_idtb}
-\title{Create an Identification Table from Sketch Data}
+\title{Create an summary table from sendsketch output table}
 \usage{
 sketch_idtb(
   sketch_data,
@@ -36,7 +36,7 @@ An interactive DT::datatable object that renders as an HTML table when used in a
 The table will have interactive features such as sorting and search enabled.
 }
 \description{
-This function processes sketch data from pathogen surveillance reports and
+This function processes sendsketch data from pathogen surveillance nextflow pipeline and
 generates an interactive HTML table displaying the top hits from the sketch-based analysis.
 The resulting table includes metrics such as Weighted Kmer IDentity (WKID),
 Average Nucleotide Identity (ANI), and Completeness, providing insights into

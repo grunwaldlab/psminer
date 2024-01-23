@@ -6,8 +6,11 @@
 #' @param sample_data A tibble/data.frame with the sample metadata
 #' @param reference_data A tibble/data/frame with information on references used in analysis
 #' @param interactive Whether to use an HTML-based interactive format or not (default: TRUE)
+#'
 #' @return A heatmap and dendrogram
+#'
 #' @export
+#'
 #' @examples
 #' make_ani_heatmap(ani_matrix, ref_data, samp_data, interactive=FALSE)
 
