@@ -43,3 +43,24 @@ make_ani_heatmap <- function(sourmash_ani_matrix, reference_data, sample_data, i
     heatmap_ani <- pheatmap(ani_matrix_format, show_rownames = TRUE, labels_row = colnames(ani_matrix_format))
   }
 }
+
+#' Make a neighbor joining tree from Sourmash approximate ANI matrix
+#'
+#' The ANI heatmap will either be static when PDF is rendered or interactive a NJ tree from Sourmash approximate ANI values
+#'
+#' @param sourmash_ani_matrix Approximate ANI matrix output from Sourmash analysis
+#' @param sample_data A tibble/data.frame with the sample metadata
+#' @param reference_data A tibble/data/frame with information on references used in analysis
+#' @param interactive Whether to use an HTML-based interactive format or not (default: TRUE)
+#'
+#' @return A heatmap and dendrogram
+#'
+#' @export
+#'
+#' @examples
+#' make_ani_heatmap(ani_matrix, ref_data, samp_data, interactive=FALSE)
+
+make_ani_nj_tree <- function(sourmash_ani_matrix, reference_data, sample_data, interactive = TRUE) {
+  #TODO
+}
+
