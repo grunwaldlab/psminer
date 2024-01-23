@@ -41,6 +41,15 @@ make_phylogeny <- function(core_phylogeny_path, sample_data, sourmash_ani_matrix
     }
     phycanv
   } else {
-    print("In progress")
+    ggtree_core_tree <- ggtree(core_tree)
+
+    ggtree_core_tree <- ggtree_core_tree +
+      geom_tiplab(aes(label = name_key[tip.label], color = ifelse(tip.label %in% name_key[sample_ids], "green", "black")), size = 3, hjust = 0, vjust = 0.5, fontface = "bold") +
+      scale_color_identity() +
+      theme(legend.position = "none")
+
+    ggtree_core_tree
   }
 }
+
+#to do optimize-so it is rectangular if samples size less than 15-20, circular, otherwise.
