@@ -11,10 +11,7 @@
 #' @return Core gene phylogeny
 #'
 #' @export
-#'
-#' @examples
-#'
-make_phylogeny <- function(core_phylogeny_path, sample_data, sourmash_sourmash_ani_matrix, reference_data, interactive = TRUE) {
+make_phylogeny <- function(core_phylogeny_path, sample_data, sourmash_ani_matrix, reference_data, interactive = TRUE) {
   # Helper function to convert IDs
   convert_id <- function(ids) gsub(ids, pattern = "[.-]", replacement = "_")
 
