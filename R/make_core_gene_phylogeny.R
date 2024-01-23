@@ -52,4 +52,4 @@ make_phylogeny <- function(core_phylogeny_path, sample_data, sourmash_ani_matrix
   }
 }
 
-#to do optimize-so it is rectangular if samples size less than 15-20, circular, otherwise.
+#to do optimize-so it is rectangular if sample size less than 15-20, circular, otherwise.
