@@ -41,3 +41,4 @@ make_ani_heatmap <- function(sourmash_ani_matrix, reference_data, sample_data, i
     heatmap_ani <- pheatmap(ani_matrix_format, show_rownames = T, labels_row =colnames(ani_matrix_format))
   }
 }
+
