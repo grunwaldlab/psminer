@@ -16,14 +16,19 @@
 
 make_ani_heatmap <- function(sourmash_ani_matrix, reference_data, sample_data, interactive = TRUE) {
 
+  # Define convert_id function internally
+  convert_id <- function(ids) {
+    gsub(pattern = "[.-]", replacement = "_", x = ids)
+  }
+
   ani_matrix_format <- as.matrix(sourmash_ani_matrix)
-  colnames(ani_matrix_format) <- gsub(pattern = "[.-]", replacement = "_", x = colnames(ani_matrix_format))
-  rownames(ani_matrix_format) <- gsub(pattern = "[.-]", replacement = "_", x = rownames(ani_matrix_format))
+  colnames(ani_matrix_format) <- convert_id(colnames(ani_matrix_format))
+  rownames(ani_matrix_format) <- convert_id(rownames(ani_matrix_format))
   assembly_entries <- rownames(ani_matrix_format)[grepl("_assembly$", rownames(ani_matrix_format))]
 
   name_key <- c(
-    setNames(reference_data$Organism, gsub(pattern = "[.-]", replacement = "_", x = reference_data$LastMajorReleaseAccession)),
-    setNames(sample_data$sample, gsub(pattern = "[.-]", replacement = "_", x = sample_data$sample)),
+    setNames(reference_data$Organism, convert_id(reference_data$LastMajorReleaseAccession)),
+    setNames(sample_data$sample, convert_id(sample_data$sample)),
     setNames(assembly_entries, assembly_entries)
   )
 
