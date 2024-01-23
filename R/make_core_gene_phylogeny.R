@@ -15,41 +15,34 @@
 #' @examples
 #'
 make_phylogeny <- function(core_phylogeny_path, sample_data, sourmash_sourmash_ani_matrix, reference_data, interactive = TRUE) {
-  #This helpfer function is used quite a bit, so perhaps it is worth pulling out of individual fxns?
-  convert_id <- function(ids) {
-    gsub(ids, pattern = "[.-]", replacement = "_")
-  }
+  # Helper function to convert IDs
+  convert_id <- function(ids) gsub(ids, pattern = "[.-]", replacement = "_")
 
+  # Read core tree
   core_tree <- ape::read.tree(core_phylogeny_path)
 
-  # Identify which tips are samples and references
+  # Identify sample IDs in the tree
   sample_ids <- core_tree$tip.label[core_tree$tip.label %in% convert_id(sample_data$sample)]
 
-  # Root tree
+  # Root tree based on sample IDs
   colnames(sourmash_ani_matrix) <- convert_id(colnames(sourmash_ani_matrix))
   rownames(sourmash_ani_matrix) <- colnames(sourmash_ani_matrix)
   group_ani <- sourmash_ani_matrix[rownames(sourmash_ani_matrix) %in% core_tree$tip.label, colnames(sourmash_ani_matrix) %in% core_tree$tip.label]
   core_tree <- root(core_tree, names(which.min(colMeans(group_ani[sample_ids, ]))))
 
-  # Set tip labels to taxon names for reference sequences
-  # TODO-we need to generalize
-  name_key <- c(
-    reference_data$Organism,
-    sample_data$sample
-  )
-  names(name_key) <- c(
-    convert_id(reference_data$LastMajorReleaseAccession),
-    convert_id(sample_data$sample)
-  )
+  # Set tip labels to taxon names
+  name_key <- set_names(c(reference_data$Organism, sample_data$sample), c(convert_id(reference_data$LastMajorReleaseAccession), convert_id(sample_data$sample)))
   core_tree$tip.label <- name_key[core_tree$tip.label]
 
-
   if (interactive) {
-    phycanv <- phylocanvas(core_tree, treetype = "rectangular", alignlabels = T, showscalebar = T, width = "100%")
+    # Create phylocanvas for interactive visualization
+    phycanv <- phylocanvas(core_tree, treetype = "rectangular", alignlabels = TRUE, showscalebar = TRUE, width = "100%")
+
+    # Style nodes for sample IDs
     for (x in name_key[sample_ids]) {
       phycanv <- style_node(phycanv, x, labelcolor = "green", labeltextsize = 30)
+    }
   } else {
     print("In progress")
-    }
   }
 }
