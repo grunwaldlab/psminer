@@ -39,7 +39,7 @@ make_phylogeny <- function(core_phylogeny_path, sample_data, sourmash_ani_matrix
     for (x in name_key[sample_ids]) {
       phycanv <- style_node(phycanv, x, labelcolor = "green", labeltextsize = 30)
     }
-    return(phycanv)
+    phycanv
   } else {
     print("In progress")
   }
