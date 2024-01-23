@@ -16,6 +16,7 @@
 
 make_ani_heatmap <- function(sourmash_ani_matrix, reference_data, sample_data, interactive = TRUE) {
 
+  # Define convert_id function internally
   convert_id <- function(ids) {
     gsub(pattern = "[.-]", replacement = "_", x = ids)
   }
