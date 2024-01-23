@@ -31,7 +31,6 @@ make_ani_heatmap <- function(sourmash_ani_matrix, reference_data, sample_data, i
     setNames(assembly_entries, assembly_entries)
   )
 
-  # Relabel the tree tips
   colnames(ani_matrix_format) <- name_key[colnames(ani_matrix_format)]
   rownames(ani_matrix_format) <- name_key[rownames(ani_matrix_format)]
 
