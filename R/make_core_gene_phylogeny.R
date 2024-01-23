@@ -38,8 +38,8 @@ make_phylogeny <- function(core_phylogeny_path, sample_data, sourmash_ani_matrix
     # Style nodes for sample IDs
     for (x in name_key[sample_ids]) {
       phycanv <- style_node(phycanv, x, labelcolor = "green", labeltextsize = 30)
-      phycanv
     }
+    return(phycanv)
   } else {
     print("In progress")
   }
