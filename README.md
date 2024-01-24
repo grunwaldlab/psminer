@@ -13,7 +13,7 @@ devtools::install_github("grunwaldlab/psminer")
 ```
 
 ``` R
-# Replace "your_doi_here" with the actual DOI
+# Replace DOI
 doi <- "https://doi.org/10.1002/cpbi.102"
 bibtex_citation <- get_bibtex_from_doi(doi, format = "bibtex")
 ```
