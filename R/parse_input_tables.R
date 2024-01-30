@@ -40,7 +40,7 @@ parse_ref_meta <- function(refseq_path, user_ref_path) {
     new_rows <- data.frame(
       reference_id = new_reference_ids,
       display_name = new_reference_ids,
-      input = "user"
+      origin = "user"
     )
   }
     ref_data <- bind_rows(ref_data, new_rows)
