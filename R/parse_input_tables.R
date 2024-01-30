@@ -28,8 +28,13 @@ parse_sample_meta <- function(path, group) {
 #' @export
 
 parse_ref_meta <- function(refseq_path, sample_data) {
+  convert_id <- function(ids) gsub(ids, pattern = "[.-]", replacement = "_")
+
   ref_data <- read_tsv(ref_data_path , col_types = 'dcccccccccccccccddc')
   refs <- strsplit(read_lines(ref_ids_path), split = ';', fixed = TRUE)[[1]]
+
+  reference_data$LastMajorReleaseAccession<-convert_id(reference_data$LastMajorReleaseAccession)
+
   ref_data$origin = "refseq"
   ref_data$reference_id = ref_data$LastMajorReleaseAccession
   ref_data$display_name = ref_data$Organism
