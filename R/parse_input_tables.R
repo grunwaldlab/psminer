@@ -42,7 +42,7 @@ parse_ref_meta <- function(refseq_path, user_ref_path) {
       reference_id = new_reference_ids,
       origin = "user"
     )
-  }
     ref_data <- bind_rows(ref_data, new_rows)
+  }
     return(ref_data)
 }
