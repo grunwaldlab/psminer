@@ -53,3 +53,22 @@ parse_ref_meta <- function(reference_data_path, ref_ids_path, sample_data) {
 
   return(reference_data)
 }
+
+#' Parse and rename ANI matrix names for downstream steps
+#'
+#'
+#' @param path the file path to 'sample_data.csv' file
+#' @param group parsed information on report group for specific set of samples
+#'
+#' @return ANI matrix with column and row names that are compatible with other data inputs
+#'
+#' @export
+
+parse_ani_matrix_names <- function(sourmash_ani_matrix) {
+  convert_id <- function(ids) gsub(ids, pattern = "[.-]", replacement = "_")
+  colnames(sourmash_ani_matrix) <- convert_id(colnames(sourmash_ani_matrix))
+  rownames(ani_matrix) <- colnames(ani_matrix)
+  return(renamed_matrix)
+}
+
+
