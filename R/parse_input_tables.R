@@ -27,7 +27,7 @@ parse_sample_meta <- function(path, group) {
 #'
 #' @export
 
-parse_ref_meta <- function(refseq_path, sample_data) {
+parse_ref_meta <- function(ref_data_path, ref_ids_path, sample_data) {
   convert_id <- function(ids) gsub(ids, pattern = "[.-]", replacement = "_")
 
   ref_data <- read_tsv(ref_data_path , col_types = 'dcccccccccccccccddc')
@@ -49,5 +49,6 @@ parse_ref_meta <- function(refseq_path, sample_data) {
     )
     ref_data <- bind_rows(new_rows,ref_data)
   }
-    return(ref_data)
+
+  return(ref_data)
 }
