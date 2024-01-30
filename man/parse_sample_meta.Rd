@@ -7,7 +7,12 @@
 parse_sample_meta(path, group)
 }
 \arguments{
-\item{group}{}
+\item{path}{the file path to 'samp_data.csv' file}
+
+\item{group}{parsed information on report group for specific set of samples}
+}
+\value{
+samp_data dataframe
 }
 \description{
 Parse sample metadata files
