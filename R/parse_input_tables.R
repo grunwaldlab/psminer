@@ -43,6 +43,6 @@ parse_ref_meta <- function(refseq_path, user_ref_path) {
       origin = "user"
     )
   }
-    ref_data <- bind_rows(new_rows, ref_data)
+    ref_data <- bind_rows(ref_data, new_rows)
     return(ref_data)
 }
