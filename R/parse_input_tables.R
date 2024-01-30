@@ -68,7 +68,8 @@ parse_ani_matrix_names <- function(sourmash_ani_matrix) {
   convert_id <- function(ids) gsub(ids, pattern = "[.-]", replacement = "_")
 
   colnames(sourmash_ani_matrix) <- convert_id(colnames(sourmash_ani_matrix))
-  rownames(sourmash_ani_matrix) <- colnames(sourmash_ani_matrix)
+  rownames(sourmash_ani_matrix) <- convert_id(colnames(sourmash_ani_matrix))
+
   return(sourmash_ani_matrix)
 }
 
