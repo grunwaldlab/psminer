@@ -20,7 +20,8 @@ parse_sample_meta <- function(path, group) {
 #' Parse reference metadata files
 #'
 #'
-#' @param refseq_path
+#' @param ref_data_path
+#' @param ref_ids_path
 #' @param sample_data
 #'
 #' @return Reformatted reference metadata table containing both refseq-defined reference assemblies and user-defined assemblies

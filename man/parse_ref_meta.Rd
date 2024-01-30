@@ -4,10 +4,10 @@
 \alias{parse_ref_meta}
 \title{Parse reference metadata files}
 \usage{
-parse_ref_meta(refseq_path, user_ref_path)
+parse_ref_meta(ref_data_path, ref_ids_path, sample_data)
 }
 \arguments{
-\item{user_ref_path}{}
+\item{sample_data}{}
 }
 \value{
 Reformatted reference metadata table containing both refseq-defined reference assemblies and user-defined assemblies
