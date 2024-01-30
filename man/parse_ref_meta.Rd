@@ -4,7 +4,7 @@
 \alias{parse_ref_meta}
 \title{Parse reference metadata files}
 \usage{
-parse_ref_meta(ref_data_path, ref_ids_path, sample_data)
+parse_ref_meta(reference_data_path, ref_ids_path, sample_data)
 }
 \arguments{
 \item{sample_data}{}
