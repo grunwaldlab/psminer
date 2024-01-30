@@ -30,11 +30,11 @@ parse_sample_meta <- function(path, group) {
 parse_ref_meta <- function(refseq_path, user_ref_path) {
   ref_data <- read_tsv(ref_data_path , col_types = 'dcccccccccccccccddc')
   refs <- strsplit(read_lines(ref_ids_path), split = ';', fixed = TRUE)[[1]]
-  ref_data$Origin = "refseq"
-  ref_data$Reference_id = ref_data$LastMajorReleaseAccession
-  ref_data$Display_name = ref_data$Organism
+  ref_data$origin = "refseq"
+  ref_data$reference_id = ref_data$LastMajorReleaseAccession
+  ref_data$display_name = ref_data$Organism
 
-  new_reference_ids <- unique(samp_data$reference_id[!is.na(samp_data$reference_id) & !samp_data$reference_id %in% ref_data$Reference_id])
+  new_reference_ids <- unique(samp_data$reference_id[!is.na(samp_data$reference_id) & !samp_data$reference_id %in% ref_data$reference_id])
 
   if (length(new_reference_ids) > 0) {
     new_rows <- data.frame(
