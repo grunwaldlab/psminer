@@ -38,11 +38,11 @@ parse_ref_meta <- function(refseq_path, user_ref_path) {
 
   if (length(new_reference_ids) > 0) {
     new_rows <- data.frame(
-      reference_id = new_reference_ids,
       display_name = new_reference_ids,
+      reference_id = new_reference_ids,
       origin = "user"
     )
   }
-    ref_data <- bind_rows(ref_data, new_rows)
+    ref_data <- bind_rows(new_rows, ref_data)
     return(ref_data)
 }
