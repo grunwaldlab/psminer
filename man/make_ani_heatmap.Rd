@@ -18,7 +18,7 @@ make_ani_heatmap(
 
 \item{interactive}{Whether to use an HTML-based interactive format or not (default: TRUE)}
 
-\item{sourmash_ani_matrix}{Approximate ANI matrix output from Sourmash analysis}
+\item{formatted_ani_matri}{Approximate ANI matrix output from Sourmash analysis}
 }
 \value{
 A heatmap and dendrogram

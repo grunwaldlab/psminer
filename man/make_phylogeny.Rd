@@ -7,7 +7,7 @@
 make_phylogeny(
   core_phylogeny_path,
   sample_data,
-  sourmash_ani_matrix,
+  formatted_ani_matrix,
   reference_data,
   interactive = TRUE
 )
