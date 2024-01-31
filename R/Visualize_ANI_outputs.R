@@ -28,10 +28,11 @@ make_ani_heatmap <- function(formatted_ani_matrix, reference_data, sample_data, 
   rownames(formatted_ani_matrix) <- name_key[rownames(formatted_ani_matrix)]
 
   if (interactive) {
-    # Trying to find a good solution for an interactive plot, but based on complicated renaming of columns and rows,
-    # Still figuring this out. Defaulting to pheatmap for both for now.
-    heatmap_ani <- pheatmap(formatted_ani_matrix, show_rownames = TRUE, labels_row = colnames(formatted_ani_matrix))
+    heatmap_ani <- heatmaply(formatted_ani_matrix, xlab = "Strains", ylab = "Strains", main = "ANI Heatmap",
+                             fontsize_row = 8, fontsize_col = 8)
   } else {
     heatmap_ani <- pheatmap(formatted_ani_matrix, show_rownames = TRUE, labels_row = colnames(formatted_ani_matrix))
   }
+
+  return(heatmap_ani)
 }
