@@ -9,8 +9,14 @@ Description: More about what it does (maybe more than one line)
 License: What license is it under?
 Depends:
         rcrossref,
-        dplyr,
-        magrittr
+        dplyr,,
+        ape,
+        phylocanvas,
+        ggtree,
+        magrittr,
+        heatmaply,
+        pheatmap,
+        ggplot2
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.1
