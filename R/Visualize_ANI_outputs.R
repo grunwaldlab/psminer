@@ -29,10 +29,9 @@ make_ani_heatmap <- function(formatted_ani_matrix, reference_data, sample_data, 
 
   if (interactive) {
     heatmap_ani <- heatmaply(formatted_ani_matrix,
-                             fontsize_row = 8, fontsize_col = 8, width = 600, height = 800)
+                             fontsize_row = 8, fontsize_col = 8, width = 1000, height = 800)
   } else {
     heatmap_ani <- pheatmap(formatted_ani_matrix, show_rownames = TRUE, labels_row = colnames(formatted_ani_matrix))
   }
-
   return(heatmap_ani)
 }
