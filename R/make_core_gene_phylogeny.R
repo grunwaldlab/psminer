@@ -4,31 +4,23 @@
 #'
 #' @param core_phylogeny_path
 #' @param sample_data
-#' @param sourmash_sourmash_ani_matrix
+#' @param formatted_ani_matrix
 #' @param reference_data
 #' @param interactive
 #'
 #' @return Core gene phylogeny
 #'
 #' @export
-make_phylogeny <- function(core_phylogeny_path, sample_data, sourmash_ani_matrix, reference_data, interactive = TRUE) {
-  # Helper function to convert IDs
-  convert_id <- function(ids) gsub(ids, pattern = "[.-]", replacement = "_")
-
-  # Read core tree
+make_phylogeny <- function(core_phylogeny_path, sample_data, formatted_ani_matrix, reference_data, interactive = TRUE) {
   core_tree <- ape::read.tree(core_phylogeny_path)
-
-  # Identify sample IDs in the tree
-  sample_ids <- core_tree$tip.label[core_tree$tip.label %in% convert_id(sample_data$sample)]
+  sample_ids <- core_tree$tip.label[core_tree$tip.label %in% sample_data$modified_id]
 
   # Root tree based on sample IDs
-  colnames(sourmash_ani_matrix) <- convert_id(colnames(sourmash_ani_matrix))
-  rownames(sourmash_ani_matrix) <- colnames(sourmash_ani_matrix)
-  group_ani <- sourmash_ani_matrix[rownames(sourmash_ani_matrix) %in% core_tree$tip.label, colnames(sourmash_ani_matrix) %in% core_tree$tip.label]
+  group_ani <- formatted_ani_matrix[rownames(formatted_ani_matrix) %in% core_tree$tip.label, colnames(formatted_ani_matrix) %in% core_tree$tip.label]
   core_tree <- root(core_tree, names(which.min(colMeans(group_ani[sample_ids, ]))))
 
   # Set tip labels to taxon names
-  name_key <- set_names(c(reference_data$display_name, sample_data$sample), c(convert_id(reference_data$LastMajorReleaseAccession), convert_id(sample_data$sample)))
+  name_key <- set_names(c(reference_data$display_name, sample_data$modified_id), c(reference_data$LastMajorReleaseAccession, sample_data$modified_id))
   core_tree$tip.label <- name_key[core_tree$tip.label]
 
   if (interactive) {
@@ -53,42 +45,3 @@ make_phylogeny <- function(core_phylogeny_path, sample_data, sourmash_ani_matrix
   }
 }
 
-#' Make core gene phylogeny using ggtree
-#'
-#' The tree will either be made using ggtree, if output is a PDF, or phylo
-#'
-#' @param core_phylogeny_path
-#' @param sample_data
-#' @param sourmash_sourmash_ani_matrix
-#' @param reference_data
-#' @param interactive
-#'
-#' @return Core gene phylogeny
-#'
-#' @export
-make_phylogeny_ggtree <- function(core_phylogeny_path, sample_data, sourmash_ani_matrix, reference_data, interactive = TRUE) {
-  # Helper function to convert IDs
-  convert_id <- function(ids) gsub(ids, pattern = "[.-]", replacement = "_")
-
-  # Read core tree
-  core_tree <- ape::read.tree(core_phylogeny_path)
-
-  # Identify sample IDs in the tree
-  sample_ids <- core_tree$tip.label[core_tree$tip.label %in% convert_id(sample_data$sample)]
-
-  # Root tree based on sample IDs
-  colnames(sourmash_ani_matrix) <- convert_id(colnames(sourmash_ani_matrix))
-  rownames(sourmash_ani_matrix) <- colnames(sourmash_ani_matrix)
-  group_ani <- sourmash_ani_matrix[rownames(sourmash_ani_matrix) %in% core_tree$tip.label, colnames(sourmash_ani_matrix) %in% core_tree$tip.label]
-  core_tree <- root(core_tree, names(which.min(colMeans(group_ani[sample_ids, ]))))
-
-  # Set tip labels to taxon names
-  name_key <- set_names(c(reference_data$display_name, sample_data$sample), c(convert_id(reference_data$LastMajorReleaseAccession), convert_id(sample_data$sample)))
-  core_tree$tip.label <- name_key[core_tree$tip.label]
-
-  if (interactive) {
-    print("in progress")
-  } else {
-    print("in progress")
-  }
-}
