@@ -28,8 +28,8 @@ make_ani_heatmap <- function(formatted_ani_matrix, reference_data, sample_data, 
   rownames(formatted_ani_matrix) <- name_key[rownames(formatted_ani_matrix)]
 
   if (interactive) {
-    heatmap_ani <- heatmaply(formatted_ani_matrix, xlab = "Strains", ylab = "Strains", main = "ANI Heatmap",
-                             fontsize_row = 8, fontsize_col = 8)
+    heatmap_ani <- heatmaply(formatted_ani_matrix,
+                             fontsize_row = 8, fontsize_col = 8, width = 600, height = 800)
   } else {
     heatmap_ani <- pheatmap(formatted_ani_matrix, show_rownames = TRUE, labels_row = colnames(formatted_ani_matrix))
   }
