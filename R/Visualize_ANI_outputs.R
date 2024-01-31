@@ -14,9 +14,9 @@
 #' @examples
 #' make_ani_heatmap(ani_matrix, ref_data, samp_data, interactive=FALSE)
 
-make_ani_heatmap <- function(sourmash_ani_matrix, reference_data, sample_data, interactive = TRUE) {
+make_ani_heatmap <- function(formatted_ani_matrix, reference_data, sample_data, interactive = TRUE) {
 
-  assembly_entries <- rownames(ani_matrix_format)[grepl("_assembly$", rownames(ani_matrix_format))]
+  assembly_entries <- rownames(formatted_ani_matrix)[grepl("_assembly$", rownames(formatted_ani_matrix))]
 
   name_key <- c(
     setNames(reference_data$Organism, reference_data$LastMajorReleaseAccession),
@@ -24,14 +24,14 @@ make_ani_heatmap <- function(sourmash_ani_matrix, reference_data, sample_data, i
     setNames(assembly_entries, assembly_entries)
   )
 
-  colnames(ani_matrix_format) <- name_key[colnames(ani_matrix_format)]
-  rownames(ani_matrix_format) <- name_key[rownames(ani_matrix_format)]
+  colnames(formatted_ani_matrix) <- name_key[colnames(formatted_ani_matrix)]
+  rownames(formatted_ani_matrix) <- name_key[rownames(formatted_ani_matrix)]
 
   if (interactive) {
     # Trying to find a good solution for an interactive plot, but based on complicated renaming of columns and rows,
     # Still figuring this out. Defaulting to pheatmap for both for now.
-    heatmap_ani <- pheatmap(ani_matrix_format, show_rownames = TRUE, labels_row = colnames(ani_matrix_format))
+    heatmap_ani <- pheatmap(formatted_ani_matrix, show_rownames = TRUE, labels_row = colnames(formatted_ani_matrix))
   } else {
-    heatmap_ani <- pheatmap(ani_matrix_format, show_rownames = TRUE, labels_row = colnames(ani_matrix_format))
+    heatmap_ani <- pheatmap(formatted_ani_matrix, show_rownames = TRUE, labels_row = colnames(formatted_ani_matrix))
   }
 }
