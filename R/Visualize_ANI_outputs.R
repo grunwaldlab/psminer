@@ -1,6 +1,6 @@
 #' Make an ANI heatmap and dendrogram.
 #'
-#' The ANI heatmap will either be static when PDF is rendered or interactive a NJ tree from Sourmash approximate ANI values
+#' The ANI heatmap is based on approximate ANI similarity matrix output by Sourmash
 #'
 #' @param sourmash_ani_matrix Approximate ANI matrix output from Sourmash analysis
 #' @param sample_data A tibble/data.frame with the sample metadata

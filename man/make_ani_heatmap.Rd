@@ -24,7 +24,7 @@ make_ani_heatmap(
 A heatmap and dendrogram
 }
 \description{
-The ANI heatmap will either be static when PDF is rendered or interactive a NJ tree from Sourmash approximate ANI values
+The ANI heatmap is based on approximate ANI similarity matrix output by Sourmash
 }
 \examples{
 make_ani_heatmap(ani_matrix, ref_data, samp_data, interactive=FALSE)
