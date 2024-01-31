@@ -5,20 +5,20 @@
 \title{Make an ANI heatmap and dendrogram.}
 \usage{
 make_ani_heatmap(
-  sourmash_ani_matrix,
+  formatted_ani_matrix,
   reference_data,
   sample_data,
   interactive = TRUE
 )
 }
 \arguments{
-\item{sourmash_ani_matrix}{Approximate ANI matrix output from Sourmash analysis}
-
 \item{reference_data}{A tibble/data/frame with information on references used in analysis}
 
 \item{sample_data}{A tibble/data.frame with the sample metadata}
 
 \item{interactive}{Whether to use an HTML-based interactive format or not (default: TRUE)}
+
+\item{sourmash_ani_matrix}{Approximate ANI matrix output from Sourmash analysis}
 }
 \value{
 A heatmap and dendrogram
