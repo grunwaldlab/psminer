@@ -44,4 +44,3 @@ make_phylogeny <- function(core_phylogeny_path, sample_data, formatted_ani_matri
     #ggtree_core_tree
   }
 }
-
