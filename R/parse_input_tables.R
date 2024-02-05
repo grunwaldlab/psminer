@@ -46,6 +46,7 @@ parse_ref_meta <- function(reference_data_path, ref_ids_path, sample_data) {
   if (length(new_reference_ids) > 0) {
     new_rows <- data.frame(
       display_name = new_reference_ids,
+      display_name_shorter = new_reference_ids,
       reference_id = new_reference_ids,
       origin = "user"
     )
