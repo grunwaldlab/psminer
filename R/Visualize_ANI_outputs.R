@@ -21,7 +21,7 @@ make_ani_heatmap <- function(formatted_ani_matrix, reference_data, sample_data, 
   name_key <- c(
     setNames(reference_data$display_name_shorter, reference_data$LastMajorReleaseAccession),
     setNames(sample_data$modified_id, sample_data$modified_id),
-    setNames(assembly_entries, assembly_entries)
+    setNames(reference_data$display_name_shorter, assembly_entries)
   )
 
   colnames(formatted_ani_matrix) <- name_key[colnames(formatted_ani_matrix)]

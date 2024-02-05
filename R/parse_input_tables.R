@@ -53,6 +53,9 @@ parse_ref_meta <- function(reference_data_path, ref_ids_path, sample_data) {
       origin = "user"
     )
     reference_data <- bind_rows(new_rows,reference_data)
+    new_rows$display_name <- sub("_assembly$", "user-provided reference", new_rows$display_name)
+    new_rows$display_name_shorter <- sub("_assembly$", "user-provided reference", new_rows$display_name_shorter)
+
   }
 
   return(reference_data)
