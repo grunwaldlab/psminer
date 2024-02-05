@@ -39,6 +39,7 @@ parse_ref_meta <- function(reference_data_path, ref_ids_path, sample_data) {
   reference_data$origin = "refseq"
   reference_data$reference_id = reference_data$LastMajorReleaseAccession
   reference_data$display_name = reference_data$Organism
+  reference_data$display_name_shorter = reference_data$SpeciesName
 
   new_reference_ids <- unique(sample_data$reference_id[!is.na(sample_data$reference_id) & !sample_data$reference_id %in% reference_data$reference_id])
 
