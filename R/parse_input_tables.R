@@ -39,16 +39,23 @@ parse_ref_meta <- function(reference_data_path, ref_ids_path, sample_data) {
   reference_data$origin = "refseq"
   reference_data$reference_id = reference_data$LastMajorReleaseAccession
   reference_data$display_name = reference_data$Organism
+  #Remove anything within parenthesis for slightly shorter names when making trees
+  reference_data$display_name_shorter <- sub("\\s*\\([^)]+\\)$", "", reference_data$Organism)
+
 
   new_reference_ids <- unique(sample_data$reference_id[!is.na(sample_data$reference_id) & !sample_data$reference_id %in% reference_data$reference_id])
 
   if (length(new_reference_ids) > 0) {
     new_rows <- data.frame(
       display_name = new_reference_ids,
+      display_name_shorter = new_reference_ids,
       reference_id = new_reference_ids,
       origin = "user"
     )
     reference_data <- bind_rows(new_rows,reference_data)
+    reference_data$display_name <- sub("_assembly$", "", reference_data$display_name)
+    reference_data$display_name_shorter <- sub("_assembly$", "", reference_data$display_name_shorter)
+
   }
 
   return(reference_data)

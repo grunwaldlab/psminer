@@ -20,7 +20,7 @@ make_phylogeny <- function(core_phylogeny_path, sample_data, formatted_ani_matri
   core_tree <- root(core_tree, names(which.min(colMeans(group_ani[sample_ids, ]))))
 
   # Set tip labels to taxon names
-  name_key <- set_names(c(reference_data$display_name, sample_data$modified_id), c(reference_data$LastMajorReleaseAccession, sample_data$modified_id))
+  name_key <- set_names(c(reference_data$display_name_shorter, sample_data$modified_id), c(reference_data$LastMajorReleaseAccession, sample_data$modified_id))
   core_tree$tip.label <- name_key[core_tree$tip.label]
 
   if (interactive) {
