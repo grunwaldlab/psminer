@@ -31,7 +31,7 @@ parse_sample_meta <- function(path, group) {
 parse_ref_meta <- function(reference_data_path, ref_ids_path, sample_data) {
   convert_id <- function(ids) gsub(ids, pattern = "[.-]", replacement = "_")
 
-  reference_data <- read_tsv(reference_data_path , col_types = 'dcccccccccccccccddc')
+  reference_data <- read_tsv(reference_data_path , col_types = 'ccccccccccdccccccddccc')
   refs <- strsplit(read_lines(ref_ids_path), split = ';', fixed = TRUE)[[1]]
 
   reference_data$LastMajorReleaseAccession<-convert_id(reference_data$LastMajorReleaseAccession)
