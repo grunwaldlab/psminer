@@ -7,7 +7,8 @@
 sketch_idtb(
   sketch_data,
   sort_columns = c("sample_id", "WKID", "ANI", "Complt"),
-  top_n = 1
+  top_n = 1,
+  interactive = knitr::is_html_output()
 )
 }
 \arguments{
@@ -20,6 +21,8 @@ metrics in the order provided.}
 
 \item{top_n}{Integer; the number of top entries to retain for each unique sample ID after sorting.
 The default is `1`, meaning only the top entry is kept.}
+
+\item{interactive}{Whether or not to produce an interactive HTML/javascript-based table or a static one.}
 
 \item{sample_id}{Character; unique identifiers for each sample.}
 

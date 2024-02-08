@@ -4,7 +4,7 @@
 \alias{print_sample_metadata}
 \title{Print a table of sample metadata}
 \usage{
-print_sample_metadata(sample_data, interactive = TRUE)
+print_sample_metadata(sample_data, interactive = knitr::is_html_output())
 }
 \arguments{
 \item{sample_data}{A tibble/data.frame with the sample metadata}

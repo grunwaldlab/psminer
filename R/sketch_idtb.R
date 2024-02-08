@@ -22,6 +22,7 @@
 #'   metrics in the order provided.
 #' @param top_n Integer; the number of top entries to retain for each unique sample ID after sorting.
 #'   The default is `1`, meaning only the top entry is kept.
+#' @param interactive Whether or not to produce an interactive HTML/javascript-based table or a static one.
 #'
 #' @return An interactive DT::datatable object that renders as an HTML table when used in an R Markdown document or Shiny application.
 #' The table will have interactive features such as sorting and search enabled.
@@ -37,7 +38,7 @@
 #'
 #' # If you want to sort by Completeness and then WKID, keeping the top 2 entries for each sample_id:
 #' sketch_idtb(sketch_data, sort_columns = c("sample_id", "Complt", "WKID"), top_n = 2)
-sketch_idtb <- function(sketch_data, sort_columns = c("sample_id", "WKID", "ANI", "Complt"), top_n = 1) {
+sketch_idtb <- function(sketch_data, sort_columns = c("sample_id", "WKID", "ANI", "Complt"), top_n = 1, interactive = knitr::is_html_output()) {
 
   # Sort and filter data
   final_table <- best_sendsketch_hits(sketch_data, sort_columns = sort_columns, top_n = top_n) %>%
@@ -48,36 +49,46 @@ sketch_idtb <- function(sketch_data, sort_columns = c("sample_id", "WKID", "ANI"
            `Completeness (%)` = Complt,
            `Top Hit` = taxName)
 
-  # Define a function called 'bordered_bar'
-  bordered_bar <- function(value, color) {
-    sprintf('<div style="border: 1px solid gray; width: 100%%; border-radius: 12px;">
+  if (interactive) {
+    # Define a function called 'bordered_bar'
+    bordered_bar <- function(value, color) {
+      sprintf('<div style="border: 1px solid gray; width: 100%%; border-radius: 12px;">
               <div style="width: %s%%; background-color: %s; border-radius: 12px; text-align: center;">%s</div>
              </div>',
-            value, color, value)
+              value, color, value)
+    }
+
+    # Apply the bordered_bar function
+    final_table$`WKID (%)` <- sapply(final_table$`WKID (%)`, function(x) bordered_bar(x, 'lightblue'))
+    final_table$`ANI (%)` <- sapply(final_table$`ANI (%)`, function(x) bordered_bar(x, 'lightgreen'))
+    final_table$`Completeness (%)` <- sapply(final_table$`Completeness (%)`, function(x) bordered_bar(x, 'lightpink'))
+
+    # Render the table using DT for HTML output
+    return(
+      DT::datatable(final_table,
+                    options = list(
+                      pageLength = 10,
+                      autoWidth = TRUE,
+                      columnDefs = list(
+                        list(width = '150px', targets = c(1, 2, 3))
+                      ),
+                      searchHighlight = TRUE
+                    ),
+                    rownames = FALSE,
+                    escape = FALSE
+      )
+    )
+  } else {
+    return(print_static_table(final_table))
   }
 
-  # Apply the bordered_bar function
-  final_table$`WKID (%)` <- sapply(final_table$`WKID (%)`, function(x) bordered_bar(x, 'lightblue'))
-  final_table$`ANI (%)` <- sapply(final_table$`ANI (%)`, function(x) bordered_bar(x, 'lightgreen'))
-  final_table$`Completeness (%)` <- sapply(final_table$`Completeness (%)`, function(x) bordered_bar(x, 'lightpink'))
-
-  # Render the table using DT for HTML output
-  DT::datatable(final_table,
-                options = list(
-                  pageLength = 10,
-                  autoWidth = TRUE,
-                  columnDefs = list(
-                    list(width = '150px', targets = c(1, 2, 3))
-                  ),
-                  searchHighlight = TRUE
-                ),
-                rownames = FALSE,
-                escape = FALSE
-  )
 
 }
 
 
+
+
+#' Make sunburst plot of sendsketch taxonomy
 #' @export
 plot_sendsketch_taxonomy <- function(sketch_data, ...) {
 
