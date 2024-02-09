@@ -81,50 +81,6 @@ sketch_idtb <- function(sketch_data, sort_columns = c("sample_id", "WKID", "ANI"
   } else {
     return(print_static_table(final_table))
   }
-
-
-}
-
-
-
-
-#' Make sunburst plot of sendsketch taxonomy
-#' @export
-plot_sendsketch_taxonomy <- function(sketch_data, ...) {
-
-  # Sort and filter data
-  top_hits <- best_sendsketch_hits(sketch_data, ...)
-
-  # Parse taxonomic data
-  x <- metacoder::parse_tax_data(tax_data = top_hits,
-                      class_cols = 'taxonomy',
-                      class_key = c("taxon_rank", "taxon_name"),
-                      class_regex = "([a-z]+)?:?([a-zA-Z0-9.-_, ]+)",
-                      class_sep = ";")
-  x <- metacoder::filter_taxa(x, taxon_ranks == "s", supertaxa = TRUE)
-
-  # Replace duplicated names with their name + rank
-  duplicated_names <- taxon_names(x)[duplicated(taxon_names(x))]
-  unique_taxon_names <- paste0(taxon_names(x), " (", taxon_ranks(x), ")")
-  names(unique_taxon_names) <- taxon_ids(x)
-  unique_tax_names <- ifelse(taxon_names(x) %in% duplicated_names, unique_taxon_names, taxon_names(x))
-  names(unique_tax_names) <- taxon_ids(x)
-
-  # Convert to an edge list for plotting
-  plot_data <- x$edge_list
-  plot_data$count <- n_obs(x)[plot_data$to]
-  plot_data$from <- unique_tax_names[plot_data$from]
-  plot_data$to <- unique_tax_names[plot_data$to]
-
-  plotly::plot_ly(
-    type = 'sunburst',
-    ids = plot_data$to,
-    labels = plot_data$to,
-    parents = plot_data$from,
-    values = plot_data$count,
-    domain = list(column = 0),
-    branchvalues = 'total'
-  )
 }
 
 
@@ -146,7 +102,7 @@ plot_sendsketch_taxonomy <- function(sketch_data, ...) {
 #'
 #' @importFrom dplyr arrange group_by slice_head ungroup select rename
 #' @importFrom magrittr %>%
-#' @keywords internal
+#' @export
 #'
 #' @examples
 #' # Assuming `sketch_data` is your dataframe with the appropriate structure:
@@ -176,4 +132,61 @@ best_sendsketch_hits <- function(sketch_data, sort_columns = c("sample_id", "WKI
 
   return(final_table)
 
+}
+
+
+
+#' Make sunburst plot of sendsketch taxonomy
+#'
+#' Converts classifications of top hits in sendsketch output into an interactive sunburst plot.
+#'
+#' @param sketch_data A dataframe containing sketch analysis results.
+#' @param interactive Whether or not to produce an interactive HTML/javascript-based plot or a static one.
+#'
+#' @export
+plot_sendsketch_taxonomy <- function(sketch_data, interactive = knitr::is_html_output(), ...) {
+
+  # Sort and filter data
+  top_hits <- best_sendsketch_hits(sketch_data, ...)
+
+  # Parse taxonomic data
+  x <- metacoder::parse_tax_data(tax_data = top_hits,
+                                 class_cols = 'taxonomy',
+                                 class_key = c("taxon_rank", "taxon_name"),
+                                 class_regex = "([a-z]+)?:?([a-zA-Z0-9.-_, ]+)",
+                                 class_sep = ";")
+  x <- metacoder::filter_taxa(x, taxon_ranks == "s", supertaxa = TRUE)
+
+  # Replace duplicated names with their name + rank
+  duplicated_names <- taxon_names(x)[duplicated(taxon_names(x))]
+  unique_taxon_names <- paste0(taxon_names(x), " (", taxon_ranks(x), ")")
+  names(unique_taxon_names) <- taxon_ids(x)
+  unique_tax_names <- ifelse(taxon_names(x) %in% duplicated_names, unique_taxon_names, taxon_names(x))
+  names(unique_tax_names) <- taxon_ids(x)
+
+  # Convert to an edge list for plotting
+  plot_data <- x$edge_list
+  plot_data$count <- n_obs(x)[plot_data$to]
+  plot_data$from <- unique_tax_names[plot_data$from]
+  plot_data$to <- unique_tax_names[plot_data$to]
+
+  output <- plotly::plot_ly(
+    type = 'sunburst',
+    ids = plot_data$to,
+    labels = plot_data$to,
+    parents = plot_data$from,
+    values = plot_data$count,
+    domain = list(column = 0),
+    branchvalues = 'total'
+  )
+
+  if (! interactive) {
+    temp_file_html <- tempfile(fileext = ".html")
+    temp_file_png <- tempfile(fileext = ".png")
+    htmlwidgets::saveWidget(widget = config(output, displayModeBar = FALSE), file = temp_file_html)
+    output <- webshot2::webshot(url = temp_file_html, file = temp_file_png,
+                                delay = 1, vheight = 750, vwidth = 750, zoom = 2)
+  }
+
+  return(output)
 }

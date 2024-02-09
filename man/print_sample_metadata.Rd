@@ -4,12 +4,14 @@
 \alias{print_sample_metadata}
 \title{Print a table of sample metadata}
 \usage{
-print_sample_metadata(sample_data, interactive = knitr::is_html_output())
+print_sample_metadata(sample_data, interactive = knitr::is_html_output(), ...)
 }
 \arguments{
 \item{sample_data}{A tibble/data.frame with the sample metadata}
 
 \item{interactive}{Whether to use an HTML-based interactive format or not (default: TRUE)}
+
+\item{...}{Passed to `DT::datatable`.}
 }
 \description{
 Selects columns in the sample metadata to print and format the result for

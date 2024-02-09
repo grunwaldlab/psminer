@@ -6,8 +6,9 @@
 #'
 #' @param sample_data A tibble/data.frame with the sample metadata
 #' @param interactive Whether to use an HTML-based interactive format or not (default: TRUE)
+#' @param ... Passed to `DT::datatable`.
 #' @export
-print_sample_metadata <- function(sample_data, interactive = knitr::is_html_output()) {
+print_sample_metadata <- function(sample_data, interactive = knitr::is_html_output(), ...) {
 
   # Subset and reformat data for printing
   column_key <- c(
@@ -22,7 +23,9 @@ print_sample_metadata <- function(sample_data, interactive = knitr::is_html_outp
 
   # Print table
   if (interactive) {
-    DT::datatable(formatted_data)
+    DT::datatable(formatted_data, class = "display nowrap", ...) %>%
+      formatStyle(column_key, "white-space" = "nowrap")
+
   } else {
     print_static_table(formatted_data, compressed_cols = c('Forward Reads', 'Reverse Reads', 'Reference'))
   }
