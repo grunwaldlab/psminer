@@ -4,7 +4,7 @@
 #'
 #' @param formatted_ani_matri Approximate ANI matrix output from Sourmash analysis
 #' @param sample_data A tibble/data.frame with the sample metadata
-#' @param reference_data A tibble/data/frame with information on references used in analysis
+#' @param reference_data A tibble/data.frame with information on references used in analysis
 #' @param interactive Whether to use an HTML-based interactive format or not (default: TRUE)
 #'
 #' @return A heatmap and dendrogram
