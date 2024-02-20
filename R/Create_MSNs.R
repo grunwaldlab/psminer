@@ -26,11 +26,14 @@ make_MSN <- function(tree_path, snp_alignment_path, sample_data, population=NULL
   samp_data <- samp_data[mat, ]
   snp_genclone <- as.genclone(snp_aln.gi)
 
-  if (!is.null(snp_threshold)) {
-    mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE)
+  if (is.null(snp_threshold)) {
     snpdist_stats <- filter_stats(snp_genclone)
     average_thresh <- cutoff_predictor(snpdist_stats$average$THRESHOLDS)
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE, threshold=average_thresh)
+
+    } else {
+    mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE, threshold=snp_threshold)
+    }
 
     if (!is.null(population) && population %in% names(samp_data)) {
       # Extract population from samp_data based on the specified column
@@ -70,26 +73,11 @@ make_MSN <- function(tree_path, snp_alignment_path, sample_data, population=NULL
       print("in progress")
     }
 
-  } else {
-    mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE, threshold=snp_threshold)
-  }
-
-  if (show_MLG_table) {
-    idlist <- mlg.id(snp_genclone)
-    mlglist <- data.frame("MLG","strain")
-    colnames(mlglist) <- c("V1","V2")
-
-    for (name in names(idlist)) {
-      newframe <- as.data.frame(cbind(paste0("MLG","_",name),idlist[[name]]))
-      mlglist <- rbind(mlglist,newframe)
-    }
-
-    colnames(mlglist) <- c("MLG","strain")
-    mlglist <- mlglist[mlglist$strain != "strain",]
-    print(mlglist) # To do-reformat
-  }
-
   if (interactive) {
     print("in progress")
   }
 }
+
+
+
+
