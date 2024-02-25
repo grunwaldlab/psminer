@@ -83,8 +83,6 @@ parse_ref_meta <- function(ref_data_path, assigned_refs_path, sample_data_path, 
 #' Parse and rename ANI matrix names for downstream steps
 #'
 #'
-#' @param ani_matrix_path the file path to 'ani_matrix.csv' file
-#'
 #' @return ANI matrix with column and row names that are compatible with other data inputs
 #'
 #' @export
@@ -93,5 +91,3 @@ parse_ani_matrix <- function(ani_matrix_path) {
   rownames(ani_matrix) <- colnames(ani_matrix)
   return(ani_matrix)
 }
-
-
