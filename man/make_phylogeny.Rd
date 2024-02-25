@@ -4,13 +4,7 @@
 \alias{make_phylogeny}
 \title{Make core gene phylogeny}
 \usage{
-make_phylogeny(
-  core_phylogeny_path,
-  sample_data,
-  formatted_ani_matrix,
-  reference_data,
-  interactive = TRUE
-)
+make_phylogeny(core_phylo_path, sample_data, ref_data, interactive = TRUE)
 }
 \arguments{
 \item{interactive}{}

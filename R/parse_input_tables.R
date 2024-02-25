@@ -1,18 +1,22 @@
 #' Parse sample metadata files
 #'
 #'
-#' @param path the file path to 'sample_data.csv' file
-#' @param group parsed information on report group for specific set of samples
+#' @param sample_data_path The file path to the 'sample_data.csv' file
+#' @param assigned_refs_path The file path to the 'assigned_refs.csv' file
+#' @param group The name of the report group for specific set of samples.
 #'
-#' @return sample_data dataframe
+#' @return `data.frame` of metadata for samples, with one row for each sample in
+#'   the group
 #'
 #' @export
-
-parse_sample_meta <- function(path, group) {
-  all_sample_data <- read_csv(path, show_col_types = FALSE)
-  all_sample_data$modified_id <- gsub(all_sample_data$sample, pattern = "-", replacement = "_", fixed = TRUE) #TODO: check that this is needed with new data format
-  group_data <- strsplit(all_sample_data$report_group, split = ";")
-  sample_data <- all_sample_data[map_lgl(group_data, function(x) group %in% x), ]
+parse_sample_meta <- function(sample_data_path, assigned_refs_path, group) {
+  sample_data <- read.csv(sample_data_path, check.names = FALSE)
+  assigned_refs <- read.csv(assigned_refs_path, col.names = c('sample_id', 'reference_id'), header = FALSE)
+  # Subset to samples in the report group
+  group_data <- strsplit(sample_data$report_group, split = ";")
+  sample_data <- sample_data[map_lgl(group_data, function(x) group %in% x), ]
+  # Add in which reference was used in variant calling
+  sample_data[match(assigned_refs$sample_id, sample_data$sample_id), 'reference_id'] <- assigned_refs$reference_id
   return(sample_data)
 }
 
@@ -20,64 +24,74 @@ parse_sample_meta <- function(path, group) {
 #' Parse reference metadata files
 #'
 #'
-#' @param reference_data_path
-#' @param ref_ids_path
-#' @param sample_data
+#' @param ref_data_path The folder with files with the data on references
+#'   assigned to each sample. The individual files are named by sample ID.
+#' @param assigned_refs_path The file path to the 'assigned_refs.csv' file
+#' @param sample_data_path The file path to the 'sample_data.csv' file
+#' @param group The name of the report group for specific set of samples.
 #'
-#' @return Reformatted reference metadata table containing both refseq-defined reference assemblies and user-defined assemblies
+#' @return Reformatted reference metadata table containing both refseq-defined
+#'   reference assemblies and user-defined assemblies
 #'
 #' @export
 
-parse_ref_meta <- function(reference_data_path, ref_ids_path, sample_data) {
-  convert_id <- function(ids) gsub(ids, pattern = "[.-]", replacement = "_")
+parse_ref_meta <- function(ref_data_path, assigned_refs_path, sample_data_path, group) {
+  sample_data <- read.csv(sample_data_path, check.names = FALSE)
+  group_data <- strsplit(sample_data$report_group, split = ";")
+  sample_data <- sample_data[map_lgl(group_data, function(x) group %in% x), ] # Subset to samples in the report group
+  assigned_refs <- read.csv(assigned_refs_path, col.names = c('sample_id', 'reference_id'), header = FALSE)
 
-  reference_data <- read_tsv(reference_data_path , col_types = 'ccccccccccdccccccddccc')
-  refs <- strsplit(read_lines(ref_ids_path), split = ';', fixed = TRUE)[[1]]
+  # Get data for the references selected by the pipeline
+  ref_file_names <- list.files(ref_data_path)
+  ref_data_per_sample <- lapply(ref_file_names, function(path) {
+    sample_id <- gsub(path, pattern = '\\.tsv$', replacement = '')
+    output <- read.csv(file.path(ref_data_path, path), sep = '\t')
+    return(cbind(
+      used_in_phylo_by = sample_id,
+      source = 'pipeline',
+      reference_name = output$Organism,
+      output
+    ))
+  })
+  ref_data <- do.call(rbind, ref_data_per_sample)
 
-  reference_data$LastMajorReleaseAccession<-convert_id(reference_data$LastMajorReleaseAccession)
+  # Combine sample IDs for each unique reference ID into a single row
+  ref_data <- do.call(rbind, lapply(unique(ref_data$reference_id), function(id) {
+    subset <- ref_data[ref_data$reference_id == id, ]
+    subset$used_in_phylo_by <- paste0(unique(subset$used_in_phylo_by), collapse = ';')
+    return(subset[1, ])
+  }))
 
-  reference_data$origin = "refseq"
-  reference_data$reference_id = reference_data$LastMajorReleaseAccession
-  reference_data$display_name = reference_data$Organism
-  #Remove anything within parenthesis for slightly shorter names when making trees
-  reference_data$display_name_shorter <- sub("\\s*\\([^)]+\\)$", "", reference_data$Organism)
+  # Add user-defined references
+  user_ref_ids <- unique(sample_data$reference_id)
+  user_ref_ids <- user_ref_ids[user_ref_ids != '' & !is.na(user_ref_ids)]
+  user_ref_data <- ref_data[NA, ][seq_along(user_ref_ids), ] # Hack to make a data.frame with all NAs
+  user_ref_data$reference_id <- user_ref_ids
+  user_ref_data$reference_name <- sample_data$reference_name[match(user_ref_ids, sample_data$reference_name)]
+  user_ref_data$source <- 'user'
+  ref_data <- rbind(ref_data, user_ref_data)
+  row.names(ref_data) <- NULL
 
+  # Add in which reference was used in variant calling
+  samps_per_ref <- split(assigned_refs$sample_id, assigned_refs$reference_id)
+  samp_ref_key <- unlist(lapply(samps_per_ref, paste0, collapse = ';'))
+  ref_data$used_in_var_by <- samp_ref_key[ref_data$reference_id]
 
-  new_reference_ids <- unique(sample_data$reference_id[!is.na(sample_data$reference_id) & !sample_data$reference_id %in% reference_data$reference_id])
-
-  if (length(new_reference_ids) > 0) {
-    new_rows <- data.frame(
-      display_name = new_reference_ids,
-      display_name_shorter = new_reference_ids,
-      reference_id = new_reference_ids,
-      origin = "user"
-    )
-    reference_data <- bind_rows(new_rows,reference_data)
-    reference_data$display_name <- sub("_assembly$", "", reference_data$display_name)
-    reference_data$display_name_shorter <- sub("_assembly$", "", reference_data$display_name_shorter)
-
-  }
-
-  return(reference_data)
+  return(ref_data)
 }
 
 #' Parse and rename ANI matrix names for downstream steps
 #'
 #'
-#' @param path the file path to 'sample_data.csv' file
-#' @param group parsed information on report group for specific set of samples
+#' @param ani_matrix_path the file path to 'ani_matrix.csv' file
 #'
 #' @return ANI matrix with column and row names that are compatible with other data inputs
 #'
 #' @export
-
-parse_ani_matrix_names <- function(sourmash_ani_matrix) {
-  convert_id <- function(ids) gsub(ids, pattern = "[.-]", replacement = "_")
-
-  colnames(sourmash_ani_matrix) <- convert_id(colnames(sourmash_ani_matrix))
-  rownames(sourmash_ani_matrix) <- convert_id(colnames(sourmash_ani_matrix))
-
-  return(sourmash_ani_matrix)
+parse_ani_matrix <- function(ani_matrix_path) {
+  ani_matrix <- read.csv(ani_matrix_path, check.names = FALSE)
+  rownames(ani_matrix) <- colnames(ani_matrix)
+  return(ani_matrix)
 }
 
 

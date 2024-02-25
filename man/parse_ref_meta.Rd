@@ -4,13 +4,21 @@
 \alias{parse_ref_meta}
 \title{Parse reference metadata files}
 \usage{
-parse_ref_meta(reference_data_path, ref_ids_path, sample_data)
+parse_ref_meta(ref_data_path, assigned_refs_path, sample_data_path, group)
 }
 \arguments{
-\item{sample_data}{}
+\item{ref_data_path}{The folder with files with the data on references
+assigned to each sample. The individual files are named by sample ID.}
+
+\item{assigned_refs_path}{The file path to the 'assigned_refs.csv' file}
+
+\item{sample_data_path}{The file path to the 'sample_data.csv' file}
+
+\item{group}{The name of the report group for specific set of samples.}
 }
 \value{
-Reformatted reference metadata table containing both refseq-defined reference assemblies and user-defined assemblies
+Reformatted reference metadata table containing both refseq-defined
+  reference assemblies and user-defined assemblies
 }
 \description{
 Parse reference metadata files

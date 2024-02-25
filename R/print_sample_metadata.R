@@ -12,11 +12,11 @@ print_sample_metadata <- function(sample_data, interactive = knitr::is_html_outp
 
   # Subset and reformat data for printing
   column_key <- c(
-    sample = 'Sample ID',
-    fastq_1 = 'Forward Reads',
-    fastq_2 = 'Reverse Reads',
+    sample_id = 'Sample ID',
+    shortread_1 = 'Forward Reads',
+    shortread_2 = 'Reverse Reads',
     reference_id = 'Reference ID',
-    reference =  'Reference'
+    reference_name =  'Reference'
   )
   formatted_data <- sample_data[, names(column_key)]
   colnames(formatted_data) <- column_key

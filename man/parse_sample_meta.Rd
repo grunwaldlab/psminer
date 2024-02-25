@@ -4,15 +4,18 @@
 \alias{parse_sample_meta}
 \title{Parse sample metadata files}
 \usage{
-parse_sample_meta(path, group)
+parse_sample_meta(sample_data_path, assigned_refs_path, group)
 }
 \arguments{
-\item{path}{the file path to 'sample_data.csv' file}
+\item{sample_data_path}{The file path to the 'sample_data.csv' file}
 
-\item{group}{parsed information on report group for specific set of samples}
+\item{assigned_refs_path}{The file path to the 'assigned_refs.csv' file}
+
+\item{group}{The name of the report group for specific set of samples.}
 }
 \value{
-sample_data dataframe
+`data.frame` of metadata for samples, with one row for each sample in
+  the group
 }
 \description{
 Parse sample metadata files
