@@ -8,11 +8,23 @@
 #' @param user_seed
 #' @param
 #' @return minimum spanning network
+#' @export
+
+
+#' Make Minimum spanning network
+#'
+#' @param snp_align_path
+#' @param sample_data
+#' @param population
+#' @param snp_threshold
+#' @param show_MLG_table
+#' @param user_seed
+#' @return minimum spanning network
 #'
 #' @export
 
 
-make_MSN <- function(snp_alignment_path, sample_data, population=NULL, interactive = TRUE, snp_threshold=NULL, show_MLG_table=FALSE, user_seed=NULL) {
+make_MSN <- function(snp_align_path, sample_data, population=NULL, interactive = FALSE, snp_threshold=NULL, show_MLG_table=FALSE, user_seed=NULL) {
 
   snp_alignment <- ape::read.dna(snp_alignment_path, format =  "fasta")
   snp_aln.gi <- DNAbin2genind(snp_alignment)
@@ -35,6 +47,7 @@ make_MSN <- function(snp_alignment_path, sample_data, population=NULL, interacti
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- snp_threshold
   }
 
+  # Create MSN based on population information
   if (!is.null(population) && population %in% names(sample_data)) {
     user_factor <- sample_data[[population]]
     node_color <- as.factor(ifelse(is.na(user_factor) | user_factor == "", "Unknown", user_factor))
@@ -68,6 +81,7 @@ make_MSN <- function(snp_alignment_path, sample_data, population=NULL, interacti
       edge.label.color = "darkslateblue"
     )
   }
+  # Create MSN based on color_by information
   else if (!is.null(sample_data$color_by)) {
     unique_factors <- unique(sample_data$color_by)
     unique_factors <- unlist(strsplit(unique_factors, ";"))
