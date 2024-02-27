@@ -1,6 +1,6 @@
 #' Make Minimum spanning network
 #'
-#' @param snp_align_path
+#' @param snp_alignment_path
 #' @param sample_data
 #' @param population
 #' @param snp_threshold
@@ -8,7 +8,6 @@
 #' @param user_seed
 #' @return minimum spanning network
 #' @export
-
 
 make_MSN <- function(snp_alignment_path, sample_data, population=NULL, interactive = FALSE, snp_threshold=NULL, show_MLG_table=FALSE, user_seed=NULL) {
 
@@ -151,3 +150,5 @@ make_MSN <- function(snp_alignment_path, sample_data, population=NULL, interacti
     print("in progress")
   }
 }
+
+#TODO-finish adding interactive component
