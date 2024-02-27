@@ -10,7 +10,7 @@
 #' @export
 
 
-make_MSN <- function(snp_align_path, sample_data, population=NULL, interactive = FALSE, snp_threshold=NULL, show_MLG_table=FALSE, user_seed=NULL) {
+make_MSN <- function(snp_alignment_path, sample_data, population=NULL, interactive = FALSE, snp_threshold=NULL, show_MLG_table=FALSE, user_seed=NULL) {
 
   snp_alignment <- ape::read.dna(snp_alignment_path, format =  "fasta")
   snp_aln.gi <- DNAbin2genind(snp_alignment)
