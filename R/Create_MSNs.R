@@ -6,21 +6,7 @@
 #' @param snp_threshold
 #' @param show_MLG_table
 #' @param user_seed
-#' @param
 #' @return minimum spanning network
-#' @export
-
-
-#' Make Minimum spanning network
-#'
-#' @param snp_align_path
-#' @param sample_data
-#' @param population
-#' @param snp_threshold
-#' @param show_MLG_table
-#' @param user_seed
-#' @return minimum spanning network
-#'
 #' @export
 
 
@@ -165,4 +151,3 @@ make_MSN <- function(snp_align_path, sample_data, population=NULL, interactive =
     print("in progress")
   }
 }
-
