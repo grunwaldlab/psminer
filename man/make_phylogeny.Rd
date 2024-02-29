@@ -4,10 +4,15 @@
 \alias{make_phylogeny}
 \title{Make core gene phylogeny}
 \usage{
-make_phylogeny(core_phylo, sample_data, ref_data, interactive = TRUE)
+make_phylogeny(
+  input,
+  sample_data,
+  ref_data,
+  interactive = knitr::is_html_output()
+)
 }
 \arguments{
-\item{core_phylo}{Either a file path or a "phylo" object}
+\item{input}{Either a file path to a .treefile or a "phylo" object}
 
 \item{interactive}{}
 }

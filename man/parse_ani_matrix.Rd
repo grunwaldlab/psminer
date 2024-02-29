@@ -2,16 +2,16 @@
 % Please edit documentation in R/parse_input_tables.R
 \name{parse_ani_matrix}
 \alias{parse_ani_matrix}
-\title{Parse and rename ANI matrix names for downstream steps}
+\title{Parse ANI matrix}
 \usage{
-parse_ani_matrix(ani_matrix_path)
+parse_ani_matrix(path)
 }
 \arguments{
-\item{ani_matrix_path}{the file path to 'ani_matrix.csv' file}
+\item{path}{the file path to the 'ani_matrix.csv' file}
 }
 \value{
 ANI matrix with column and row names that are compatible with other data inputs
 }
 \description{
-Parse and rename ANI matrix names for downstream steps
+Parse and rename ANI matrix for downstream steps
 }

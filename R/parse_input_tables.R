@@ -34,7 +34,6 @@ parse_sample_meta <- function(sample_data_path, assigned_refs_path, group) {
 #'   reference assemblies and user-defined assemblies
 #'
 #' @export
-
 parse_ref_meta <- function(ref_data_path, assigned_refs_path, sample_data_path, group) {
   sample_data <- read.csv(sample_data_path, check.names = FALSE)
   group_data <- strsplit(sample_data$report_group, split = ";")
@@ -80,15 +79,33 @@ parse_ref_meta <- function(ref_data_path, assigned_refs_path, sample_data_path, 
   return(ref_data)
 }
 
-#' Parse and rename ANI matrix names for downstream steps
+#' Parse ANI matrix
 #'
-#' @param ani_matrix_path the file path to 'ani_matrix.csv' file
+#' Parse and rename ANI matrix for downstream steps
+#'
+#' @param path the file path to the 'ani_matrix.csv' file
 #'
 #' @return ANI matrix with column and row names that are compatible with other data inputs
 #'
 #' @export
-parse_ani_matrix <- function(ani_matrix_path) {
-  ani_matrix <- read.csv(ani_matrix_path, check.names = FALSE)
+parse_ani_matrix <- function(path) {
+  ani_matrix <- read.csv(path, check.names = FALSE)
   rownames(ani_matrix) <- colnames(ani_matrix)
   return(ani_matrix)
+}
+
+
+#' Parse POCP matrix
+#'
+#' Parse and rename POCP matrix for downstream steps
+#'
+#' @param path the file path to the 'popc.tsv' file
+#'
+#' @return POCP matrix with column and row names that are compatible with other data inputs
+#'
+#' @export
+parse_pocp_matrix <- function(path) {
+  output <- read.csv(path, check.names = FALSE, sep = '\t')
+  rownames(output) <- colnames(output)
+  return(output)
 }

@@ -7,6 +7,7 @@
 #' @param sample_data A tibble/data.frame with the sample metadata
 #' @param interactive Whether to use an HTML-based interactive format or not (default: TRUE)
 #' @param ... Passed to `DT::datatable`.
+#'
 #' @export
 print_sample_metadata <- function(sample_data, interactive = knitr::is_html_output(), ...) {
 

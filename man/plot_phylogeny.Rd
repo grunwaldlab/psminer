@@ -9,7 +9,7 @@ plot_phylogeny(
   ids,
   labels = ids,
   colors = "#000000",
-  interactive = TRUE,
+  interactive = knitr::is_html_output(),
   ...
 )
 }
