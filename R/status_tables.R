@@ -4,7 +4,7 @@
 #' a simple summary table, a detailed table for samples, and a detailed table for report groups.
 #' It allows toggling between interactive and static outputs.
 #'
-#' @param messages A dataframe containing the columns `sample_id`, `group_id`, `workflow`, `message_level`, and `message_text`.
+#' @param messages A dataframe containing the columns `sample_id`, `group_id`, `workflow`, `level`, and `message`.
 #' @param interactive Logical; whether to produce interactive tables (TRUE) or static tables (FALSE).
 #'                    Default is TRUE if running in an environment that supports HTML output, otherwise FALSE.
 #' @return A list containing three objects: simpleTable, detailedSamplesTable, and detailedGroupsTable.
@@ -12,7 +12,7 @@
 #' @export
 #' @examples
 #' messages <- readr::read_tsv("path/to/messages.tsv") %>%
-#'   tidyr::separate(message, into = c("message_level", "message_text"), sep = "\t")
+#'   tidyr::separate(message, into = c("level", "message"), sep = "\t")
 #' tables <- status_tables(messages, interactive = TRUE)
 #' tables$simpleTable
 #' tables$detailedSamplesTable
@@ -40,10 +40,10 @@ status_tables <- function(messages, interactive = knitr::is_html_output()) {
   # Map workflows to major steps
   messages$major_step <- step_flat[messages$workflow]
 
-  # Adjusted summarization logic to use 'message_level' for calculating Failures and identifying group issues
+  # Adjusted summarization logic to use 'level' for calculating Failures and identifying group issues
   summary_data <- messages %>%
     group_by(major_step) %>%
-    summarise(Failures = sum(message_level == "WARNING" | message_level == "ERROR"), .groups = 'drop')
+    summarise(Failures = sum(level == "WARNING" | level == "ERROR"), .groups = 'drop')
 
   # Calculate report group issues
   report_group_issues <- messages %>%
@@ -63,15 +63,15 @@ status_tables <- function(messages, interactive = knitr::is_html_output()) {
 
   # Mapping message level to emojis for detailed tables
   messages$emoji <- case_when(
-    messages$message_level == "WARNING" ~ "⚠️WARNING",
-    messages$message_level == "ERROR" ~ "❌ERROR",
+    messages$level == "WARNING" ~ "⚠️WARNING",
+    messages$level == "ERROR" ~ "❌ERROR",
     TRUE ~ "✅" # Default to a success symbol, adjust as necessary
   )
 
   # Detailed table for samples
   detailed_data_samples <- messages %>%
     filter(!is.na(sample_id)) %>%
-    select(sample_id, major_step, emoji, summarized_message = message_text)
+    select(sample_id, major_step, emoji, summarized_message = message)
 
   # Customize column names for the detailed table for samples
   colnames(detailed_data_samples) <- c("Sample", "Pipeline step", "Issue type", "Message")
@@ -79,16 +79,19 @@ status_tables <- function(messages, interactive = knitr::is_html_output()) {
   # Detailed table for report groups
   detailed_data_groups <- messages %>%
     filter(is.na(sample_id)) %>%
-    select(group_id, major_step, emoji, summarized_message = message_text)
+    select(group_id, major_step, emoji, summarized_message = message)
 
   # Customize column names for the detailed table for report groups
   colnames(detailed_data_groups) <- c("Group", "Pipeline step", "Issue type", "Message")
 
   # Conditional output function and options
   if (interactive) {
-    simple_table_output <- DT::datatable(summary_data_full, options = list(pageLength = 5, autoWidth = TRUE), escape = FALSE)
-    detailed_samples_output <- DT::datatable(detailed_data_samples, options = list(pageLength = 10, autoWidth = TRUE), escape = FALSE)
-    detailed_groups_output <- DT::datatable(detailed_data_groups, options = list(pageLength = 10, autoWidth = TRUE), escape = FALSE)
+    simple_table_output <- DT::datatable(summary_data_full, options = list(pageLength = 5, autoWidth = TRUE), escape = FALSE) %>%
+      formatStyle(colnames(summary_data_full), "white-space" = "nowrap")
+    detailed_samples_output <- DT::datatable(detailed_data_samples, options = list(pageLength = 10, autoWidth = TRUE), escape = FALSE) %>%
+      formatStyle(colnames(detailed_data_samples), "white-space" = "nowrap")
+    detailed_groups_output <- DT::datatable(detailed_data_groups, options = list(pageLength = 10, autoWidth = TRUE), escape = FALSE) %>%
+      formatStyle(colnames(detailed_data_groups), "white-space" = "nowrap")
   } else {
     # Using kable and kableExtra for static output
     simple_table_output <- summary_data_full %>%

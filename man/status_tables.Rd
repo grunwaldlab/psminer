@@ -7,7 +7,7 @@
 status_tables(messages, interactive = knitr::is_html_output())
 }
 \arguments{
-\item{messages}{A dataframe containing the columns `sample_id`, `group_id`, `workflow`, `message_level`, and `message_text`.}
+\item{messages}{A dataframe containing the columns `sample_id`, `group_id`, `workflow`, `level`, and `message`.}
 
 \item{interactive}{Logical; whether to produce interactive tables (TRUE) or static tables (FALSE).
 Default is TRUE if running in an environment that supports HTML output, otherwise FALSE.}
@@ -23,7 +23,7 @@ It allows toggling between interactive and static outputs.
 }
 \examples{
 messages <- readr::read_tsv("path/to/messages.tsv") \%>\%
-  tidyr::separate(message, into = c("message_level", "message_text"), sep = "\t")
+  tidyr::separate(message, into = c("level", "message"), sep = "\t")
 tables <- status_tables(messages, interactive = TRUE)
 tables$simpleTable
 tables$detailedSamplesTable
