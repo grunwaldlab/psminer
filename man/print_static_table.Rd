@@ -4,18 +4,21 @@
 \alias{print_static_table}
 \title{Wrapper function to print static tables}
 \usage{
-print_static_table(data, compressed_cols = NULL)
+print_static_table(data, compressed_cols = NULL, max_nchar = 20)
 }
 \arguments{
 \item{data}{The table to print.}
 
 \item{compressed_cols}{The named of columns to attempt to make shorter by
-moving shared text at the beginning and end to footnotes and replacing
-with `...`}
+moving shared text at the beginning and end to footnotes and replacing with
+`...`}
+
+\item{max_nchar}{The number of characters that the longest entry in a column
+can be before the `compressed_cols` option takes effect.}
 }
 \description{
-This wrapper function is meant to allow the method of printing tables used
-by many functions to be changed in the future. This is primarily used for
-PDF output.
+This wrapper function is meant to allow the method of printing tables used by
+many functions to be changed in the future. This is primarily used for PDF
+output.
 }
 \keyword{internal}

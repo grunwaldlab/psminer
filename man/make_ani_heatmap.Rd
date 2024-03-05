@@ -8,7 +8,10 @@ make_ani_heatmap(
   ani_matrix,
   ref_data,
   sample_data,
-  interactive = knitr::is_html_output()
+  interactive = knitr::is_html_output(),
+  height = 1000,
+  width = 1000,
+  dpi = 100
 )
 }
 \arguments{
@@ -19,6 +22,12 @@ make_ani_heatmap(
 \item{sample_data}{A tibble/data.frame with the sample metadata}
 
 \item{interactive}{Whether to use an HTML-based interactive format or not (default: TRUE)}
+
+\item{height}{The height in pixels. If not `interactive`, this is divided by `dpi` to convert it to inches.}
+
+\item{width}{The width in pixels. If not `interactive`, this is divided by `dpi` to convert it to inches.}
+
+\item{dpi}{How pixels are converted to inches}
 }
 \value{
 A heatmap and dendrogram

@@ -6,6 +6,9 @@
 #' @param sample_data A tibble/data.frame with the sample metadata
 #' @param ref_data A tibble/data.frame with information on references used in analysis
 #' @param interactive Whether to use an HTML-based interactive format or not (default: TRUE)
+#' @param height The height in pixels. If not `interactive`, this is divided by `dpi` to convert it to inches.
+#' @param width The width in pixels. If not `interactive`, this is divided by `dpi` to convert it to inches.
+#' @param dpi How pixels are converted to inches
 #'
 #' @return A heatmap and dendrogram
 #'
@@ -14,7 +17,7 @@
 #' @examples
 #' make_ani_heatmap(ani_matrix, ref_data, samp_data, interactive=FALSE)
 
-make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = knitr::is_html_output()) {
+make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = knitr::is_html_output(),height = 1000, width = 1000, dpi = 100) {
   # Rename rows/columns for plotting
   name_key <- c(
     setNames(ref_data$reference_name, ref_data$reference_id),
@@ -25,9 +28,9 @@ make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = kn
 
   if (interactive) {
     heatmap_ani <- heatmaply(ani_matrix,
-                             fontsize_row = 8, fontsize_col = 8, width = 1000, height = 800)
+                             fontsize_row = 8, fontsize_col = 8, width = width, height = height)
   } else {
-    heatmap_ani <- pheatmap(ani_matrix, show_rownames = TRUE, labels_row = colnames(ani_matrix))
+    heatmap_ani <- pheatmap(ani_matrix, show_rownames = TRUE, labels_row = colnames(ani_matrix), width = width / dpi, height = height / dpi)
   }
   return(heatmap_ani)
 }

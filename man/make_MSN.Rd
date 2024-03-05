@@ -5,13 +5,13 @@
 \title{Make Minimum spanning network}
 \usage{
 make_MSN(
-  tree_path,
   snp_alignment_path,
   sample_data,
   population = NULL,
-  interactive = TRUE,
+  interactive = FALSE,
   snp_threshold = NULL,
-  show_MLG_table = FALSE
+  show_MLG_table = FALSE,
+  user_seed = NULL
 )
 }
 \value{

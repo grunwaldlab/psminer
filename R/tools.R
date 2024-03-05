@@ -4,19 +4,26 @@
 
 #' Wrapper function to print static tables
 #'
-#' This wrapper function is meant to allow the method of printing tables used
-#' by many functions to be changed in the future. This is primarily used for
-#' PDF output.
+#' This wrapper function is meant to allow the method of printing tables used by
+#' many functions to be changed in the future. This is primarily used for PDF
+#' output.
 #'
 #' @param data The table to print.
 #' @param compressed_cols The named of columns to attempt to make shorter by
-#'   moving shared text at the beginning and end to footnotes and replacing
-#'   with `...`
+#'   moving shared text at the beginning and end to footnotes and replacing with
+#'   `...`
+#' @param max_nchar The number of characters that the longest entry in a column
+#'   can be before the `compressed_cols` option takes effect.
 #'
 #' @keywords internal
-print_static_table <- function(data, compressed_cols = NULL) {
+print_static_table <- function(data, compressed_cols = NULL, max_nchar = 20) {
   # Compress column contents
   if (!is.null(compressed_cols)) {
+    # Dont compress column that already have small values
+    compress_needed <- unlist(lapply(compressed_cols, function(col) {
+      max(nchar(data[[col]])) > max_nchar
+    }))
+    compressed_cols <- compressed_cols[compress_needed]
     # Remove starts
     starts <- lapply(data[compressed_cols], shared_char)
     data[compressed_cols] <- lapply(compressed_cols, function(col_name) {
@@ -109,3 +116,14 @@ shared_char <- function(col, end = FALSE) {
   return(result)
 }
 
+
+
+#' Format a number for printing
+#'
+#' Shortens a number to a specified number of significant digits.
+#' Taken from https://stackoverflow.com/questions/3245862/format-numbers-to-significant-figures-nicely-in-r
+#'
+#' @keywords internal
+format_number <- function(nums, sig_fig = 4) {
+  formatC(signif(nums, digits = sig_fig), digits = sig_fig, format="fg", flag="#")
+}
