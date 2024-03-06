@@ -94,15 +94,9 @@ status_tables <- function(messages, interactive = knitr::is_html_output()) {
       formatStyle(colnames(detailed_data_groups), "white-space" = "nowrap")
   } else {
     # Using kable and kableExtra for static output
-    simple_table_output <- summary_data_full %>%
-      kable("html", escape = FALSE) %>%
-      kable_styling(bootstrap_options = c("striped", "hover"))
-    detailed_samples_output <- detailed_data_samples %>%
-      kable("html", escape = FALSE) %>%
-      kable_styling(bootstrap_options = c("striped", "hover"))
-    detailed_groups_output <- detailed_data_groups %>%
-      kable("html", escape = FALSE) %>%
-      kable_styling(bootstrap_options = c("striped", "hover"))
+    simple_table_output <- print_static_table(summary_data_full)
+    detailed_samples_output <- print_static_table(detailed_data_samples)
+    detailed_groups_output <- print_static_table(detailed_data_groups)
   }
 
   # Return the tables as a list
