@@ -105,7 +105,7 @@ status_tables <- function(messages, interactive = knitr::is_html_output()) {
     simple_table_output <- DT::datatable(summary_data_full, options = list(pageLength = 5, autoWidth = TRUE), escape = FALSE) %>%
       DT::formatStyle(colnames(summary_data_full), "white-space" = "nowrap")
     detailed_samples_output <- DT::datatable(detailed_data_samples, options = list(pageLength = 10, autoWidth = TRUE), escape = FALSE) %>%
-      DT::formatStyle(colnames(detailed_data_samples), columns = 4, `white-space` = "normal")
+      DT::formatStyle(colnames(detailed_data_samples), "white-space" = "nowrap")
     detailed_groups_output <- DT::datatable(detailed_data_groups, options = list(pageLength = 10, autoWidth = TRUE), escape = FALSE) %>%
       DT::formatStyle(colnames(detailed_data_groups), "white-space" = "nowrap")
   } else {
