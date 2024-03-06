@@ -87,18 +87,18 @@ status_tables <- function(messages, interactive = knitr::is_html_output()) {
 
   # Detailed table for samples
   detailed_data_samples <- dplyr::filter(messages, !is.na(sample_id)) %>%
-    dplyr::select(sample_id, major_step, emoji, summarized_message = message)
+    dplyr::select(emoji, sample_id, major_step, summarized_message = message)
 
   # Customize column names for the detailed table for samples
-  colnames(detailed_data_samples) <- c("Sample", "Pipeline step", "Issue type", "Message")
+  colnames(detailed_data_samples) <- c("Issue type", "Sample", "Pipeline step", "Message")
 
   # Detailed table for report groups
   detailed_data_groups <- messages %>%
-    filter(is.na(sample_id)) %>%
-    select(group_id, major_step, emoji, summarized_message = message)
+    dplyr::filter(is.na(sample_id)) %>%
+    dplyr::select(emoji, group_id, major_step, summarized_message = message)
 
   # Customize column names for the detailed table for report groups
-  colnames(detailed_data_groups) <- c("Group", "Pipeline step", "Issue type", "Message")
+  colnames(detailed_data_groups) <- c("Issue type", "Group", "Pipeline step", "Message")
 
   # Conditional output function and options
   if (interactive) {
