@@ -64,12 +64,14 @@ parse_ref_meta <- function(ref_data_path, assigned_refs_path, sample_data_path, 
   # Add user-defined references
   user_ref_ids <- unique(sample_data$reference_id)
   user_ref_ids <- user_ref_ids[user_ref_ids != '' & !is.na(user_ref_ids)]
-  user_ref_data <- ref_data[NA, ][seq_along(user_ref_ids), ] # Hack to make a data.frame with all NAs
-  user_ref_data$reference_id <- user_ref_ids
-  user_ref_data$reference_name <- sample_data$reference_name[match(user_ref_ids, sample_data$reference_name)]
-  user_ref_data$source <- 'user'
-  ref_data <- rbind(ref_data, user_ref_data)
-  row.names(ref_data) <- NULL
+  if (length(user_ref_ids) > 0) {
+    user_ref_data <- ref_data[NA, ][seq_along(user_ref_ids), ] # Hack to make a data.frame with all NAs
+    user_ref_data$reference_id <- user_ref_ids
+    user_ref_data$reference_name <- sample_data$reference_name[match(user_ref_ids, sample_data$reference_name)]
+    user_ref_data$source <- 'user'
+    ref_data <- rbind(ref_data, user_ref_data)
+    row.names(ref_data) <- NULL
+  }
 
   # Add in which reference was used in variant calling
   samps_per_ref <- split(assigned_refs$sample_id, assigned_refs$reference_id)
