@@ -1,18 +1,18 @@
 #' Make Minimum spanning network
 #'
-#' @param snp_alignment_path
+#' @param snp_alignments
 #' @param sample_data
 #' @param population
 #' @param snp_threshold
 #' @param show_MLG_table
 #' @param user_seed
+#' @param ...
 #' @return minimum spanning network
 #' @export
 
-make_MSN <- function(snp_alignment_path, sample_data, population=NULL, interactive = FALSE, snp_threshold=NULL, show_MLG_table=FALSE, user_seed=NULL) {
+make_MSN <- function(fasta_alignment, sample_data, population=NULL, interactive = FALSE, snp_threshold=NULL, show_MLG_table=FALSE, user_seed=NULL, ...) {
 
-  snp_alignment <- ape::read.dna(snp_alignment_path, format =  "fasta")
-  snp_aln.gi <- DNAbin2genind(snp_alignment)
+  snp_aln.gi <- DNAbin2genind(fasta_alignment)
   snp_aln.gi <- snp_aln.gi[indNames(snp_aln.gi) != "REF"]
 
   genind_names <- indNames(snp_aln.gi)
@@ -22,6 +22,7 @@ make_MSN <- function(snp_alignment_path, sample_data, population=NULL, interacti
   mat <- match(indNames(snp_aln.gi), sample_data$sample_id)
   sample_data <- sample_data[mat, ]
   snp_genclone <- as.genclone(snp_aln.gi)
+
 
   if (is.null(snp_threshold)) {
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE)
@@ -47,6 +48,8 @@ make_MSN <- function(snp_alignment_path, sample_data, population=NULL, interacti
                         distmat = bitwise.dist(snp_genclone, percent = FALSE),
                         include.ties = TRUE,
                         showplot = FALSE)
+
+
     the_edges <- igraph::E(ms.loc$graph)$weight
     edges <- as.list(the_edges)
 
@@ -80,6 +83,7 @@ make_MSN <- function(snp_alignment_path, sample_data, population=NULL, interacti
       strata(snp_genclone) <- cbind(sample_data[, c(1:num_columns)], color_node_by = node_color)
       setPop(snp_genclone) <- ~color_node_by
 
+      set.seed(user_seed)
       ms.loc <- poppr.msn(snp_genclone,
                           distmat = bitwise.dist(snp_genclone, percent = FALSE),
                           include.ties = TRUE,
@@ -102,18 +106,19 @@ make_MSN <- function(snp_alignment_path, sample_data, population=NULL, interacti
       )
     }
   } else {
-    # No color_by provided, create "Unknown" factor
-    node_color <- as.factor(rep("Unknown", length(indNames(snp_genclone))))
+    # No color_by provided, create "No_Factor_Provided" label
+    # Decide on better label
+    node_color <- as.factor(rep("No_Factor_Provided", length(indNames(snp_genclone))))
     myColors <- rainbow(length(unique(node_color)))
     names(myColors) <- levels(node_color)
     strata(snp_genclone) <- list(color_node_by = node_color)
 
+    set.seed(user_seed)
     ms.loc <- poppr.msn(snp_genclone,
                         distmat = bitwise.dist(snp_genclone, percent = FALSE),
                         include.ties = TRUE,
                         showplot = FALSE)
 
-    set.seed(user_seed)
     plot_poppr_msn(
       snp_genclone,
       poppr_msn = ms.loc,
@@ -147,7 +152,8 @@ make_MSN <- function(snp_alignment_path, sample_data, population=NULL, interacti
   }
 
   if (interactive) {
-    print("in progress")
+    print("in_progress")
+
   }
 }
 
