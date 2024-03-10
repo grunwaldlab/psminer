@@ -10,9 +10,9 @@
 #' @return minimum spanning network
 #' @export
 
-make_MSN <- function(fasta_alignment, sample_data, population=NULL, interactive = FALSE, snp_threshold=NULL, show_MLG_table=FALSE, user_seed=NULL, ...) {
+make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interactive = FALSE, snp_threshold=NULL, show_MLG_table=FALSE, user_seed=NULL, ...) {
 
-  snp_aln.gi <- DNAbin2genind(fasta_alignment)
+  snp_aln.gi <- DNAbin2genind(snp_fasta_alignment)
   snp_aln.gi <- snp_aln.gi[indNames(snp_aln.gi) != "REF"]
 
   genind_names <- indNames(snp_aln.gi)
