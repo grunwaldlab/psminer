@@ -10,7 +10,7 @@
 #' @return minimum spanning network
 #' @export
 
-make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interactive = FALSE, snp_threshold=NULL, show_MLG_table=FALSE, user_seed=NULL, ...) {
+make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interactive = knitr::is_html_output(), snp_threshold=NULL, show_MLG_table=FALSE, user_seed=NULL, ...) {
 
   snp_aln.gi <- DNAbin2genind(snp_fasta_alignment)
   snp_aln.gi <- snp_aln.gi[indNames(snp_aln.gi) != "REF"]
@@ -28,10 +28,10 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE)
     snpdist_stats <- filter_stats(snp_genclone)
     average_thresh <- cutoff_predictor(snpdist_stats$average$THRESHOLDS)
-    cat("Predicted SNP threshold, using cutoff_predictor function from poppr is ", average_thresh, "\n")
+    print("Predicted SNP threshold, using cutoff_predictor function from poppr is ", average_thresh, "\n")
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- average_thresh
   } else {
-    mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- snp_threshold
+    mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- snp_threshold+1
   }
 
   # Create MSN based on population information
@@ -150,12 +150,15 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
 
     colnames(mlglist) <- c("MLG","strain")
     mlglist <- mlglist[mlglist$strain != "strain",]
-    print_static_table(mlglist) # To do-reformat
-  }
 
-  if (interactive) {
-    print("in_progress")
+    # Print table
+    if (interactive) {
+      DT::datatable(mlglist, class = "display nowrap", ...) %>%
+        formatStyle(colnames(mlglist), "white-space" = "nowrap")
 
+    } else {
+      print_static_table(mlglist)
+    }
   }
 }
 
