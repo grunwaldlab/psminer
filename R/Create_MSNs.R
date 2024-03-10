@@ -149,7 +149,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
     }
 
     colnames(mlglist) <- c("Multi-locus genotype","Strain")
-    #mlglist <- mlglist[mlglist$strain != "strain",]
+    mlglist <- mlglist[mlglist$strain != "strain",]
 
     # Print table
     if (interactive) {
