@@ -140,7 +140,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
 
   if (show_MLG_table) {
     idlist <- mlg.id(snp_genclone)
-    mlglist <- data.frame("MLG","strain")
+    mlglist <- data.frame("Multi-locus genotype","Strain")
     colnames(mlglist) <- c("V1","V2")
 
     for (name in names(idlist)) {
