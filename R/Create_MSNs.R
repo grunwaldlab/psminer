@@ -148,8 +148,8 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
       mlglist <- rbind(mlglist,newframe)
     }
 
+    mlglist <- mlglist[mlglist$strain != "strain",]
     colnames(mlglist) <- c("Multi-locus genotype","Strain")
-    mlglist <- mlglist[mlglist$Strain != "strain",]
 
     # Print table
     if (interactive) {
