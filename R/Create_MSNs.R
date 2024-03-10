@@ -29,7 +29,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
     snpdist_stats <- filter_stats(snp_genclone)
     average_thresh <- cutoff_predictor(snpdist_stats$average$THRESHOLDS)
     cat("Predicted SNP threshold, using cutoff_predictor function from poppr is:", average_thresh, "\n")
-    mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- 0.05
+    mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- average_thresh
   } else {
     adjust_threshold <- snp_threshold+1
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- adjust_threshold
