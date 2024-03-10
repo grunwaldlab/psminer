@@ -61,12 +61,13 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
       quantiles = FALSE,
       wscale = FALSE,
       inds = "None",
-      layfun = igraph::layout_with_lgl,
+      #layfun = igraph::layout_with_lgl,
       edge.label = the_edges,
       edge.label.font = 2,
       edge.label.cex = 1,
       edge.label.family = "Helvetica",
-      edge.label.color = "darkslateblue"
+      edge.label.color = "darkslateblue",
+      ...
     )
   }
   # Create MSN based on color_by information
