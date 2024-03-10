@@ -28,7 +28,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE)
     snpdist_stats <- filter_stats(snp_genclone)
     average_thresh <- cutoff_predictor(snpdist_stats$average$THRESHOLDS)
-    print("Predicted SNP threshold, using cutoff_predictor function from poppr is: ", average_thresh, "\n")
+    cat("Predicted SNP threshold, using cutoff_predictor function from poppr is: ", average_thresh, "\n")
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- average_thresh
   } else {
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- snp_threshold+1
@@ -49,7 +49,6 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
                         distmat = bitwise.dist(snp_genclone, percent = FALSE),
                         include.ties = TRUE,
                         showplot = FALSE)
-
 
     the_edges <- igraph::E(ms.loc$graph)$weight
     edges <- as.list(the_edges)
@@ -109,7 +108,6 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
     }
   } else {
     # No color_by provided, create "No_Factor_Provided" label
-    # Decide on better label
     node_color <- as.factor(rep("No_Factor_Provided", length(indNames(snp_genclone))))
     myColors <- rainbow(length(unique(node_color)))
     names(myColors) <- levels(node_color)
