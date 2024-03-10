@@ -33,7 +33,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
   } else {
     adjust_threshold <- snp_threshold+1
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- adjust_threshold
-    cat("User-defined SNP threshold is:", adjust_threshold, "\n")
+    cat("User-defined SNP threshold is:", snp_threshold, "\n")
   }
 
   # Create MSN based on population information
