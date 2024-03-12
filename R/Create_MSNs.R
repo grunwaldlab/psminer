@@ -158,7 +158,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
         formatStyle(colnames(mlglist), "white-space" = "nowrap")
 
     } else {
-      psminer::print_static_table(mlglist)
+      print_static_table(mlglist)
     }
   }
 }
