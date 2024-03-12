@@ -1,16 +1,4 @@
-#' Make Minimum spanning network
-#'
-#' @param snp_alignments
-#' @param sample_data
-#' @param population
-#' @param snp_threshold
-#' @param show_MLG_table
-#' @param user_seed
-#' @param ...
-#' @return minimum spanning network
-#' @export
-
-make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interactive = knitr::is_html_output(), snp_threshold=NULL, show_MLG_table=FALSE, user_seed=NULL, ...) {
+make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interactive = knitr::is_html_output(), snp_threshold=NULL, use_cutoff_predictor = TRUE, show_MLG_table=FALSE, user_seed=NULL, ...) {
 
   snp_aln.gi <- DNAbin2genind(snp_fasta_alignment)
   snp_aln.gi <- snp_aln.gi[indNames(snp_aln.gi) != "REF"]
@@ -23,17 +11,24 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
   sample_data <- sample_data[mat, ]
   snp_genclone <- as.genclone(snp_aln.gi)
 
+  # Define threshold options
+  threshold_options <- c(0.0001, 0.001, 0.01, 0.1)
 
-  if (is.null(snp_threshold)) {
-    mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE)
+  if (use_cutoff_predictor) {
     snpdist_stats <- filter_stats(snp_genclone)
     average_thresh <- cutoff_predictor(snpdist_stats$average$THRESHOLDS)
     cat("Predicted SNP threshold, using cutoff_predictor function from poppr is:", average_thresh, "\n")
-    mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- average_thresh
-  } else {
-    adjust_threshold <- snp_threshold+1
-    mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- adjust_threshold
+    mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- average_thresh
+  } else if (!is.null(snp_threshold)) {
+    mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- snp_threshold
     cat("User-defined SNP threshold is:", snp_threshold, "\n")
+  } else {
+    # Loop through threshold options and choose the first one
+    for (thresh in threshold_options) {
+      mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- thresh
+      cat("Using threshold:", thresh, "\n")
+      break
+    }
   }
 
   # Create MSN based on population information
