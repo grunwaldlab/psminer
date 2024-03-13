@@ -11,7 +11,7 @@
 #' @return minimum spanning network
 #' @export
 
-make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interactive = knitr::is_html_output(), snp_threshold=NULL, use_cutoff_predictor = TRUE, show_MLG_table=FALSE, user_seed=NULL, ...) {
+make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interactive = knitr::is_html_output(), snp_threshold=NULL, use_cutoff_predictor = FALSE, show_MLG_table=FALSE, user_seed=NULL, ...) {
 
   snp_aln.gi <- DNAbin2genind(snp_fasta_alignment)
   snp_aln.gi <- snp_aln.gi[indNames(snp_aln.gi) != "REF"]
@@ -39,7 +39,6 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
     for (thresh in threshold_options) {
       mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- thresh
       cat("Using threshold:", thresh, "\n")
-      break
     }
   }
 
