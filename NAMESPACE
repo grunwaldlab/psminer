@@ -2,7 +2,6 @@
 
 export(best_sendsketch_hits)
 export(get_bibtex_from_doi)
-export(make_MSN)
 export(make_ani_heatmap)
 export(make_phylogeny)
 export(parse_alignment_fastas)
