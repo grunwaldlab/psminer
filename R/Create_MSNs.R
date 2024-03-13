@@ -25,17 +25,18 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
   sample_data <- sample_data[mat, ]
   snp_genclone <- as.genclone(snp_aln.gi)
 
+
   if (use_cutoff_predictor) {
     snpdist_stats <- filter_stats(snp_genclone)
     average_thresh <- cutoff_predictor(snpdist_stats$average$THRESHOLDS)
-    cat("Predicted SNP threshold, using cutoff_predictor function from poppr is:", average_thresh, "\n")
+    #cat("Predicted SNP threshold, using cutoff_predictor function from poppr is:", average_thresh, "\n")
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- average_thresh
   } else if (!is.null(snp_threshold)) {
-    cat("User-defined SNP threshold is:", snp_threshold, "\n")
+    #cat("User-defined SNP threshold is:", snp_threshold, "SNPs", "\n")
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- snp_threshold
   } else if (!is.null(snp_diff_prop)) {
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- snp_diff_prop
-    cat("SNP difference proportion is:", snp_diff_prop, "\n")
+    #cat("SNP difference proportion is:", snp_diff_prop, "\n")
   }
 
   if (!is.null(population) && population %in% names(sample_data)) {
