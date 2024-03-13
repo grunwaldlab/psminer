@@ -1,3 +1,16 @@
+#' Make Minimum spanning network
+#'
+#' @param snp_alignments
+#' @param sample_data
+#' @param population
+#' @param snp_threshold
+#' @param show_MLG_table
+#' @param user_seed
+#' @param use_cutoff_predictor
+#' @param ...
+#' @return minimum spanning network
+#' @export
+
 make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interactive = knitr::is_html_output(), snp_threshold=NULL, use_cutoff_predictor = TRUE, show_MLG_table=FALSE, user_seed=NULL, ...) {
 
   snp_aln.gi <- DNAbin2genind(snp_fasta_alignment)
