@@ -4,6 +4,7 @@
 #' @param sample_data
 #' @param population
 #' @param snp_threshold
+#' @param snp_diff_prop
 #' @param show_MLG_table
 #' @param user_seed
 #' @param use_cutoff_predictor
@@ -11,8 +12,7 @@
 #' @return minimum spanning network
 #' @export
 
-# Make Minimum spanning network
-make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interactive = knitr::is_html_output(), snp_threshold=NULL, use_cutoff_predictor = FALSE, show_MLG_table=FALSE, user_seed=NULL, ...) {
+make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interactive = knitr::is_html_output(), snp_threshold=NULL, snp_diff_prop=NULL, use_cutoff_predictor = FALSE, show_MLG_table=FALSE, user_seed=NULL, ...) {
 
   snp_aln.gi <- DNAbin2genind(snp_fasta_alignment)
   snp_aln.gi <- snp_aln.gi[indNames(snp_aln.gi) != "REF"]
@@ -25,8 +25,6 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
   sample_data <- sample_data[mat, ]
   snp_genclone <- as.genclone(snp_aln.gi)
 
-  threshold_options <- c(0.0001, 0.001, 0.01, 0.1)
-
   if (use_cutoff_predictor) {
     snpdist_stats <- filter_stats(snp_genclone)
     average_thresh <- cutoff_predictor(snpdist_stats$average$THRESHOLDS)
@@ -35,113 +33,112 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
   } else if (!is.null(snp_threshold)) {
     cat("User-defined SNP threshold is:", snp_threshold, "\n")
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- snp_threshold
+  } else if (!is.null(snp_diff_prop)) {
+    mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- snp_diff_prop
+    cat("SNP difference proportion is:", snp_diff_prop, "\n")
+  }
+
+  if (!is.null(population) && population %in% names(sample_data)) {
+    user_factor <- sample_data[[population]]
+    node_color <- as.factor(ifelse(is.na(user_factor) | user_factor == "", "Unknown", user_factor))
+    myColors <- rainbow(length(unique(node_color)))
+    names(myColors) <- levels(node_color)
+    num_columns <- ncol(sample_data)
+    strata(snp_genclone) <- cbind(sample_data[, c(1:num_columns)], color_node_by = node_color)
+    setPop(snp_genclone) <- ~color_node_by
+
+    set.seed(user_seed)
+    ms.loc <- poppr.msn(snp_genclone,
+                        distmat = bitwise.dist(snp_genclone),
+                        include.ties = TRUE,
+                        showplot = FALSE)
+
+    the_edges <- igraph::E(ms.loc$graph)$weight
+    edges <- as.list(the_edges)
+
+    plot_poppr_msn(
+      snp_genclone,
+      poppr_msn = ms.loc,
+      palette = myColors,
+      mlg = FALSE,
+      quantiles = FALSE,
+      wscale = FALSE,
+      inds = "None",
+      ...
+    )
+  } else if (!is.null(sample_data$color_by)) {
+    unique_factors <- unique(sample_data$color_by)
+    unique_factors <- unlist(strsplit(unique_factors, ";"))
+
+    for (factor in unique_factors) {
+      factor_column <- sample_data[[factor]]
+      node_color <- as.factor(ifelse(is.na(factor_column) | factor_column == "", "Unknown", factor_column))
+      myColors <- rainbow(length(unique(node_color)))
+      names(myColors) <- levels(node_color)
+      num_columns <- ncol(sample_data)
+      strata(snp_genclone) <- cbind(sample_data[, c(1:num_columns)], color_node_by = node_color)
+      setPop(snp_genclone) <- ~color_node_by
+
+      set.seed(user_seed)
+      ms.loc <- poppr.msn(snp_genclone,
+                          distmat = bitwise.dist(snp_genclone),
+                          include.ties = TRUE,
+                          showplot = FALSE)
+
+      plot_poppr_msn(
+        snp_genclone,
+        poppr_msn = ms.loc,
+        palette = myColors,
+        mlg = FALSE,
+        quantiles = FALSE,
+        wscale = FALSE,
+        inds = "None",
+        ...
+      )
+    }
   } else {
-    for (thresh in threshold_options) {
-      mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- thresh
-      cat("Using threshold:", thresh, "\n")
-      if (!is.null(population) && population %in% names(sample_data)) {
-        user_factor <- sample_data[[population]]
-        node_color <- as.factor(ifelse(is.na(user_factor) | user_factor == "", "Unknown", user_factor))
-        myColors <- rainbow(length(unique(node_color)))
-        names(myColors) <- levels(node_color)
-        num_columns <- ncol(sample_data)
-        strata(snp_genclone) <- cbind(sample_data[, c(1:num_columns)], color_node_by = node_color)
-        setPop(snp_genclone) <- ~color_node_by
+    node_color <- as.factor(rep("No_Factor_Provided", length(indNames(snp_genclone))))
+    myColors <- rainbow(length(unique(node_color)))
+    names(myColors) <- levels(node_color)
+    strata(snp_genclone) <- list(color_node_by = node_color)
 
-        set.seed(user_seed)
-        ms.loc <- poppr.msn(snp_genclone,
-                            distmat = bitwise.dist(snp_genclone),
-                            include.ties = TRUE,
-                            showplot = FALSE)
+    set.seed(user_seed)
+    ms.loc <- poppr.msn(snp_genclone,
+                        distmat = bitwise.dist(snp_genclone),
+                        include.ties = TRUE,
+                        showplot = FALSE)
 
-        the_edges <- igraph::E(ms.loc$graph)$weight
-        edges <- as.list(the_edges)
+    plot_poppr_msn(
+      snp_genclone,
+      poppr_msn = ms.loc,
+      palette = myColors,
+      mlg = FALSE,
+      quantiles = FALSE,
+      wscale = FALSE,
+      inds = "None",
+      ...
+    )
+  }
 
-        plot_poppr_msn(
-          snp_genclone,
-          poppr_msn = ms.loc,
-          palette = myColors,
-          mlg = FALSE,
-          quantiles = FALSE,
-          wscale = FALSE,
-          inds = "None",
-          ...
-        )
-      } else if (!is.null(sample_data$color_by)) {
-        unique_factors <- unique(sample_data$color_by)
-        unique_factors <- unlist(strsplit(unique_factors, ";"))
+  if (show_MLG_table) {
+    idlist <- mlg.id(snp_genclone)
+    mlglist <- data.frame("MLG","strain")
+    colnames(mlglist) <- c("V1","V2")
 
-        for (factor in unique_factors) {
-          factor_column <- sample_data[[factor]]
-          node_color <- as.factor(ifelse(is.na(factor_column) | factor_column == "", "Unknown", factor_column))
-          myColors <- rainbow(length(unique(node_color)))
-          names(myColors) <- levels(node_color)
-          num_columns <- ncol(sample_data)
-          strata(snp_genclone) <- cbind(sample_data[, c(1:num_columns)], color_node_by = node_color)
-          setPop(snp_genclone) <- ~color_node_by
+    for (name in names(idlist)) {
+      newframe <- as.data.frame(cbind(paste0("MLG","_",name),idlist[[name]]))
+      mlglist <- rbind(mlglist,newframe)
+    }
 
-          set.seed(user_seed)
-          ms.loc <- poppr.msn(snp_genclone,
-                              distmat = bitwise.dist(snp_genclone),
-                              include.ties = TRUE,
-                              showplot = FALSE)
+    colnames(mlglist) <- c("Multi-locus genotype","Strain")
+    mlglist <- mlglist[mlglist$Strain != "strain",]
 
-          plot_poppr_msn(
-            snp_genclone,
-            poppr_msn = ms.loc,
-            palette = myColors,
-            mlg = FALSE,
-            quantiles = FALSE,
-            wscale = FALSE,
-            inds = "None",
-            ...
-          )
-        }
-      } else {
-        node_color <- as.factor(rep("No_Factor_Provided", length(indNames(snp_genclone))))
-        myColors <- rainbow(length(unique(node_color)))
-        names(myColors) <- levels(node_color)
-        strata(snp_genclone) <- list(color_node_by = node_color)
+    if (interactive) {
+      DT::datatable(mlglist, class = "display nowrap", ...) %>%
+        formatStyle(colnames(mlglist), "white-space" = "nowrap")
 
-        set.seed(user_seed)
-        ms.loc <- poppr.msn(snp_genclone,
-                            distmat = bitwise.dist(snp_genclone),
-                            include.ties = TRUE,
-                            showplot = FALSE)
-
-        plot_poppr_msn(
-          snp_genclone,
-          poppr_msn = ms.loc,
-          palette = myColors,
-          mlg = FALSE,
-          quantiles = FALSE,
-          wscale = FALSE,
-          inds = "None",
-          ...
-        )
-      }
-
-      if (show_MLG_table) {
-        idlist <- mlg.id(snp_genclone)
-        mlglist <- data.frame("MLG","strain")
-        colnames(mlglist) <- c("V1","V2")
-
-        for (name in names(idlist)) {
-          newframe <- as.data.frame(cbind(paste0("MLG","_",name),idlist[[name]]))
-          mlglist <- rbind(mlglist,newframe)
-        }
-
-        colnames(mlglist) <- c("Multi-locus genotype","Strain")
-        mlglist <- mlglist[mlglist$Strain != "strain",]
-
-        if (interactive) {
-          DT::datatable(mlglist, class = "display nowrap", ...) %>%
-            formatStyle(colnames(mlglist), "white-space" = "nowrap")
-
-        } else {
-          print(mlglist)
-        }
-      }
+    } else {
+      print(mlglist)
     }
   }
 }
