@@ -11,7 +11,6 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
   sample_data <- sample_data[mat, ]
   snp_genclone <- as.genclone(snp_aln.gi)
 
-  # Define threshold options
   threshold_options <- c(0.0001, 0.001, 0.01, 0.1)
 
   if (use_cutoff_predictor) {
@@ -31,7 +30,6 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
     }
   }
 
-  # Create MSN based on population information
   if (!is.null(population) && population %in% names(sample_data)) {
     user_factor <- sample_data[[population]]
     node_color <- as.factor(ifelse(is.na(user_factor) | user_factor == "", "Unknown", user_factor))
