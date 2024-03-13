@@ -34,7 +34,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- average_thresh
   } else if (!is.null(snp_threshold)) {
     cat("User-defined SNP threshold is:", snp_threshold, "\n")
-    mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- snp_threshold
+    mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- snp_threshold
   } else {
     for (thresh in threshold_options) {
       mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- thresh
@@ -50,7 +50,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
 
         set.seed(user_seed)
         ms.loc <- poppr.msn(snp_genclone,
-                            distmat = bitwise.dist(snp_genclone, percent = FALSE),
+                            distmat = bitwise.dist(snp_genclone),
                             include.ties = TRUE,
                             showplot = FALSE)
 
@@ -82,7 +82,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
 
           set.seed(user_seed)
           ms.loc <- poppr.msn(snp_genclone,
-                              distmat = bitwise.dist(snp_genclone, percent = FALSE),
+                              distmat = bitwise.dist(snp_genclone),
                               include.ties = TRUE,
                               showplot = FALSE)
 
@@ -105,7 +105,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
 
         set.seed(user_seed)
         ms.loc <- poppr.msn(snp_genclone,
-                            distmat = bitwise.dist(snp_genclone, percent = FALSE),
+                            distmat = bitwise.dist(snp_genclone),
                             include.ties = TRUE,
                             showplot = FALSE)
 
