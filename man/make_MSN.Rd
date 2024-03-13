@@ -10,6 +10,7 @@ make_MSN(
   population = NULL,
   interactive = knitr::is_html_output(),
   snp_threshold = NULL,
+  snp_diff_prop = NULL,
   use_cutoff_predictor = FALSE,
   show_MLG_table = FALSE,
   user_seed = NULL,
