@@ -17,8 +17,29 @@ make_MSN(
   ...
 )
 }
+\arguments{
+\item{snp_fasta_alignment}{A DNA alignment in fasta format.}
+
+\item{sample_data}{A data frame containing information about samples.}
+
+\item{population}{A character string specifying the column name in sample_data to be used for stratification.}
+
+\item{interactive}{A logical value indicating whether Whether or not to produce an interactive HTML/javascript-based figures or tables or a static ones (default is determined by knitr::is_html_output()).}
+
+\item{snp_threshold}{An integer specifying the number of SNPs to be used as the threshold for filtering. User can specify whole numbers or alternatively, a relative proportion using 'snp_diff_prop', but not both. Default is NULL.}
+
+\item{snp_diff_prop}{A numeric value specifying the proportion of SNPs to be used as the threshold for filtering. If user prefers to specify whole numbers, use 'snp_threshold' instead. Default is NULL.}
+
+\item{use_cutoff_predictor}{A logical value indicating whether to use cutoff predictor for determining SNP threshold.}
+
+\item{show_MLG_table}{A logical value indicating whether to display a table of multi-locus genotypes.}
+
+\item{user_seed}{An optional integer specifying the seed for reproducibility.}
+
+\item{...}{Additional arguments to be passed to internal functions.}
+}
 \value{
-minimum spanning network
+Minimum spanning network
 }
 \description{
 Make Minimum spanning network
