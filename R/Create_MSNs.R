@@ -1,19 +1,20 @@
 #' Make Minimum spanning network
 #'
-#' @param snp_alignments
-#' @param sample_data
-#' @param population
-#' @param snp_threshold
-#' @param snp_diff_prop
-#' @param show_MLG_table
-#' @param user_seed
-#' @param use_cutoff_predictor
-#' @param ...
-#' @return minimum spanning network
+#' @param snp_fasta_alignment A DNA alignment in fasta format.
+#' @param sample_data A data frame containing information about samples.
+#' @param population A character string specifying the column name in sample_data to be used for stratification.
+#' @param interactive A logical value indicating whether Whether or not to produce an interactive HTML/javascript-based figures or tables or a static ones (default is determined by knitr::is_html_output()).
+#' @param snp_threshold An integer specifying the number of SNPs to be used as the threshold for filtering. User can specify whole numbers or alternatively, a relative proportion using 'snp_diff_prop', but not both. Default is NULL.
+#' @param snp_diff_prop A numeric value specifying the proportion of SNPs to be used as the threshold for filtering. If user prefers to specify whole numbers, use 'snp_threshold' instead. Default is NULL.
+#' @param use_cutoff_predictor A logical value indicating whether to use cutoff predictor for determining SNP threshold.
+#' @param show_MLG_table A logical value indicating whether to display a table of multi-locus genotypes.
+#' @param user_seed An optional integer specifying the seed for reproducibility.
+#' @param ... Additional arguments to be passed to internal functions.
+#' @return Minimum spanning network
 #' @export
+make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, interactive = knitr::is_html_output(), snp_threshold = NULL, snp_diff_prop = NULL, use_cutoff_predictor = FALSE, show_MLG_table = FALSE, user_seed = NULL, ...) {
 
-make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interactive = knitr::is_html_output(), snp_threshold=NULL, snp_diff_prop=NULL, use_cutoff_predictor = FALSE, show_MLG_table=FALSE, user_seed=NULL, ...) {
-
+  set.seed(user_seed)
   snp_aln.gi <- DNAbin2genind(snp_fasta_alignment)
   snp_aln.gi <- snp_aln.gi[indNames(snp_aln.gi) != "REF"]
 
@@ -29,14 +30,11 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
   if (use_cutoff_predictor) {
     snpdist_stats <- filter_stats(snp_genclone)
     average_thresh <- cutoff_predictor(snpdist_stats$average$THRESHOLDS)
-    #cat("Predicted SNP threshold, using cutoff_predictor function from poppr is:", average_thresh, "\n")
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- average_thresh
   } else if (!is.null(snp_threshold)) {
-    #cat("User-defined SNP threshold is:", snp_threshold, "SNPs", "\n")
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- snp_threshold
   } else if (!is.null(snp_diff_prop)) {
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- snp_diff_prop
-    #cat("SNP difference proportion is:", snp_diff_prop, "\n")
   }
 
   if (!is.null(population) && population %in% names(sample_data)) {
@@ -48,11 +46,18 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
     strata(snp_genclone) <- cbind(sample_data[, c(1:num_columns)], color_node_by = node_color)
     setPop(snp_genclone) <- ~color_node_by
 
-    set.seed(user_seed)
-    ms.loc <- poppr.msn(snp_genclone,
-                        distmat = bitwise.dist(snp_genclone),
-                        include.ties = TRUE,
-                        showplot = FALSE)
+    if (!is.null(snp_threshold)) {
+      ms.loc <- poppr.msn(snp_genclone,
+                          distmat = bitwise.dist(snp_genclone, percent = FALSE),
+                          include.ties = TRUE,
+                          showplot = FALSE)
+    }
+    else {
+      ms.loc <- poppr.msn(snp_genclone,
+                          distmat = bitwise.dist(snp_genclone, percent = TRUE),
+                          include.ties = TRUE,
+                          showplot = FALSE)
+    }
 
     the_edges <- igraph::E(ms.loc$graph)$weight
     edges <- as.list(the_edges)
@@ -80,11 +85,18 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
       strata(snp_genclone) <- cbind(sample_data[, c(1:num_columns)], color_node_by = node_color)
       setPop(snp_genclone) <- ~color_node_by
 
-      set.seed(user_seed)
-      ms.loc <- poppr.msn(snp_genclone,
-                          distmat = bitwise.dist(snp_genclone),
-                          include.ties = TRUE,
-                          showplot = FALSE)
+      if (!is.null(snp_threshold)) {
+        ms.loc <- poppr.msn(snp_genclone,
+                            distmat = bitwise.dist(snp_genclone, percent = FALSE),
+                            include.ties = TRUE,
+                            showplot = FALSE)
+      }
+      else {
+        ms.loc <- poppr.msn(snp_genclone,
+                            distmat = bitwise.dist(snp_genclone, percent = TRUE),
+                            include.ties = TRUE,
+                            showplot = FALSE)
+      }
 
       plot_poppr_msn(
         snp_genclone,
@@ -103,11 +115,18 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
     names(myColors) <- levels(node_color)
     strata(snp_genclone) <- list(color_node_by = node_color)
 
-    set.seed(user_seed)
-    ms.loc <- poppr.msn(snp_genclone,
-                        distmat = bitwise.dist(snp_genclone),
-                        include.ties = TRUE,
-                        showplot = FALSE)
+    if (!is.null(snp_threshold)) {
+      ms.loc <- poppr.msn(snp_genclone,
+                          distmat = bitwise.dist(snp_genclone, percent = FALSE),
+                          include.ties = TRUE,
+                          showplot = FALSE)
+    }
+    else {
+      ms.loc <- poppr.msn(snp_genclone,
+                          distmat = bitwise.dist(snp_genclone, percent = TRUE),
+                          include.ties = TRUE,
+                          showplot = FALSE)
+    }
 
     plot_poppr_msn(
       snp_genclone,
@@ -123,15 +142,15 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population=NULL, interact
 
   if (show_MLG_table) {
     idlist <- mlg.id(snp_genclone)
-    mlglist <- data.frame("MLG","strain")
-    colnames(mlglist) <- c("V1","V2")
+    mlglist <- data.frame("MLG", "strain")
+    colnames(mlglist) <- c("V1", "V2")
 
     for (name in names(idlist)) {
-      newframe <- as.data.frame(cbind(paste0("MLG","_",name),idlist[[name]]))
-      mlglist <- rbind(mlglist,newframe)
+      newframe <- as.data.frame(cbind(paste0("MLG", "_", name), idlist[[name]]))
+      mlglist <- rbind(mlglist, newframe)
     }
 
-    colnames(mlglist) <- c("Multi-locus genotype","Strain")
+    colnames(mlglist) <- c("Multi-locus genotype", "Strain")
     mlglist <- mlglist[mlglist$Strain != "strain",]
 
     if (interactive) {
