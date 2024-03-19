@@ -20,7 +20,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
 
   genind_names <- indNames(snp_aln.gi)
   cleaned_names <- sub(".*assembly_", "", genind_names)
-  indNames(snp_aln.gi) <-
+  indNames(snp_aln.gi) <- cleaned_names
 
   snp_sample_ids <- indNames(snp_aln.gi)
   sample_data <- sample_data[sample_data$sample_id %in% snp_sample_ids, ]
