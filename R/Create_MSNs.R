@@ -19,7 +19,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
   snp_aln.gi <- snp_aln.gi[indNames(snp_aln.gi) != "REF"]
 
   genind_names <- indNames(snp_aln.gi)
-  cleaned_names <- sub(".*(assembly_|[^_]+_[^_]+_[^_]+_)", "", genind_names)
+  cleaned_names <- sub(".*?((?:assembly_)?(?:[^_]+_)+[^_]+)_.*", "\\1", genind_names)
   indNames(snp_aln.gi) <- cleaned_names
 
   snp_sample_ids <- indNames(snp_aln.gi)
@@ -28,7 +28,6 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
   mat <- match(indNames(snp_aln.gi), sample_data$sample_id)
   sample_data <- sample_data[mat, ]
   snp_genclone <- as.genclone(snp_aln.gi)
-
 
   if (use_cutoff_predictor) {
     snpdist_stats <- filter_stats(snp_genclone)
