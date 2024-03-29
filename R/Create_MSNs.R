@@ -18,9 +18,19 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
   snp_aln.gi <- DNAbin2genind(snp_fasta_alignment)
   snp_aln.gi <- snp_aln.gi[indNames(snp_aln.gi) != "REF"]
 
-  genind_names <- indNames(snp_aln.gi)
-  cleaned_names <- sub(".*?((?:assembly_)?(?:[^_]+_)+[^_]+)_.*", "\\1", genind_names)
-  indNames(snp_aln.gi) <- cleaned_names
+  name_key <- setNames(c(ref_data$reference_name, sample_data$sample_name),
+                       c(ref_data$reference_id, sample_data$sample_id))
+
+  sample_names <- sapply(indNames(snp_aln.gi), function(x) {
+    matched_name <- name_key[endsWith(x, names(name_key))]
+    if (length(matched_name) > 0) {
+      matched_name[1]
+    } else {
+      x
+    }
+  })
+
+  indNames(snp_aln.gi) <- sample_names
 
   snp_sample_ids <- indNames(snp_aln.gi)
   sample_data <- sample_data[sample_data$sample_id %in% snp_sample_ids, ]
