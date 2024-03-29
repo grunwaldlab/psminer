@@ -31,11 +31,9 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
   })
 
   indNames(snp_aln.gi) <- sample_names
-
   snp_sample_ids <- indNames(snp_aln.gi)
-  sample_data <- sample_data[sample_data$sample_id %in% snp_sample_ids, ]
-
-  mat <- match(indNames(snp_aln.gi), sample_data$sample_id)
+  sample_data <- sample_data[sample_data$sample_name %in% snp_sample_ids, ]
+  mat <- match(indNames(snp_aln.gi), sample_data$sample_name)
   sample_data <- sample_data[mat, ]
   snp_genclone <- as.genclone(snp_aln.gi)
 
