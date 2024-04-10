@@ -14,15 +14,15 @@ best_sendsketch_hits(
 \item{sketch_data}{A dataframe containing sketch analysis results.}
 
 \item{sort_columns}{Character vector; specifies the columns to sort the table by in descending order.
-The default is `c("sample_id", "WKID", "ANI", "Complt")`. The `sample_id` is expected to be
+The default is \code{c("sample_id", "WKID", "ANI", "Complt")}. The \code{sample_id} is expected to be
 unique for each row, and the table will be sorted by this column first, followed by the other
 metrics in the order provided.}
 
 \item{top_n}{Integer; the number of top entries to retain for each unique sample ID after sorting.
-The default is `1`, meaning only the top entry is kept.}
+The default is \code{1}, meaning only the top entry is kept.}
 }
 \value{
-A `data.frame`
+A \code{data.frame}
 }
 \description{
 This function processes sendsketch data from pathogen surveillance nextflow pipeline and

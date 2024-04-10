@@ -21,47 +21,51 @@ print_static_table <- function(data, compressed_cols = NULL, max_nchar = 20) {
   if (!is.null(compressed_cols)) {
     # Dont compress column that already have small values
     compress_needed <- unlist(lapply(compressed_cols, function(col) {
-      max(nchar(data[[col]])) > max_nchar
+      ! all(is.na(data[[col]])) && max(nchar(data[[col]])) > max_nchar
     }))
     compressed_cols <- compressed_cols[compress_needed]
-    # Remove starts
-    starts <- lapply(data[compressed_cols], shared_char)
-    data[compressed_cols] <- lapply(compressed_cols, function(col_name) {
-      column <- data[[col_name]]
-      start <- starts[[col_name]]
-      if (start != "") {
-        column <- sub(column, pattern = paste0("^", start), replacement = "…")
-      }
-      return(column)
-    })
-    # Remove ends
-    ends <- lapply(data[compressed_cols], shared_char, end = TRUE)
-    data[compressed_cols] <- lapply(compressed_cols, function(col_name) {
-      column <- data[[col_name]]
-      end <- ends[[col_name]]
-      if (end != "") {
-        column <- sub(column, pattern = paste0(end, "$"), replacement = "…")
-      }
-      return(column)
-    })
-    # Create footnotes
-    footnotes <- unlist(lapply(compressed_cols, function(col_name) {
-      start <- starts[[col_name]]
-      end <- ends[[col_name]]
-      if (start != "" && end != "") {
-        note <- paste0('All values in column "', col_name, '" start with "', start, '" and end with "', end, '".')
-      } else if (start != "" ) {
-        note <- paste0('All values in column "', col_name, '" start with "', start, '".')
-      } else if (end != "" ) {
-        note <- paste0('All values in column "', col_name, '" end with "', end, '".')
-      } else {
-        note <- NA_character_
-      }
-    }))
-    names(footnotes) <- compressed_cols
-    footnotes <- footnotes[! is.na(footnotes)]
-    # Modify column names ( cant figure out how to get superscripts to render correctly )
-    colnames(data)[colnames(data) %in% names(footnotes)] <- paste0(colnames(data)[colnames(data) %in% names(footnotes)], ' (', seq_along(footnotes), ')')
+    if (length(compressed_cols) > 0 ) {
+      # Remove starts
+      starts <- lapply(data[compressed_cols], shared_char)
+      data[compressed_cols] <- lapply(compressed_cols, function(col_name) {
+        column <- data[[col_name]]
+        start <- starts[[col_name]]
+        if (start != "") {
+          column <- sub(column, pattern = paste0("^", start), replacement = "…")
+        }
+        return(column)
+      })
+      # Remove ends
+      ends <- lapply(data[compressed_cols], shared_char, end = TRUE)
+      data[compressed_cols] <- lapply(compressed_cols, function(col_name) {
+        column <- data[[col_name]]
+        end <- ends[[col_name]]
+        if (end != "") {
+          column <- sub(column, pattern = paste0(end, "$"), replacement = "…")
+        }
+        return(column)
+      })
+      # Create footnotes
+      footnotes <- unlist(lapply(compressed_cols, function(col_name) {
+        start <- starts[[col_name]]
+        end <- ends[[col_name]]
+        if (start != "" && end != "") {
+          note <- paste0('All values in column "', col_name, '" start with "', start, '" and end with "', end, '".')
+        } else if (start != "" ) {
+          note <- paste0('All values in column "', col_name, '" start with "', start, '".')
+        } else if (end != "" ) {
+          note <- paste0('All values in column "', col_name, '" end with "', end, '".')
+        } else {
+          note <- NA_character_
+        }
+      }))
+      names(footnotes) <- compressed_cols
+      footnotes <- footnotes[! is.na(footnotes)]
+      # Modify column names ( cant figure out how to get superscripts to render correctly )
+      colnames(data)[colnames(data) %in% names(footnotes)] <- paste0(colnames(data)[colnames(data) %in% names(footnotes)], ' (', seq_along(footnotes), ')')
+    } else {
+      footnotes <- character(0)
+    }
   } else {
     footnotes <- character(0)
   }

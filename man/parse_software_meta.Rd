@@ -10,7 +10,7 @@ parse_software_meta(version_path)
 \item{version_path}{A character string specifying the path to the YAML file with version metadata.}
 }
 \value{
-A tibble with columns `module`, `program`, and `version` detailing the software versions.
+A tibble with columns \code{module}, \code{program}, and \code{version} detailing the software versions.
 }
 \description{
 Reads a YAML file containing software version information and transforms it into a tibble.

@@ -47,108 +47,46 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
     mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- snp_diff_prop
   }
 
-  if (!is.null(population) && population %in% names(sample_data)) {
-    user_factor <- sample_data[[population]]
-    node_color <- as.factor(ifelse(is.na(user_factor) | user_factor == "", "Unknown", user_factor))
-    myColors <- rainbow(length(unique(node_color)))
-    names(myColors) <- levels(node_color)
-    num_columns <- ncol(sample_data)
-    strata(snp_genclone) <- cbind(sample_data[, c(1:num_columns)], color_node_by = node_color)
-    setPop(snp_genclone) <- ~color_node_by
-
-    if (!is.null(snp_threshold)) {
-      ms.loc <- poppr.msn(snp_genclone,
-                          distmat = bitwise.dist(snp_genclone, percent = FALSE),
-                          include.ties = TRUE,
-                          showplot = FALSE)
-    }
-    else {
-      ms.loc <- poppr.msn(snp_genclone,
-                          distmat = bitwise.dist(snp_genclone, percent = TRUE),
-                          include.ties = TRUE,
-                          showplot = FALSE)
-    }
-
-    the_edges <- igraph::E(ms.loc$graph)$weight
-    edges <- as.list(the_edges)
-
-    plot_poppr_msn(
-      snp_genclone,
-      poppr_msn = ms.loc,
-      palette = myColors,
-      mlg = FALSE,
-      quantiles = FALSE,
-      wscale = FALSE,
-      inds = "None",
-      ...
-    )
-  } else if (!is.null(sample_data$color_by)) {
-    unique_factors <- unique(sample_data$color_by)
-    unique_factors <- unlist(strsplit(unique_factors, ";"))
-
-    for (factor in unique_factors) {
-      factor_column <- sample_data[[factor]]
-      node_color <- as.factor(ifelse(is.na(factor_column) | factor_column == "", "Unknown", factor_column))
-      myColors <- rainbow(length(unique(node_color)))
-      names(myColors) <- levels(node_color)
-      num_columns <- ncol(sample_data)
-      strata(snp_genclone) <- cbind(sample_data[, c(1:num_columns)], color_node_by = node_color)
-      setPop(snp_genclone) <- ~color_node_by
-
-      if (!is.null(snp_threshold)) {
-        ms.loc <- poppr.msn(snp_genclone,
-                            distmat = bitwise.dist(snp_genclone, percent = FALSE),
-                            include.ties = TRUE,
-                            showplot = FALSE)
-      }
-      else {
-        ms.loc <- poppr.msn(snp_genclone,
-                            distmat = bitwise.dist(snp_genclone, percent = TRUE),
-                            include.ties = TRUE,
-                            showplot = FALSE)
-      }
-
-      plot_poppr_msn(
-        snp_genclone,
-        poppr_msn = ms.loc,
-        palette = myColors,
-        mlg = FALSE,
-        quantiles = FALSE,
-        wscale = FALSE,
-        inds = "None",
-        ...
-      )
-    }
-  } else {
-    node_color <- as.factor(rep("No_Factor_Provided", length(indNames(snp_genclone))))
-    myColors <- rainbow(length(unique(node_color)))
-    names(myColors) <- levels(node_color)
-    strata(snp_genclone) <- list(color_node_by = node_color)
-
-    if (!is.null(snp_threshold)) {
-      ms.loc <- poppr.msn(snp_genclone,
-                          distmat = bitwise.dist(snp_genclone, percent = FALSE),
-                          include.ties = TRUE,
-                          showplot = FALSE)
-    }
-    else {
-      ms.loc <- poppr.msn(snp_genclone,
-                          distmat = bitwise.dist(snp_genclone, percent = TRUE),
-                          include.ties = TRUE,
-                          showplot = FALSE)
-    }
-
-    plot_poppr_msn(
-      snp_genclone,
-      poppr_msn = ms.loc,
-      palette = myColors,
-      mlg = FALSE,
-      quantiles = FALSE,
-      wscale = FALSE,
-      inds = "None",
-      ...
-    )
+  if (is.null(population)) {
+    sample_data$no_factor_provided <- 'Sample (No factor provided)'
+    population <- 'no_factor_provided'
   }
+
+  user_factor <- sample_data[[population]]
+  node_color <- as.factor(ifelse(is.na(user_factor) | user_factor == "", "Unknown", user_factor))
+  myColors <- rainbow(length(unique(node_color)))
+  names(myColors) <- levels(node_color)
+  num_columns <- ncol(sample_data)
+  strata(snp_genclone) <- cbind(sample_data[, c(1:num_columns)], color_node_by = node_color)
+  setPop(snp_genclone) <- ~color_node_by
+
+  if (!is.null(snp_threshold)) {
+    ms.loc <- poppr.msn(snp_genclone,
+                        distmat = bitwise.dist(snp_genclone, percent = FALSE),
+                        include.ties = TRUE,
+                        showplot = FALSE)
+  }
+  else {
+    ms.loc <- poppr.msn(snp_genclone,
+                        distmat = bitwise.dist(snp_genclone, percent = TRUE),
+                        include.ties = TRUE,
+                        showplot = FALSE)
+  }
+
+  the_edges <- igraph::E(ms.loc$graph)$weight
+  edges <- as.list(the_edges)
+
+  plot_poppr_msn(
+    snp_genclone,
+    poppr_msn = ms.loc,
+    palette = myColors,
+    mlg = FALSE,
+    quantiles = FALSE,
+    wscale = FALSE,
+    inds = "None",
+    ...
+  )
+
 
   if (show_MLG_table) {
     idlist <- mlg.id(snp_genclone)

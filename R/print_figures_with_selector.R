@@ -8,6 +8,7 @@
 #' @param label Text used to label the selector dropdown.
 #' @param img_class The CSS class used as an ID for the `img` HTML element. This must be unique.
 #' @param imglist_class The CSS class used as an ID for the dropdown HTML element. This must be unique.
+#' @param ... Passed to [grDevices::png()]
 #'
 #' @return
 #' @export
@@ -27,11 +28,11 @@
 #'   print(ggplot(df, aes(x=weight)) + geom_histogram())
 #' }
 #' print_figures_with_selector(ggplot_func, n, 'Number', 'ggplot_test_id')
-print_figures_with_selector <- function(plot_func, selector, label, img_class, imglist_class = paste0(img_class, '_list')) {
+print_figures_with_selector <- function(plot_func, selector, label, img_class, imglist_class = paste0(img_class, '_list'), ...) {
   # Make plots encoded in base64
   plots <- unlist(lapply(selector, function(x) {
     temp_path <- tempfile(fileext = '.png')
-    png(temp_path)
+    png(temp_path, ...)
     plot_func(x)
     dev.off()
     output <- base64enc::base64encode(temp_path)
@@ -42,7 +43,7 @@ print_figures_with_selector <- function(plot_func, selector, label, img_class, i
   # Make selector with the base64 plot as value
   cat(paste0('<b>', label, ':  </b>'))
   cat(paste0('<select id="', imglist_class, '">'))
-  cat(paste0('  <option value="', plots, '">', n, '</option>', collapse = '\n'))
+  cat(paste0('  <option value="', plots, '">', selector, '</option>', collapse = '\n'))
   cat(paste0('</select>'))
 
   # Make image showing the first plot

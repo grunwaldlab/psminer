@@ -11,7 +11,7 @@ print_sample_metadata(sample_data, interactive = knitr::is_html_output(), ...)
 
 \item{interactive}{Whether to use an HTML-based interactive format or not (default: TRUE)}
 
-\item{...}{Passed to `DT::datatable`.}
+\item{...}{Passed to \code{DT::datatable}.}
 }
 \description{
 Selects columns in the sample metadata to print and format the result for

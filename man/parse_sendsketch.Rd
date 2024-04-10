@@ -10,7 +10,7 @@ parse_sendsketch(paths)
 \item{paths}{A character vector of file paths to SendSketch output files like those produced by the nextflow pipeline pathogensurveillance.}
 }
 \value{
-A data frame combining all parsed files with an additional `sample_id` column.
+A data frame combining all parsed files with an additional \code{sample_id} column.
 }
 \description{
 Parses multiple SendSketch output files into a single data frame.

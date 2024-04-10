@@ -13,7 +13,7 @@ print_pocp_table(
 )
 }
 \arguments{
-\item{pairwise_matrix}{A `matrix` with all pairwise comparisons between samples and references}
+\item{pairwise_matrix}{A \code{matrix} with all pairwise comparisons between samples and references}
 
 \item{sample_data}{The sample metadata}
 
@@ -21,7 +21,7 @@ print_pocp_table(
 
 \item{interactive}{Whether to print an interactive HTML-based table or one for use with PDF}
 
-\item{...}{Passed to `DT::datatable`.}
+\item{...}{Passed to \code{DT::datatable}.}
 }
 \value{
 Returns the table to print

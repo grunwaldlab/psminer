@@ -14,8 +14,8 @@ parse_sample_meta(sample_data_path, assigned_refs_path, group)
 \item{group}{The name of the report group for specific set of samples.}
 }
 \value{
-`data.frame` of metadata for samples, with one row for each sample in
-  the group
+\code{data.frame} of metadata for samples, with one row for each sample in
+the group
 }
 \description{
 Parse sample metadata files

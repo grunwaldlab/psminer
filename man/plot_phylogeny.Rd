@@ -25,11 +25,11 @@ plot_phylogeny(
 \arguments{
 \item{phylo_path}{Path to the .treefile}
 
-\item{ids}{The ids used to identify tips in `phylo_path`. The tree will be subset to these tips.}
+\item{ids}{The ids used to identify tips in \code{phylo_path}. The tree will be subset to these tips.}
 
-\item{labels}{The labels to print on the plot. Must be the same length as `ids`.}
+\item{labels}{The labels to print on the plot. Must be the same length as \code{ids}.}
 
-\item{colors}{The color or the tips. Must be the same length as `ids`.}
+\item{colors}{The color or the tips. Must be the same length as \code{ids}.}
 
 \item{interactive}{Whether to use an HTML-based interactive format or not (default: TRUE)}
 }

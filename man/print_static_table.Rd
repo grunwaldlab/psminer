@@ -11,10 +11,10 @@ print_static_table(data, compressed_cols = NULL, max_nchar = 20)
 
 \item{compressed_cols}{The named of columns to attempt to make shorter by
 moving shared text at the beginning and end to footnotes and replacing with
-`...`}
+\code{...}}
 
 \item{max_nchar}{The number of characters that the longest entry in a column
-can be before the `compressed_cols` option takes effect.}
+can be before the \code{compressed_cols} option takes effect.}
 }
 \description{
 This wrapper function is meant to allow the method of printing tables used by

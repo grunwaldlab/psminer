@@ -23,9 +23,9 @@ make_ani_heatmap(
 
 \item{interactive}{Whether to use an HTML-based interactive format or not (default: TRUE)}
 
-\item{height}{The height in pixels. If not `interactive`, this is divided by `dpi` to convert it to inches.}
+\item{height}{The height in pixels. If not \code{interactive}, this is divided by \code{dpi} to convert it to inches.}
 
-\item{width}{The width in pixels. If not `interactive`, this is divided by `dpi` to convert it to inches.}
+\item{width}{The width in pixels. If not \code{interactive}, this is divided by \code{dpi} to convert it to inches.}
 
 \item{dpi}{How pixels are converted to inches}
 }

@@ -18,7 +18,7 @@ assigned to each sample. The individual files are named by sample ID.}
 }
 \value{
 Reformatted reference metadata table containing both refseq-defined
-  reference assemblies and user-defined assemblies
+reference assemblies and user-defined assemblies
 }
 \description{
 Parse reference metadata files

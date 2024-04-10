@@ -15,12 +15,12 @@ sketch_idtb(
 \item{sketch_data}{A dataframe containing sketch analysis results with the following columns:}
 
 \item{sort_columns}{Character vector; specifies the columns to sort the table by in descending order.
-The default is `c("sample_id", "WKID", "ANI", "Complt")`. The `sample_id` is expected to be
+The default is \code{c("sample_id", "WKID", "ANI", "Complt")}. The \code{sample_id} is expected to be
 unique for each row, and the table will be sorted by this column first, followed by the other
 metrics in the order provided.}
 
 \item{top_n}{Integer; the number of top entries to retain for each unique sample ID after sorting.
-The default is `1`, meaning only the top entry is kept.}
+The default is \code{1}, meaning only the top entry is kept.}
 
 \item{interactive}{Whether or not to produce an interactive HTML/javascript-based table or a static one.}
 
@@ -45,7 +45,7 @@ The resulting table includes metrics such as Weighted Kmer IDentity (WKID),
 Average Nucleotide Identity (ANI), and Completeness, providing insights into
 genomic similarity and representational completeness between the query and reference genomes.
 The table can be sorted by any of these metrics, and only the top results as specified
-by `top_n` are displayed for each unique sample ID. Additionally, the table
+by \code{top_n} are displayed for each unique sample ID. Additionally, the table
 visually encodes the percentage values using horizontal bars for an intuitive
 and accessible presentation.
 }

@@ -9,7 +9,7 @@ shared_char(col, end = FALSE)
 \arguments{
 \item{col}{The character vector}
 
-\item{end}{If `TRUE` then return shared end instead of shared start}
+\item{end}{If \code{TRUE} then return shared end instead of shared start}
 }
 \description{
 Find any starts or ends of strings that are the same in all elements of a character vector
