@@ -76,16 +76,23 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
   the_edges <- igraph::E(ms.loc$graph)$weight
   edges <- as.list(the_edges)
 
-  plot_poppr_msn(
-    snp_genclone,
-    poppr_msn = ms.loc,
-    palette = myColors,
-    mlg = FALSE,
-    quantiles = FALSE,
-    wscale = FALSE,
-    inds = "None",
-    ...
-  )
+  if (length(V(ms.loc$graph)) > 1) {
+    plot_poppr_msn(
+      snp_genclone,
+      poppr_msn = ms.loc,
+      palette = myColors,
+      mlg = FALSE,
+      quantiles = FALSE,
+      wscale = FALSE,
+      inds = "None",
+      ...
+    )
+  } else {
+    text_plot <- ggplot() +
+      annotate("text", x = 4, y = 25, size=8, label = "All samples are in the same multilocus genotype.") +
+      theme_void()
+    print(text_plot)
+  }
 
 
   if (show_MLG_table) {
