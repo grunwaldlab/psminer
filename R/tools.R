@@ -73,7 +73,7 @@ print_static_table <- function(data, compressed_cols = NULL, max_nchar = 20) {
   # Print table
   is_multi_page_table <- nrow(data) > 45
   table <- kableExtra::kbl(data, booktabs = TRUE, longtable = is_multi_page_table) %>%
-    kable_styling(full_width = FALSE, latex_options = c("hold_position", "repeat_header", "scale_down"))
+    kableExtra::kable_styling(full_width = FALSE, latex_options = c("hold_position", "repeat_header", "scale_down"))
   if (length(footnotes) > 0) {
     table <- footnote(table, number = footnotes)
   }

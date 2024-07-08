@@ -15,15 +15,15 @@
 print_ani_table <- function(pairwise_matrix, sample_data, ref_data, interactive = knitr::is_html_output(), ...) {
   # Create table to print
   output <- do.call(rbind, lapply(sample_data$sample_id, function(id) { # loop over sample IDs and combine results into a table
-    ref_samp_comp <- pairwise_matrix[id, colnames(pairwise_matrix) %in% ref_data$reference_id]
+    ref_samp_comp <- pairwise_matrix[id, colnames(pairwise_matrix) %in% ref_data$ref_id]
     best_match <- which.max(ref_samp_comp)
     next_best_match <-  which.max(ref_samp_comp[, -best_match])
     data.frame(
       check.names = FALSE,
-      'Sample' = sample_data$sample_name[sample_data$sample_id == id],
-      'Best match' =  ref_data$reference_name[ref_data$reference_id == names(best_match)],
+      'Sample' = sample_data$name[sample_data$sample_id == id],
+      'Best match' =  ref_data$ref_name[ref_data$ref_id == names(best_match)],
       'ANI (%)' = format_number(unname(unlist(ref_samp_comp[best_match]))),
-      '2nd Best match' = ref_data$reference_name[ref_data$reference_id == names(next_best_match)],
+      '2nd Best match' = ref_data$ref_name[ref_data$ref_id == names(next_best_match)],
       '2nd ANI (%)' = format_number(unname(unlist(ref_samp_comp[next_best_match])))
     )
   }))
@@ -57,15 +57,16 @@ print_ani_table <- function(pairwise_matrix, sample_data, ref_data, interactive 
 #' @examples
 print_pocp_table <- function(pairwise_matrix, sample_data, ref_data, interactive = knitr::is_html_output(), ...) {
   # Create table to print
-  output <- do.call(rbind, lapply(sample_data$sample_id, function(id) { # loop over sample IDs and combine results into a table
-    ref_samp_comp_1 <- pairwise_matrix[id, colnames(pairwise_matrix) %in% ref_data$reference_id, drop = FALSE]
-    ref_samp_comp_2 <- t(pairwise_matrix[rownames(pairwise_matrix) %in% ref_data$reference_id, id, drop = FALSE])
+  sample_ids_in_matrix <- sample_data$sample_id[sample_data$sample_id %in% row.names(pairwise_matrix)]
+  output <- do.call(rbind, lapply(sample_ids_in_matrix, function(id) { # loop over sample IDs and combine results into a table
+    ref_samp_comp_1 <- pairwise_matrix[id, colnames(pairwise_matrix) %in% ref_data$ref_id, drop = FALSE]
+    ref_samp_comp_2 <- t(pairwise_matrix[rownames(pairwise_matrix) %in% ref_data$ref_id, id, drop = FALSE])
     ref_samp_comp_max <- mapply(max, unlist(ref_samp_comp_1), unlist(ref_samp_comp_2))
     best_match <- which.max(ref_samp_comp_max)
     data.frame(
       check.names = FALSE,
-      'Sample' = sample_data$sample_name[sample_data$sample_id == id],
-      'Best match' =  ref_data$reference_name[ref_data$reference_id == names(best_match)],
+      'Sample' = sample_data$name[sample_data$sample_id == id],
+      'Best match' =  ref_data$ref_name[ref_data$ref_id == names(best_match)],
       'POCP 1 (%)' = format_number(unname(unlist(ref_samp_comp_1[best_match]))),
       'POCP 2 (%)' = format_number(unname(unlist(ref_samp_comp_2[best_match])))
     )

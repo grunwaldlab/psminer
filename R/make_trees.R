@@ -21,8 +21,8 @@ make_phylogeny <- function(input, sample_data, ref_data, interactive = knitr::is
 
   tip_ids <- tree$tip.label
   tree <- phangorn::midpoint(tree) # Root tree
-  name_key <- set_names(c(ref_data$reference_name, sample_data$sample_name),
-                        c(ref_data$reference_id, sample_data$sample_id))
+  name_key <- set_names(c(ref_data$ref_name, sample_data$name),
+                        c(ref_data$ref_id, sample_data$sample_id))
 
   if (interactive) {
     # Convert characters that are not allowed in the format used by phylocanvas

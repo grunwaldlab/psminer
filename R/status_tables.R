@@ -41,7 +41,6 @@
 #' tables$detailedGroupsTable
 #'
 #' # Note: To view interactive tables, set interactive = TRUE and run in an R environment that supports HTML widgets.
-
 status_tables <- function(messages, interactive = knitr::is_html_output()) {
 
   # Mapping workflow to major steps
@@ -95,10 +94,10 @@ status_tables <- function(messages, interactive = knitr::is_html_output()) {
   # Detailed table for report groups
   detailed_data_groups <- messages %>%
     dplyr::filter(is.na(sample_id)) %>%
-    dplyr::select(emoji, group_id, major_step, summarized_message = message)
+    dplyr::select(emoji, major_step, summarized_message = message)
 
   # Customize column names for the detailed table for report groups
-  colnames(detailed_data_groups) <- c("Issue type", "Group", "Pipeline step", "Message")
+  colnames(detailed_data_groups) <- c("Issue type", "Pipeline step", "Message")
 
   # Conditional output function and options
   if (interactive) {

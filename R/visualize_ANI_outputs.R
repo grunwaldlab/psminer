@@ -20,8 +20,8 @@
 make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = knitr::is_html_output(),height = 1000, width = 1000, dpi = 100) {
   # Rename rows/columns for plotting
   name_key <- c(
-    setNames(ref_data$reference_name, ref_data$reference_id),
-    setNames(sample_data$sample_name, sample_data$sample_id)
+    setNames(ref_data$ref_name, ref_data$ref_id),
+    setNames(sample_data$name, sample_data$sample_id)
   )
   colnames(ani_matrix) <- name_key[colnames(ani_matrix)]
   rownames(ani_matrix) <- name_key[rownames(ani_matrix)]
