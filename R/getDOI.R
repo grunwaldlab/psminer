@@ -1,6 +1,7 @@
 
-#' R Package Header Example
+#' Get BibTeX Citation from DOI
 #'
+#' @author Ricardo I. Alcala
 #' @title Get BibTeX Citation from DOI
 #' @description This function retrieves BibTeX citation from a given DOI using the rcrossref package.
 #'
@@ -18,7 +19,6 @@
 #'
 #' @keywords rcrossref DOI BibTeX
 #'
-#' @author Ricardo I. Alcala
 #' @export
 
 # function
