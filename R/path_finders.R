@@ -139,7 +139,7 @@ estimated_ani_matrix_path <- function(path) {
 #' @family path finders
 #' @export
 software_version_path <- function(path) {
-  find_static_file_path(path, 'versions.ym', 'software version file')
+  find_static_file_path(path, 'versions.yml', 'software version file')
 }
 
 #' Find the core gene analysis tree paths
@@ -222,6 +222,9 @@ variant_tree_paths <- function(path) {
 
 #' @keywords internal
 find_static_file_path <- function(paths, file_name, file_description, file_required = TRUE) {
+
+  group_result_paths <- find_group_result_paths(paths)
+
   find_one <- function(path) {
     output_path <- file.path(path, file_name)
     if (! file.exists(output_path)) {
@@ -238,11 +241,15 @@ find_static_file_path <- function(paths, file_name, file_description, file_requi
     }
     return(output_path)
   }
-  unlist(lapply(paths, find_one))
+  unlist(lapply(group_result_paths, find_one))
 }
 
 #' @keywords internal
 find_static_dir_paths <- function(paths, dir_name, file_description, dir_required = TRUE, file_required = TRUE, ...) {
+
+  group_result_paths <- find_group_result_paths(paths)
+
+  # List files in target directories
   find_one <- function(path) {
     # Check that directory exists
     dir_path <- file.path(path, dir_name)
@@ -270,5 +277,25 @@ find_static_dir_paths <- function(paths, dir_name, file_description, dir_require
     }
     return(out_paths)
   }
-  unlist(paths, find_one)
+  unlist(lapply(group_result_paths, find_one))
+}
+
+
+#' @keywords internal
+find_group_result_paths <- function(paths) {
+  # Find all directories in a given path
+  subdir_paths <- list.dirs(paths)
+
+  # Filter for valid input directories
+  is_valid_dir <- function(path) {
+    group_id_path <- file.path(path, 'group_id.txt')
+    if (! file.exists(group_id_path)) {
+      return(FALSE)
+    }
+    group_contents <- readLines(group_id_path)
+    return(length(group_contents) == 1 && startsWith(basename(path), group_contents))
+  }
+  subdir_paths <- subdir_paths[unlist(lapply(subdir_paths, is_valid_dir))]
+
+  return(subdir_paths)
 }

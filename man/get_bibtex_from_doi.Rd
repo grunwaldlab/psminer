@@ -16,7 +16,7 @@ A character string containing the BibTeX citation.
 This function retrieves BibTeX citation from a given DOI using the rcrossref package.
 }
 \details{
-R Package Header Example
+Get BibTeX Citation from DOI
 }
 \examples{
 \dontrun{
