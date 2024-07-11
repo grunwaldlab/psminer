@@ -4,10 +4,10 @@
 \alias{variant_ref_path}
 \title{Find the variant analysis reference data file path}
 \usage{
-variant_ref_path(path)
+variant_ref_path(paths)
 }
 \arguments{
-\item{path}{The path to one or more pathogensurveillance output folders.}
+\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 character vector of length 1

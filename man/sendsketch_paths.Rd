@@ -4,10 +4,10 @@
 \alias{sendsketch_paths}
 \title{Find the sendsketch result paths}
 \usage{
-sendsketch_paths(path)
+sendsketch_paths(paths)
 }
 \arguments{
-\item{path}{The path to one or more pathogensurveillance output folders.}
+\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 character vector of length 1

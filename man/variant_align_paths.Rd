@@ -4,10 +4,10 @@
 \alias{variant_align_paths}
 \title{Find the SNP alignment paths}
 \usage{
-variant_align_paths(path)
+variant_align_paths(paths)
 }
 \arguments{
-\item{path}{The path to one or more pathogensurveillance output folders.}
+\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 character vector of length 1

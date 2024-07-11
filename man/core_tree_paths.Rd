@@ -4,10 +4,10 @@
 \alias{core_tree_paths}
 \title{Find the core gene analysis tree paths}
 \usage{
-core_tree_paths(path)
+core_tree_paths(paths)
 }
 \arguments{
-\item{path}{The path to one or more pathogensurveillance output folders.}
+\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 character vector of length 1

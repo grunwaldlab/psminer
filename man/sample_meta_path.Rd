@@ -4,10 +4,10 @@
 \alias{sample_meta_path}
 \title{Find sample metadata file path}
 \usage{
-sample_meta_path(path)
+sample_meta_path(paths)
 }
 \arguments{
-\item{path}{The path to one or more pathogensurveillance output folders.}
+\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 character vector of length 1

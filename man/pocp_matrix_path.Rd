@@ -4,10 +4,10 @@
 \alias{pocp_matrix_path}
 \title{Find the POCP matrix file path}
 \usage{
-pocp_matrix_path(path)
+pocp_matrix_path(paths)
 }
 \arguments{
-\item{path}{The path to one or more pathogensurveillance output folders.}
+\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 character vector of length 1

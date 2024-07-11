@@ -4,10 +4,10 @@
 \alias{estimated_ani_matrix_path}
 \title{Find the estimated ANI matrix file path}
 \usage{
-estimated_ani_matrix_path(path)
+estimated_ani_matrix_path(paths)
 }
 \arguments{
-\item{path}{The path to one or more pathogensurveillance output folders.}
+\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 character vector of length 1
