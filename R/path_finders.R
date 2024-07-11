@@ -151,8 +151,8 @@ software_version_path <- function(paths) {
 #' @return character vector of length 1
 #' @family path finders
 #' @export
-core_tree_paths <- function(paths) {
-  find_static_dir_paths(paths, 'core_gene_trees', 'core gene tree', file_required = FALSE, dir_required = FALSE)
+core_tree_path <- function(paths) {
+  find_static_dir_path(paths, 'core_gene_trees', 'core gene tree', file_required = FALSE, dir_required = FALSE)
 }
 
 #' Find the considered NCBI reference metadata paths
@@ -164,8 +164,8 @@ core_tree_paths <- function(paths) {
 #' @return character vector of length 1
 #' @family path finders
 #' @export
-considered_ref_meta_paths <- function(paths) {
-  find_static_dir_paths(paths, 'ncbi_reference_data', 'considered NCBI reference metadata')
+considered_ref_meta_path <- function(paths) {
+  find_static_dir_path(paths, 'ncbi_reference_data', 'considered NCBI reference metadata')
 }
 
 #' Find the downloaded reference metadata paths
@@ -177,8 +177,8 @@ considered_ref_meta_paths <- function(paths) {
 #' @return character vector of length 1
 #' @family path finders
 #' @export
-selected_ref_meta_paths <- function(paths) {
-  find_static_dir_paths(paths, 'selected_references', 'selected NCBI reference metadata')
+selected_ref_meta_path <- function(paths) {
+  find_static_dir_path(paths, 'selected_references', 'selected NCBI reference metadata')
 }
 
 #' Find the sendsketch result paths
@@ -190,8 +190,8 @@ selected_ref_meta_paths <- function(paths) {
 #' @return character vector of length 1
 #' @family path finders
 #' @export
-sendsketch_paths <- function(paths) {
-  find_static_dir_paths(paths, 'sendsketch', 'sendsketch result')
+sendsketch_path <- function(paths) {
+  find_static_dir_path(paths, 'sendsketch', 'sendsketch result')
 }
 
 #' Find the SNP alignment paths
@@ -203,8 +203,8 @@ sendsketch_paths <- function(paths) {
 #' @return character vector of length 1
 #' @family path finders
 #' @export
-variant_align_paths <- function(paths) {
-  find_static_dir_paths(paths, 'snp_alignments', 'SNP alignment')
+variant_align_path <- function(paths) {
+  find_static_dir_path(paths, 'snp_alignments', 'SNP alignment')
 }
 
 #' Find the SNP tree paths
@@ -216,14 +216,14 @@ variant_align_paths <- function(paths) {
 #' @return character vector of length 1
 #' @family path finders
 #' @export
-variant_tree_paths <- function(paths) {
-  find_static_dir_paths(paths, 'snp_trees', 'SNP tree')
+variant_tree_path <- function(paths) {
+  find_static_dir_path(paths, 'snp_trees', 'SNP tree', dir_required = FALSE, file_required = FALSE)
 }
 
 #' @keywords internal
 find_static_file_path <- function(paths, file_name, file_description, file_required = TRUE) {
 
-  group_result_paths <- find_group_result_paths(paths)
+  group_result_paths <- find_group_result_path(paths)
 
   find_one <- function(path) {
     output_path <- file.path(path, file_name)
@@ -245,9 +245,9 @@ find_static_file_path <- function(paths, file_name, file_description, file_requi
 }
 
 #' @keywords internal
-find_static_dir_paths <- function(paths, dir_name, file_description, dir_required = TRUE, file_required = TRUE, ...) {
+find_static_dir_path <- function(paths, dir_name, file_description, dir_required = TRUE, file_required = TRUE, ...) {
 
-  group_result_paths <- find_group_result_paths(paths)
+  group_result_paths <- find_group_result_path(paths)
 
   # List files in target directories
   find_one <- function(path) {
@@ -287,7 +287,7 @@ find_static_dir_paths <- function(paths, dir_name, file_description, dir_require
 #' that are the report group output of a pathogensurviellance run.
 #'
 #' @keywords internal
-find_group_result_paths <- function(paths) {
+find_group_result_path <- function(paths) {
   # Find all directories in a given path
   subdir_paths <- list.dirs(paths)
 
