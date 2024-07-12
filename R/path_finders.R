@@ -113,7 +113,7 @@ status_message_path <- function(paths) {
 #' @family path finders
 #' @export
 pocp_matrix_path <- function(paths) {
-  find_static_file_path(paths, 'pocp.csv', 'pocp matrix file')
+  find_static_file_path(paths, 'pocp.csv', 'pocp matrix file', file_required = FALSE)
 }
 
 #' Find the estimated ANI matrix file path

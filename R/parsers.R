@@ -11,7 +11,7 @@
 #'
 #' @export
 status_message_parsed <- function(paths) {
-  path_data <- status_message_path_table(paths)
+  path_data <- status_message_path_data(paths)
   if (nrow(path_data) > 0) {
     output <- do.call(rbind, lapply(1:nrow(path_data), function(index) {
       table <- readr::read_csv(path_data$path[index], col_types = 'ccccc')
@@ -40,12 +40,72 @@ status_message_parsed <- function(paths) {
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
 #'
-#' @return A [tibble::tibble()] with the messages from all input paths
+#' @return A [tibble::tibble()] with the sample metadata
 #'
 #' @export
 sample_meta_parsed <- function(paths) {
   dplyr::bind_rows(lapply(sample_meta_path(paths), readr::read_csv, show_col_types = FALSE))
 }
+
+#' Get parsed reference metadata
+#'
+#' Return a [tibble::tibble()] (table) with reference metadata. The contents of
+#' all reference metadata files found in the given paths will be combined. This
+#' only contains data about references used by at least one step of the pipeline.
+#'
+#' @param paths The path to one or more folders that contain
+#'   pathogensurveillance output.
+#'
+#' @return A [tibble::tibble()] with reference metadata
+#'
+#' @export
+ref_meta_parsed <- function(paths) {
+  dplyr::bind_rows(lapply(ref_meta_path(paths), readr::read_csv, show_col_types = FALSE))
+}
+
+
+#' Get estimated ANI distance matrix
+#'
+#' Return a list of [base::data.frame()]s with the estimated pairwise ANI values
+#' calculated by sourmash.
+#'
+#' @param paths The path to one or more folders that contain
+#'   pathogensurveillance output.
+#' @return a `list` of ANI matrices
+#'
+#' @export
+estimated_ani_matrix_parsed <- function(paths) {
+  ani_matrix_paths <- estimated_ani_matrix_path(paths)
+  output <- lapply(ani_matrix_paths, function(path) {
+    ani_matrix <- read.csv(path, check.names = FALSE)
+    rownames(ani_matrix) <- colnames(ani_matrix)
+    return(ani_matrix)
+  })
+  names(output) <- ani_matrix_paths
+  return(output)
+}
+
+#' Get POCP matrix
+#'
+#' Return a list of [base::data.frame()]s with the POCP values based on a core
+#' gene analysis using pirate.
+#'
+#' @param paths The path to one or more folders that contain
+#'   pathogensurveillance output.
+#' @return a `list` of POCP matrices
+#'
+#' @export
+pocp_matrix_parsed <- function(paths) {
+  matrix_paths <- pocp_matrix_path(paths)
+  output <- lapply(matrix_paths, function(path) {
+    pocp_matrix <- read.csv(path, check.names = FALSE, sep = '\t')
+    rownames(pocp_matrix) <- colnames(pocp_matrix)
+    return(pocp_matrix)
+  })
+  names(output) <- matrix_paths
+  return(output)
+}
+
 
 #' Get parsed report groups
 #'
@@ -108,4 +168,46 @@ sendsketch_parsed <- function(paths, only_best = FALSE) {
   }
 
   return(sketch_data)
+}
+
+#' Parse Software Version Metadata from YAML File
+#'
+#' Reads a YAML file containing software version information and transforms it into a tibble.
+#' Each software module and program, along with its version, is extracted and organized.
+#'
+#' @param paths The path to one or more folders that contain
+#'   pathogensurveillance output.
+#' @return A [tibble::tibble()] with columns `module`, `program`, and `version` detailing the software versions.
+#' @importFrom yaml read_yaml
+#' @importFrom tibble tibble
+#' @importFrom purrr map_chr
+#' @importFrom stringr str_split
+#' @export
+#' @examples
+#' version_path <- file.path(params$inputs, "inputs", "versions.yml")
+#' version_data <- parse_software_meta(version_path)
+software_version_parsed <- function(paths) {
+
+  parse_one <- function(version_path) {
+    # Reading the YAML file
+    raw_version_data <- tryCatch({
+      unlist(yaml::read_yaml(version_path))
+    },
+    error = function(e) {
+      stop("Failed to read YAML file: ", e$message)
+    })
+    # Transforming the data into a tibble
+    version_data <- tibble::tibble(
+      module = purrr::map_chr(stringr::str_split(
+        names(raw_version_data), pattern = '\\.', n = 2
+      ), `[`, 1),
+      program = purrr::map_chr(stringr::str_split(
+        names(raw_version_data), pattern = '\\.', n = 2
+      ), `[`, 2),
+      version = unname(raw_version_data),
+    )
+    return(version_data)
+  }
+
+  unique(dplyr::bind_rows(lapply(software_version_path(paths), parse_one)))
 }

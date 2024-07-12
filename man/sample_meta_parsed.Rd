@@ -11,7 +11,7 @@ sample_meta_parsed(paths)
 pathogensurveillance output.}
 }
 \value{
-A \code{\link[tibble:tibble]{tibble::tibble()}} with the messages from all input paths
+A \code{\link[tibble:tibble]{tibble::tibble()}} with the sample metadata
 }
 \description{
 Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with sample metadata. The contents of all sample
