@@ -4,12 +4,21 @@
 #' Selects columns in the sample metadata to print and format the result for
 #' use as a static table in PDF or an interactive table in HTML.
 #'
-#' @param sample_data A tibble/data.frame with the sample metadata
+#' @param input The path to one or more folders that contain
+#'   pathogensurveillance output or a table in the format of the
+#'   [sample_meta_parsed()] output.
 #' @param interactive Whether to use an HTML-based interactive format or not (default: TRUE)
 #' @param ... Passed to `DT::datatable`.
 #'
 #' @export
-print_sample_metadata <- function(sample_data, interactive = knitr::is_html_output(), ...) {
+sample_meta_table <- function(input, interactive = knitr::is_html_output(), ...) {
+
+  # Parse the input if it is a file/folder path
+  if (is.data.frame(input)) {
+    sample_data <- input
+  } else {
+    sample_data <- sample_meta_parsed(input)
+  }
 
   # Subset and reformat data for printing
   # column_key <- c(

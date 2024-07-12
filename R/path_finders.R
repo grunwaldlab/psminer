@@ -100,7 +100,7 @@ variant_ref_path <- function(paths) {
 #' @family path finders
 #' @export
 status_message_path <- function(paths) {
-  find_static_file_path(paths, 'messages.csv', 'status message data file')
+  find_static_file_path(paths, 'messages.csv', 'status message data file', file_required = FALSE)
 }
 
 #' Find the POCP matrix file path
