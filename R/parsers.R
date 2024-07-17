@@ -44,7 +44,9 @@ status_message_parsed <- function(paths) {
 #'
 #' @export
 sample_meta_parsed <- function(paths) {
-  dplyr::bind_rows(lapply(sample_meta_path(paths), readr::read_csv, show_col_types = FALSE))
+  output <- dplyr::bind_rows(lapply(sample_meta_path(paths), readr::read_csv, show_col_types = FALSE))
+  output[] <- lapply(output, function(col_data) ifelse(col_data == 'null', NA_character_, col_data))
+  return(output)
 }
 
 #' Get parsed reference metadata
@@ -60,7 +62,9 @@ sample_meta_parsed <- function(paths) {
 #'
 #' @export
 ref_meta_parsed <- function(paths) {
-  dplyr::bind_rows(lapply(ref_meta_path(paths), readr::read_csv, show_col_types = FALSE))
+  output <- dplyr::bind_rows(lapply(ref_meta_path(paths), readr::read_csv, show_col_types = FALSE))
+  output[] <- lapply(output, function(col_data) ifelse(col_data == 'null', NA_character_, col_data))
+  return(output)
 }
 
 
@@ -170,6 +174,69 @@ sendsketch_parsed <- function(paths, only_best = FALSE) {
   return(sketch_data)
 }
 
+#' Get parsed sendsketch taxonomy
+#'
+#' Return the taxonomic classificaiton in sendsketch results associated with
+#' directory paths containing `pathogensurveillance` output.
+#'
+#' @param paths The path to one or more folders that contain
+#'   pathogensurveillance output.
+#' @param remove_ranks If `TRUE`, remove the rank information from the taxonomy.
+#' @param only_best Only return the best hit for each combination of report
+#'   group and sample. For more control/details on how the top hit is selected,
+#'   see [sendsketch_best_hits()].
+#'
+#' @return A [base::character()] vector of taxonomic classifications, each
+#'   delimited with `;`, named by sample IDs.
+#'
+#' @export
+sendsketch_taxonomy_parsed <- function(paths, remove_ranks = FALSE, only_best = FALSE) {
+  sendsketch_data <- sendsketch_parsed(paths, only_best = TRUE)
+  classifications <- sendsketch_data$taxonomy
+  if (remove_ranks) {
+    classifications <- gsub(classifications, pattern = ';?[a-z]+:', replacement = ';')
+    classifications <- gsub(classifications, pattern = '^;', replacement = '')
+  }
+  names(classifications) <- sendsketch_data$sample_id
+  classifications <- classifications[! duplicated(paste0(classifications, names(classifications)))]
+  return(classifications)
+}
+
+#' Get parsed sendsketch taxonomy data
+#'
+#' Return the taxonomic data in sendsketch results associated with directory
+#' paths containing `pathogensurveillance` output.
+#'
+#' @param paths The path to one or more folders that contain
+#'   pathogensurveillance output.
+#' @param remove_ranks If `TRUE`, remove the rank information from the taxonomy.
+#' @param only_best Only return the best hit for each combination of report
+#'   group and sample. For more control/details on how the top hit is selected,
+#'   see [sendsketch_best_hits()].
+#' @param only_shared If `TRUE`, only return the data for that are present in all of the
+#'   inputs.
+#'
+#' @return A [tibble::tibble()] with taxonomy data, with columns corresponding
+#'   to ranks.
+#'
+#' @export
+sendsketch_taxonomy_data_parsed <- function(paths, only_best = FALSE, only_shared = FALSE) {
+  sendsketch_data <- sendsketch_parsed(paths, only_best = only_best)
+  output <- dplyr::bind_rows(lapply(1:nrow(sendsketch_data), function(index) {
+    split_tax <- strsplit(sendsketch_data$taxonomy[index], split = ';', fixed = TRUE)[[1]]
+    taxon_names <- gsub(split_tax, pattern = '^[a-z]+:', replacement = '')
+    ranks <- gsub(split_tax, pattern = '^([a-z]*):?.+$', replacement = '\\1')
+    names(taxon_names) <- ifelse(ranks == '', 'tip', ranks)
+    tibble::as_tibble(as.list(c(sample_id = sendsketch_data$sample_id[index], taxon_names)))
+  }))
+  if (only_shared) {
+    col_has_na <- apply(output, MARGIN = 2, function(col) any(is.na(col)))
+    output <- output[, ! col_has_na]
+  }
+  return(output)
+}
+
+
 #' Parse Software Version Metadata from YAML File
 #'
 #' Reads a YAML file containing software version information and transforms it into a tibble.
@@ -210,4 +277,56 @@ software_version_parsed <- function(paths) {
   }
 
   unique(dplyr::bind_rows(lapply(software_version_path(paths), parse_one)))
+}
+
+
+#' Get core gene phylogeny
+#'
+#' Return a list of [ape::phylo()] objects named by file path by searching for
+#' folders containing pathogensurveillance output.
+#'
+#' @param paths The path to one or more folders that contain
+#'   pathogensurveillance output.
+#'
+#' @return List of [ape::phylo()] objects named by file path
+#'
+#' @export
+core_tree_parsed <- function(paths) {
+  tree_parsed(core_tree_path(paths))
+}
+
+#' Get SNP phylogeny
+#'
+#' Return a list of [ape::phylo()] objects named by file path by searching for
+#' folders containing pathogensurveillance output.
+#'
+#' @param paths The path to one or more folders that contain
+#'   pathogensurveillance output.
+#'
+#' @return List of [ape::phylo()] objects named by file path
+#'
+#' @export
+variant_tree_parsed <- function(paths) {
+  tree_parsed(variant_tree_path(paths))
+}
+
+#' Get phylogenies using a function
+#'
+#' Return a list of [ape::phylo()] objects named by file path by searching for
+#' folders containing pathogensurveillance output.
+#'
+#' @param paths The path to one or more folders that contain
+#'   pathogensurveillance output.
+#'
+#' @return List of [ape::phylo()] objects named by file path
+#'
+#' @keywords internal
+tree_parsed <- function(paths, func) {
+  output <- lapply(paths, function(tree_path) {
+    tree <- ape::read.tree(tree_path)
+    tree <- phytools::midpoint_root(tree)
+    return(tree)
+  })
+  names(output) <- paths
+  return(output)
 }
