@@ -44,8 +44,10 @@ status_message_parsed <- function(paths) {
 #'
 #' @export
 sample_meta_parsed <- function(paths) {
-  output <- dplyr::bind_rows(lapply(sample_meta_path(paths), readr::read_csv, show_col_types = FALSE))
+  output <- dplyr::bind_rows(lapply(sample_meta_path(paths), read.csv, check.names = FALSE))
   output[] <- lapply(output, function(col_data) ifelse(col_data == 'null', NA_character_, col_data))
+  output <- tibble::as_tibble(output)
+  output <- unique(output)
   return(output)
 }
 
@@ -62,8 +64,10 @@ sample_meta_parsed <- function(paths) {
 #'
 #' @export
 ref_meta_parsed <- function(paths) {
-  output <- dplyr::bind_rows(lapply(ref_meta_path(paths), readr::read_csv, show_col_types = FALSE))
+  output <- dplyr::bind_rows(lapply(ref_meta_path(paths), read.csv, check.names = FALSE))
   output[] <- lapply(output, function(col_data) ifelse(col_data == 'null', NA_character_, col_data))
+  output <- tibble::as_tibble(output)
+  output <- unique(output)
   return(output)
 }
 
@@ -143,6 +147,11 @@ report_group_parsed <- function(paths) {
 sendsketch_parsed <- function(paths, only_best = FALSE) {
   path_data <- sendsketch_path_data(paths)
 
+  # If no files are found, return an empty tibble
+  if (nrow(path_data) == 0) {
+    return(tibble::tibble())
+  }
+
   # Internal function to parse a single file
   parse_one_file <- function(path, report_group_id, sample_id) {
     data <- readr::read_tsv(path,
@@ -157,7 +166,7 @@ sendsketch_parsed <- function(paths, only_best = FALSE) {
   }
 
   # Use purrr to parse all files and combine them into one data frame
-  sketch_data <- purrr::map_dfr(1:nrow(path_data), function(i) {
+  sketch_data <- purrr::map_dfr(seq_len(nrow(path_data)), function(i) {
     parse_one_file(path_data$path[i], path_data$report_group_id[i], path_data$sample_id[i])
   })
 

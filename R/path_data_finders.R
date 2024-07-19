@@ -265,7 +265,7 @@ variant_tree_path_data <- function(paths) {
   file_names <- basename(output$path)
   output$ref_id <- unlist(lapply(1:nrow(output), function(index) {
     id <- sub(file_names[index], pattern = paste0('^', output$report_group_id[index], '_'), replacement = '')
-    sub(id, pattern = '_[0-9]+\\.treefile$', replacement = '')
+    sub(id, pattern = '\\.treefile$', replacement = '')
   }))
   output$cluster_id <- unlist(lapply(1:nrow(output), function(index) {
     id <- sub(file_names[index], pattern = paste0('^', output$report_group_id[index], '_', output$ref_id[index], '_'), replacement = '')
@@ -279,6 +279,7 @@ variant_tree_path_data <- function(paths) {
 #' @keywords internal
 make_path_data_with_group <- function(paths, path_func) {
   out_paths <- path_func(paths)
+
   tibble::tibble(
     report_group_id = find_path_report_group(out_paths),
     path = out_paths
@@ -298,5 +299,9 @@ find_path_report_group <- function(paths) {
     }
     return(NA_character_)
   }
-  unlist(lapply(paths, find_one))
+  if (length(paths) == 0) {
+    return(character(0))
+  } else {
+    return(unlist(lapply(paths, find_one)))
+  }
 }

@@ -17,10 +17,15 @@
 #'
 #' @export
 core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
+  # If no trees are found, return an empty list
+  trees <-  core_tree_parsed(input)
+  if (length(trees) == 0) {
+    return(list())
+  }
+
   # Find and parse needed data
   sample_meta <- sample_meta_parsed(input)
   ref_meta <- ref_meta_parsed(input)
-  trees <-  core_tree_parsed(input)
   sendsketch <- sendsketch_taxonomy_data_parsed(input, only_best = TRUE, only_shared = TRUE)
 
   # Find which columns are used to provide colors to the trees, if any
@@ -42,7 +47,6 @@ core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::i
     )
   })
   names(tree_plots) <- color_by_col_names
-
   return(tree_plots)
 }
 
@@ -65,11 +69,26 @@ core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::i
 #'
 #' @export
 variant_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
+  # If no trees are found, return an empty list
+  trees <-  variant_tree_parsed(input)
+  if (length(trees) == 0) {
+    return(list())
+  }
+
   # Find and parse needed data
   sample_meta <- sample_meta_parsed(input)
   ref_meta <- ref_meta_parsed(input)
-  trees <-  variant_tree_parsed(input)
   sendsketch <- sendsketch_taxonomy_data_parsed(input, only_best = TRUE, only_shared = TRUE)
+
+  # Rename tree tips to sample/reference IDs
+  path_data <- variant_tree_path_data(input)
+  trees <- lapply(seq_len(length(trees)), function(i) {
+    tree <- trees[[i]]
+    ref_id <- path_data$ref_id[path_data$path == names(trees)[i]]
+    tree$tip.label <- gsub(tree$tip.label, pattern = paste0('^', ref_id, '_'), replacement = '')
+    tree$tip.label[tree$tip.label == 'REF'] <- ref_id
+    return(tree)
+  })
 
   # Find which columns are used to provide colors to the trees, if any
   ids_in_trees <- unique(unlist(lapply(trees, function(t) t$tip.label)))
@@ -90,9 +109,9 @@ variant_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr
     )
   })
   names(tree_plots) <- color_by_col_names
-
   return(tree_plots)
 }
+
 
 #' Plot a phylogeny
 #'
@@ -124,8 +143,14 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
       stop(call. = FALSE, 'If "collapse_by_tax" is not provided, then only a single tree can be plotted at a time. Multiple trees were given.')
     }
   } else {
-    # Subset taxonomy data to just the part used by each tree
+    # If taxonomy does not have at least one conserved rank, then add one
     ranks <- colnames(collapse_by_tax)[colnames(collapse_by_tax) != 'sample_id']
+    n_unique_taxa <- unlist(lapply(collapse_by_tax[ranks], function(x) length(unique(x))))
+    if (! any(n_unique_taxa == 1)) {
+      collapse_by_tax <- dplyr::bind_cols(sample_id = collapse_by_tax$sample_id, root = 'Life', collapse_by_tax[ranks])
+      ranks <- c('root', ranks)
+    }
+    # Subset taxonomy data to just the part used by each tree
     collapse_by_tax[ranks] <- lapply(collapse_by_tax[ranks], as.factor)
     tree_tax <- dplyr::bind_rows(lapply(trees, function(tree) {
       sample_ids <- tree$tip.label[tree$tip.label %in% sample_meta$sample_id]
@@ -133,7 +158,7 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
       tax_subset <- tax_subset[, apply(tax_subset, MARGIN = 2, function(col) length(unique(col)) == 1)]
       unique(tax_subset)
     }))
-    tree_tax <- tree_tax[, 1:ncol(tree_tax) < which(colnames(tree_tax) == 'g')]
+    # tree_tax <- tree_tax[, 1:ncol(tree_tax) < which(colnames(tree_tax) == 'g')]
     keep_rank <- apply(tree_tax, MARGIN = 2, function(col) length(unique(col)) != 1)
     keep_rank[1] <- TRUE # Always include the first rank
     tree_tax <- tree_tax[, keep_rank]
@@ -213,13 +238,12 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
     names(phycanv$x$nodestyles) <- gsub(names(phycanv$x$nodestyles), pattern = '_', replacement = ' ', fixed = TRUE)
     return(phycanv)
   } else {
-
+    # Make data associated with tree tips
     tip_data <- tibble::tibble(
       newick_label = combined_tree$tip.label,
       tip_color = unname(tip_colors),
       tip_label = tip_labels[combined_tree$tip.label]
     )
-    # tip_data$tip_color[is.na(tip_data$tip_color)] <- 'Undefined'
 
     if (is.null(color_by) || length(trees) <= 1) {
       base_tree_node_labels <- character(0)
@@ -227,8 +251,14 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
       base_tree_node_labels <- base_tree$node.label
     }
 
+    if (is.null(combined_tree$node.label)) {
+      all_labels = c(rep(NA, combined_tree$Nnode), combined_tree$tip.label)
+    } else {
+      all_labels = c(combined_tree$node.label, combined_tree$tip.label)
+    }
+
     node_data <- tibble::tibble(
-      newick_label = c(combined_tree$node.label, combined_tree$tip.label),
+      newick_label = all_labels,
       node_label = ifelse(newick_label %in% c(base_tree_node_labels, "Root"), "", newick_label),
       branch_color = ifelse(newick_label %in% c(base_tree_node_labels, "Root"), "grey", "black"),
       branch_type = ifelse(newick_label %in% c(base_tree_node_labels, "Root"), "dashed", "solid")
@@ -237,18 +267,19 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
     legend_title <- tools::toTitleCase(trimws(gsub(color_by, pattern = '_', replacement = ' ')))
 
     plotted_tree <- ggtree(combined_tree, aes(color = branch_color, linetype = branch_type)) %<+% node_data +
-      geom_nodelab(aes(label = node_label), nudge_x = -0.04, nudge_y = 0.45) +
+      geom_nodelab(aes(label = node_label), hjust = 1.3, nudge_y = 0.3, size = 3) +
       scale_color_identity() +
       scale_linetype_identity()
 
     plotted_tree <- plotted_tree %<+% tip_data +
-      scale_x_continuous(expand = expansion(mult = c(0.1, .2 + max(nchar(tip_data$tip_label)) * 0.03))) +
+      scale_x_continuous(expand = expansion(add = c(0.05, max(nchar(tip_data$tip_label)) * 0.1 / sqrt(nrow(tip_data))))) +
       ggnewscale::new_scale_color() +
       geom_tiplab(aes(label = tip_label, color = tip_color)) +
       geom_tippoint(aes(color = tip_color), alpha = 0) + # Invisible tips just there to make override.aes below change the legend color shapes
       scale_color_viridis_d(end = 0.8, na.value = "black") +
       guides(color = guide_legend(title = legend_title, override.aes = list(label = "", size = 3, alpha = 1, shape = 15))) +
       theme(legend.position = "bottom")
+    plotted_tree
 
     return(plotted_tree)
   }

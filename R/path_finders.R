@@ -241,7 +241,11 @@ find_static_file_path <- function(paths, file_name, file_description, file_requi
     }
     return(output_path)
   }
-  unlist(lapply(group_result_paths, find_one))
+  output <- unlist(lapply(group_result_paths, find_one))
+  if (is.null(output)) {
+    output <- character(0)
+  }
+  return(output)
 }
 
 #' @keywords internal
@@ -277,7 +281,11 @@ find_static_dir_path <- function(paths, dir_name, file_description, dir_required
     }
     return(out_paths)
   }
-  unlist(lapply(group_result_paths, find_one))
+  output <- unlist(lapply(group_result_paths, find_one))
+  if (is.null(output)) {
+    output <- character(0)
+  }
+  return(output)
 }
 
 
