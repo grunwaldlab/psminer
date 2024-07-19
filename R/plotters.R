@@ -27,6 +27,8 @@ core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::i
   ids_in_trees <- unique(unlist(lapply(trees, function(t) t$tip.label)))
   color_by_cols <- unique(unlist(strsplit(sample_meta$color_by[sample_meta$sample_id %in% ids_in_trees], split = ';')))
   color_by_cols <- color_by_cols[!is.na(color_by_cols)]
+  color_by_col_names <- c(color_by_cols, 'Default')
+  color_by_cols <- c(as.list(color_by_cols), list(NULL))  # NULL ensures that the default color scheme is also used
 
   # Plot one tree for each color_by column
   tree_plots <- lapply(color_by_cols, function(color_by) {
@@ -39,11 +41,58 @@ core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::i
       interactive = interactive
     )
   })
-  names(tree_plots) <- color_by_cols
+  names(tree_plots) <- color_by_col_names
 
   return(tree_plots)
 }
 
+#' Plot SNP trees
+#'
+#' Plot the SNP trees from the variant analysis present in the output of a pathogensurveillance
+#' run.
+#'
+#' @param input The path to one or more folders that contain
+#'   pathogensurveillance output or paths to tree files.
+#' @param collapse_by_tax A [base::character()] vector of taxonomic
+#'   classifications, each delimited by `;`, and named by sample or reference
+#'   ids present in `sample_meta` or `ref_meta`. These are used to provide a
+#'   taxonomic tree that functions as a backbone to combine multiple trees into
+#'   a single one. (Default: return a list of plots instead of a single plot)
+#' @param interactive Whether to use an HTML-based interactive format or not
+#'   (default: TRUE)
+#'
+#' @return  A list of plots, unless `collapse_by_tax` is useded, in which case a single plot is returned.
+#'
+#' @export
+variant_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
+  # Find and parse needed data
+  sample_meta <- sample_meta_parsed(input)
+  ref_meta <- ref_meta_parsed(input)
+  trees <-  variant_tree_parsed(input)
+  sendsketch <- sendsketch_taxonomy_data_parsed(input, only_best = TRUE, only_shared = TRUE)
+
+  # Find which columns are used to provide colors to the trees, if any
+  ids_in_trees <- unique(unlist(lapply(trees, function(t) t$tip.label)))
+  color_by_cols <- unique(unlist(strsplit(sample_meta$color_by[sample_meta$sample_id %in% ids_in_trees], split = ';')))
+  color_by_cols <- color_by_cols[!is.na(color_by_cols)]
+  color_by_col_names <- c(color_by_cols, 'Default')
+  color_by_cols <- c(as.list(color_by_cols), list(NULL))  # NULL ensures that the default color scheme is also used
+
+  # Plot one tree for each color_by column
+  tree_plots <- lapply(color_by_cols, function(color_by) {
+    plot_phylogeny(
+      trees,
+      sample_meta,
+      ref_meta,
+      color_by,
+      sendsketch, # NOTE: A better source for the taxonomy should be found, perhaps based on reference NCBI taxon IDs.
+      interactive = interactive
+    )
+  })
+  names(tree_plots) <- color_by_col_names
+
+  return(tree_plots)
+}
 
 #' Plot a phylogeny
 #'
@@ -112,10 +161,10 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
   tip_labels <- stats::setNames(make.unique(tip_labels, sep = ' '), names(tip_labels)) # phylocanvas does not plot anything if tip labels are not unique.
 
   # Prepare colors
-  if (TRUE || is.null(color_by)) {
-    color_by <- '_sequence_source_'
-    sample_meta[['_sequence_source_']] <- 'Sample'
-    ref_meta[['_sequence_source_']] <- 'Reference'
+  if (is.null(color_by)) {
+    color_by <- '_sequence_type_'
+    sample_meta[['_sequence_type_']] <- 'Sample'
+    ref_meta[['_sequence_type_']] <- 'Reference'
   }
   ids_in_trees <- combined_tree$tip.label
   color_key <- character(0)
@@ -164,10 +213,43 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
     names(phycanv$x$nodestyles) <- gsub(names(phycanv$x$nodestyles), pattern = '_', replacement = ' ', fixed = TRUE)
     return(phycanv)
   } else {
-    tree <- groupOTU(combined_tree, .node = combined_tree$tip.label[names(combined_tree$tip.label) %in% sample_meta$sample_id])
-    plotted_tree <- ggtree(tree) +
-      geom_tiplab(aes(color = group), show.legend = FALSE) +
-      scale_color_manual(values = rev(viridis::viridis(2, end = 0.8)), name = '')
+
+    tip_data <- tibble::tibble(
+      newick_label = combined_tree$tip.label,
+      tip_color = unname(tip_colors),
+      tip_label = tip_labels[combined_tree$tip.label]
+    )
+    # tip_data$tip_color[is.na(tip_data$tip_color)] <- 'Undefined'
+
+    if (is.null(color_by) || length(trees) <= 1) {
+      base_tree_node_labels <- character(0)
+    } else {
+      base_tree_node_labels <- base_tree$node.label
+    }
+
+    node_data <- tibble::tibble(
+      newick_label = c(combined_tree$node.label, combined_tree$tip.label),
+      node_label = ifelse(newick_label %in% c(base_tree_node_labels, "Root"), "", newick_label),
+      branch_color = ifelse(newick_label %in% c(base_tree_node_labels, "Root"), "grey", "black"),
+      branch_type = ifelse(newick_label %in% c(base_tree_node_labels, "Root"), "dashed", "solid")
+    )
+
+    legend_title <- tools::toTitleCase(trimws(gsub(color_by, pattern = '_', replacement = ' ')))
+
+    plotted_tree <- ggtree(combined_tree, aes(color = branch_color, linetype = branch_type)) %<+% node_data +
+      geom_nodelab(aes(label = node_label), nudge_x = -0.04, nudge_y = 0.45) +
+      scale_color_identity() +
+      scale_linetype_identity()
+
+    plotted_tree <- plotted_tree %<+% tip_data +
+      scale_x_continuous(expand = expansion(mult = c(0.1, .2 + max(nchar(tip_data$tip_label)) * 0.03))) +
+      ggnewscale::new_scale_color() +
+      geom_tiplab(aes(label = tip_label, color = tip_color)) +
+      geom_tippoint(aes(color = tip_color), alpha = 0) + # Invisible tips just there to make override.aes below change the legend color shapes
+      scale_color_viridis_d(end = 0.8, na.value = "black") +
+      guides(color = guide_legend(title = legend_title, override.aes = list(label = "", size = 3, alpha = 1, shape = 15))) +
+      theme(legend.position = "bottom")
+
     return(plotted_tree)
   }
 }

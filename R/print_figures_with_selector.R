@@ -46,8 +46,32 @@ print_figures_with_selector <- function(plot_func, selector, label, img_class, i
   cat(paste0('  <option value="', plots, '">', selector, '</option>', collapse = '\n'))
   cat(paste0('</select>'))
 
+  # temp zoom test
+  cat(paste0('
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.css" />
+<script type="module">
+  import Zoomist from \'https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.js\'
+  new Zoomist(\'.zoomist-container-', img_class, '\', {
+maxScale: 4,
+bounds: true,
+slider: true,
+zoomer: true
+})
+</script>
+<div class="zoomist-container-', img_class, '">
+<div class="zoomist-wrapper">
+<div class="zoomist-image">
+'))
+
   # Make image showing the first plot
   cat(paste0('<img id="', img_class, '" width="100%" src="', plots[1], '" />'))
+
+  # temp zoom test
+  cat(paste0('
+</div>
+</div>
+</div>
+'))
 
   # Add javascript to change with image is shown based on the selector
   cat(paste0('<script type="text/javascript">'))
