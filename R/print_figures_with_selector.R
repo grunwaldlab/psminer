@@ -1,14 +1,23 @@
 #' Print figures with dropdown selector
 #'
 #' Prints HTML code to show a plot based on the value in a dropdown selector.
-#' For use with Quarto/Rmarkdown/Knitr, put in a chunk with the option `results='asis'`.
+#' For use with Quarto/Rmarkdown/Knitr, put in a chunk with the option
+#' `results='asis'`.
 #'
-#' @param plot_func A function to produce a plot using a single input from the `selector` input.
-#' @param selector One or more values given to `plot_func` to make plots. There will be one plot per input
-#' @param label Text used to label the selector dropdown.
-#' @param img_class The CSS class used as an ID for the `img` HTML element. This must be unique.
-#' @param imglist_class The CSS class used as an ID for the dropdown HTML element. This must be unique.
+#' @param plot_func A function to produce a plot using a single input from the
+#'   `selector` input.
+#' @param selector A named list of character vectors, that will be used to
+#'   generate the input to `plot_func` to make plots. Plots will be made for
+#'   every combination of values in the input. The number of character vectors
+#'   should equal the number of arguments taken by `plot_func`.
+#' @param id_prefix The prefix added to element IDs to distinguish this plot
+#'   from others. This must be unique amoung other calls to this functions in a
+#'   single HTML file.
+#' @param imglist_class The CSS class used as the prefix for the IDs of the
+#'   selector dropdown HTML elements. This must be unique amoung other calls to
+#'   this functions in a single HTML file.
 #' @param ... Passed to [grDevices::png()]
+#' @param zoom If `TRUE`, add JS code to allow the image to be zoomed.
 #'
 #' @return
 #' @export
@@ -28,62 +37,81 @@
 #'   print(ggplot(df, aes(x=weight)) + geom_histogram())
 #' }
 #' print_figures_with_selector(ggplot_func, n, 'Number', 'ggplot_test_id')
-print_figures_with_selector <- function(plot_func, selector, label, img_class, imglist_class = paste0(img_class, '_list'), ...) {
+print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_class = paste0(id_prefix, '_list'), zoom = TRUE, ...) {
+  # Get combinations of input parameters
+  plot_data <- expand.grid(selector, stringsAsFactors = FALSE)
+  plot_data$plot_id <- apply(plot_data, MARGIN = 1, paste0, collapse = '-')
+
   # Make plots encoded in base64
-  plots <- unlist(lapply(selector, function(x) {
+  plot_data$base64_plot <- unlist(lapply(seq_len(nrow(plot_data)), function(i) {
     temp_path <- tempfile(fileext = '.png')
     png(temp_path, ...)
-    plot_func(x)
+    do.call(plot_func, plot_data[i, unname(seq_len(length(selector))), drop = FALSE])
     dev.off()
     output <- base64enc::base64encode(temp_path)
     file.remove(temp_path)
     return(paste0('data:image/png;base64,', output))
   }))
 
-  # Make selector with the base64 plot as value
-  cat(paste0('<b>', label, ':  </b>'))
-  cat(paste0('<select id="', imglist_class, '">'))
-  cat(paste0('  <option value="', plots, '">', selector, '</option>', collapse = '\n'))
-  cat(paste0('</select>'))
+  cat('\n<!--html_preserve-->\n')
 
-  # temp zoom test
-  cat(paste0('
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.css" />
-<script type="module">
-  import Zoomist from \'https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.js\'
-  new Zoomist(\'.zoomist-container-', img_class, '\', {
-maxScale: 4,
-bounds: true,
-slider: true,
-zoomer: true
-})
-</script>
-<div class="zoomist-container-', img_class, '">
-<div class="zoomist-wrapper">
-<div class="zoomist-image">
-'))
+  # Make selectors
+  selector_class_id <- paste0(imglist_class, '-', names(selector))
+  selector_class_id <- gsub(selector_class_id, pattern = '[^a-zA-Z0-9-]+', replacement = '-')
+  names(selector_class_id) <- names(selector)
+  for (selector_id in names(selector)) {
+    cat(paste0('<b>', selector_id, ':  </b>\n'))
+    cat(paste0('<select id="', selector_class_id[selector_id], '">\n'))
+    cat(paste0('  <option value="', selector[[selector_id]], '">', selector[[selector_id]], '</option>', collapse = '\n'))
+    cat(paste0('</select>\n'))
+  }
 
-  # Make image showing the first plot
-  cat(paste0('<img id="', img_class, '" width="100%" src="', plots[1], '" />'))
+  # Add zooming widget
+  # TODO: modify so that it is not relying on URLs to stuff on the internet
+  if (zoom) {
+    cat(paste0('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.css" />\n'))
+    cat(paste0('<script type="module">\n'))
+    cat(paste0('  import Zoomist from "https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.js"\n'))
+    cat(paste0('  new Zoomist(".zoomist-container-', id_prefix, '", {\n'))
+    cat(paste0('    maxScale: 4,\n'))
+    cat(paste0('    bounds: true,\n'))
+    cat(paste0('    slider: true,\n'))
+    cat(paste0('    zoomer: true\n'))
+    cat(paste0('  })\n'))
+    cat(paste0('</script>\n'))
+    cat(paste0('<div class="zoomist-container-', id_prefix, '">\n'))
+    cat(paste0('  <div class="zoomist-wrapper">\n'))
+    cat(paste0('    <div class="zoomist-image">\n'))
+  }
 
-  # temp zoom test
-  cat(paste0('
-</div>
-</div>
-</div>
-'))
+  # Make image showing the plot
+  img_elem_id = paste0('img-', id_prefix)
+  cat(paste0('      <img id="', img_elem_id, '" width="100%" src="', plot_data$base64_plot[1], '" />\n'))
+
+  # Add zooming widget
+  if (zoom) {
+    cat(paste0('    </div>\n'))
+    cat(paste0('  </div>\n'))
+    cat(paste0('</div>\n'))
+  }
 
   # Add javascript to change with image is shown based on the selector
-  cat(paste0('<script type="text/javascript">'))
-  cat(paste0('  function setImgSrc(id) {'))
-  cat(paste0('    return function (e) {'))
-  cat(paste0('      var img = document.getElementById(id);'))
-  cat(paste0('      var select = e.target;'))
-  cat(paste0('      img.src = select.options[select.selectedIndex].value;'))
-  cat(paste0('      return false;'))
-  cat(paste0('    };'))
-  cat(paste0('  }'))
-  cat(paste0('  document.getElementById("', imglist_class, '").onchange = setImgSrc("', img_class, '");'))
-  cat(paste0('</script>'))
+  function_name <- paste0(id_prefix, '_setImgSrc')
+  cat(paste0('<script type="text/javascript">\n'))
+  cat(paste0('  function ', function_name, '(event) {\n'))
+  cat(paste0('    var plots = {', paste0('"', plot_data$plot_id, '": "', plot_data$base64_plot, '"', collapse = ', '), '};\n'))
+  cat(paste0('    var selectorIds = [', paste0('"', selector_class_id, '"', collapse = ", "), '];\n'))
+  cat(paste0('    var img = document.getElementById("', img_elem_id, '");\n'))
+  cat(paste0('    var selectors = selectorIds.map((id) => document.getElementById(id));\n'))
+  cat(paste0('    var plot_id = selectors.map((selector) => selector.options[selector.selectedIndex].value).join("-");\n'))
+  cat(paste0('    console.log(plot_id);\n'))
+  cat(paste0('    img.src = plots[plot_id];\n'))
+  cat(paste0('    return false;\n'))
+  cat(paste0('  }\n'))
+  cat(paste0('  document.getElementById("', selector_class_id, '").onchange = ', function_name, ';', collapse = '\n'))
+  cat(paste0('\n</script>\n'))
+
+  cat('\n<!--/html_preserve-->\n')
+
 }
 

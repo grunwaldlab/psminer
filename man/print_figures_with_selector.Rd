@@ -7,28 +7,37 @@
 print_figures_with_selector(
   plot_func,
   selector,
-  label,
-  img_class,
-  imglist_class = paste0(img_class, "_list"),
+  id_prefix,
+  imglist_class = paste0(id_prefix, "_list"),
+  zoom = TRUE,
   ...
 )
 }
 \arguments{
-\item{plot_func}{A function to produce a plot using a single input from the \code{selector} input.}
+\item{plot_func}{A function to produce a plot using a single input from the
+\code{selector} input.}
 
-\item{selector}{One or more values given to \code{plot_func} to make plots. There will be one plot per input}
+\item{selector}{A named list of character vectors, that will be used to
+generate the input to \code{plot_func} to make plots. Plots will be made for
+every combination of values in the input. The number of character vectors
+should equal the number of arguments taken by \code{plot_func}.}
 
-\item{label}{Text used to label the selector dropdown.}
+\item{id_prefix}{The prefix added to element IDs to distinguish this plot
+from others. This must be unique amoung other calls to this functions in a
+single HTML file.}
 
-\item{img_class}{The CSS class used as an ID for the \code{img} HTML element. This must be unique.}
+\item{imglist_class}{The CSS class used as the prefix for the IDs of the
+selector dropdown HTML elements. This must be unique amoung other calls to
+this functions in a single HTML file.}
 
-\item{imglist_class}{The CSS class used as an ID for the dropdown HTML element. This must be unique.}
+\item{zoom}{If \code{TRUE}, add JS code to allow the image to be zoomed.}
 
 \item{...}{Passed to \code{\link[grDevices:png]{grDevices::png()}}}
 }
 \description{
 Prints HTML code to show a plot based on the value in a dropdown selector.
-For use with Quarto/Rmarkdown/Knitr, put in a chunk with the option \code{results='asis'}.
+For use with Quarto/Rmarkdown/Knitr, put in a chunk with the option
+\code{results='asis'}.
 }
 \examples{
 n <- c(10, 100, 1000)
