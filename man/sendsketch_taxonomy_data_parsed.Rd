@@ -27,3 +27,14 @@ to ranks.
 Return the taxonomic data in sendsketch results associated with directory
 paths containing \code{pathogensurveillance} output.
 }
+\seealso{
+Other parsers: 
+\code{\link{core_tree_parsed}()},
+\code{\link{sendsketch_parsed}()},
+\code{\link{sendsketch_taxonomy_parsed}()},
+\code{\link{software_version_parsed}()},
+\code{\link{tree_parsed}()},
+\code{\link{variant_align_parsed}()},
+\code{\link{variant_tree_parsed}()}
+}
+\concept{parsers}

@@ -38,20 +38,31 @@
 #' }
 #' print_figures_with_selector(ggplot_func, n, 'Number', 'ggplot_test_id')
 print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_class = paste0(id_prefix, '_list'), zoom = TRUE, ...) {
+
   # Get combinations of input parameters
   plot_data <- expand.grid(selector, stringsAsFactors = FALSE)
-  plot_data$plot_id <- apply(plot_data, MARGIN = 1, paste0, collapse = '-')
 
   # Make plots encoded in base64
   plot_data$base64_plot <- unlist(lapply(seq_len(nrow(plot_data)), function(i) {
     temp_path <- tempfile(fileext = '.png')
     png(temp_path, ...)
-    do.call(plot_func, plot_data[i, unname(seq_len(length(selector))), drop = FALSE])
+    suppressWarnings(do.call(plot_func, unname(as.list(plot_data[i, seq_len(length(selector)), drop = FALSE]))))
     dev.off()
+    if (! file.exists(temp_path)) {
+      png(temp_path, ...)
+      text_plot <- ggplot2::ggplot() +
+        ggplot2::annotate("text", x = 4, y = 25, size=8, label = "No Plot.") +
+        ggplot2::theme_void()
+      print(text_plot)
+      dev.off()
+    }
     output <- base64enc::base64encode(temp_path)
     file.remove(temp_path)
     return(paste0('data:image/png;base64,', output))
+
   }))
+  plot_data[names(selector)] <- lapply(plot_data[names(selector)], as.character)
+  plot_data$plot_id <- apply(plot_data[names(selector)], MARGIN = 1, paste0, collapse = '-')
 
   cat('\n<!--html_preserve-->\n')
 
@@ -96,7 +107,7 @@ print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_
   }
 
   # Add javascript to change with image is shown based on the selector
-  function_name <- paste0(id_prefix, '_setImgSrc')
+  function_name <- paste0(gsub(id_prefix, pattern = '[^a-zA-Z0-9]+', replacement = '_'), '_setImgSrc')
   cat(paste0('<script type="text/javascript">\n'))
   cat(paste0('  function ', function_name, '(event) {\n'))
   cat(paste0('    var plots = {', paste0('"', plot_data$plot_id, '": "', plot_data$base64_plot, '"', collapse = ', '), '};\n'))

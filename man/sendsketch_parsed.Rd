@@ -21,3 +21,14 @@ A \code{\link[tibble:tibble]{tibble::tibble()}} with the sendsketch output combi
 Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with the results from sendsketch. The
 contents of all sendsketch files found in the given paths will be combined.
 }
+\seealso{
+Other parsers: 
+\code{\link{core_tree_parsed}()},
+\code{\link{sendsketch_taxonomy_data_parsed}()},
+\code{\link{sendsketch_taxonomy_parsed}()},
+\code{\link{software_version_parsed}()},
+\code{\link{tree_parsed}()},
+\code{\link{variant_align_parsed}()},
+\code{\link{variant_tree_parsed}()}
+}
+\concept{parsers}

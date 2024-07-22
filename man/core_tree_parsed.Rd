@@ -17,3 +17,14 @@ List of \code{\link[ape:read.tree]{ape::phylo()}} objects named by file path
 Return a list of \code{\link[ape:read.tree]{ape::phylo()}} objects named by file path by searching for
 folders containing pathogensurveillance output.
 }
+\seealso{
+Other parsers: 
+\code{\link{sendsketch_parsed}()},
+\code{\link{sendsketch_taxonomy_data_parsed}()},
+\code{\link{sendsketch_taxonomy_parsed}()},
+\code{\link{software_version_parsed}()},
+\code{\link{tree_parsed}()},
+\code{\link{variant_align_parsed}()},
+\code{\link{variant_tree_parsed}()}
+}
+\concept{parsers}

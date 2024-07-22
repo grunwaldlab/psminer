@@ -241,10 +241,6 @@ variant_align_path_data <- function(paths) {
   file_names <- basename(output$path)
   output$ref_id <- unlist(lapply(1:nrow(output), function(index) {
     id <- sub(file_names[index], pattern = paste0('^', output$report_group_id[index], '_'), replacement = '')
-    sub(id, pattern = '_[0-9]+\\.fasta$', replacement = '')
-  }))
-  output$cluster_id <- unlist(lapply(1:nrow(output), function(index) {
-    id <- sub(file_names[index], pattern = paste0('^', output$report_group_id[index], '_', output$ref_id[index], '_'), replacement = '')
     sub(id, pattern = '\\.fasta$', replacement = '')
   }))
   return(output)

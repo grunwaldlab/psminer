@@ -80,16 +80,6 @@ variant_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr
   ref_meta <- ref_meta_parsed(input)
   sendsketch <- sendsketch_taxonomy_data_parsed(input, only_best = TRUE, only_shared = TRUE)
 
-  # Rename tree tips to sample/reference IDs
-  path_data <- variant_tree_path_data(input)
-  trees <- lapply(seq_len(length(trees)), function(i) {
-    tree <- trees[[i]]
-    ref_id <- path_data$ref_id[path_data$path == names(trees)[i]]
-    tree$tip.label <- gsub(tree$tip.label, pattern = paste0('^', ref_id, '_'), replacement = '')
-    tree$tip.label[tree$tip.label == 'REF'] <- ref_id
-    return(tree)
-  })
-
   # Find which columns are used to provide colors to the trees, if any
   ids_in_trees <- unique(unlist(lapply(trees, function(t) t$tip.label)))
   color_by_cols <- unique(unlist(strsplit(sample_meta$color_by[sample_meta$sample_id %in% ids_in_trees], split = ';')))
@@ -285,3 +275,52 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
   }
 }
 
+
+#' Plot MSN of variant data
+#'
+#' Plot a minimum spanning network for each group of samples aligned to a
+#' reference found in `pathogensurveillance` output.
+#'
+#' @param input The path to one or more folders that contain
+#'   pathogensurveillance output.
+#' @param combine If `TRUE` combine multiple MSNs into a single figure and
+#'   return a single figure. If `FALSE`, return a list of figures.
+#'
+#' @export
+variant_msn_plot <- function(path, combine = TRUE) {
+  align_data <- variant_align_path_data(path)
+  alignments <- variant_align_parsed(path)
+  sample_data <- sample_meta_parsed(path)
+  ref_data <- ref_meta_parsed(path)
+
+  # Find which columns are used to provide colors to the trees, if any
+  ids_used <- unique(unlist(lapply(alignments, function(a) {
+    if (is.null(a)) {
+      return(character(0))
+    } else {
+      return(rownames(a))
+    }
+  })))
+  color_by_cols <- unique(unlist(strsplit(sample_data$color_by[sample_data$sample_id %in% ids_used], split = ';')))
+  color_by_cols <- color_by_cols[! is.na(color_by_cols)]
+  color_by_col_names <- c(color_by_cols, 'Default')
+  color_by_cols <- c(as.list(color_by_cols), list(NULL))  # NULL ensures that the default color scheme is also used
+
+  # Plot MSNs
+  plot.new()
+  output <- lapply(seq_len(nrow(align_data)), function(i) {
+    align_without_ref <- alignments[[i]][rownames(alignments[[i]]) != align_data$ref_id[i], ]
+    if (is.null(align_without_ref)) {
+      return(NULL)
+    }
+    plot_data <- psminer:::make_MSN(align_without_ref, sample_data, user_seed = 1, snp_diff_prop = 0.1, population = NULL)
+    if (is.null(plot_data)) {
+      return(NULL)
+    }
+    out <- recordPlot()
+    plot.new()
+    return(out)
+  })
+
+
+}

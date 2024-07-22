@@ -142,6 +142,7 @@ report_group_parsed <- function(paths) {
 #'   see [sendsketch_best_hits()].
 #'
 #' @return A [tibble::tibble()] with the sendsketch output combined
+#' @family parsers
 #'
 #' @export
 sendsketch_parsed <- function(paths, only_best = FALSE) {
@@ -197,6 +198,7 @@ sendsketch_parsed <- function(paths, only_best = FALSE) {
 #'
 #' @return A [base::character()] vector of taxonomic classifications, each
 #'   delimited with `;`, named by sample IDs.
+#' @family parsers
 #'
 #' @export
 sendsketch_taxonomy_parsed <- function(paths, remove_ranks = FALSE, only_best = FALSE) {
@@ -227,6 +229,7 @@ sendsketch_taxonomy_parsed <- function(paths, remove_ranks = FALSE, only_best = 
 #'
 #' @return A [tibble::tibble()] with taxonomy data, with columns corresponding
 #'   to ranks.
+#' @family parsers
 #'
 #' @export
 sendsketch_taxonomy_data_parsed <- function(paths, only_best = FALSE, only_shared = FALSE) {
@@ -258,6 +261,7 @@ sendsketch_taxonomy_data_parsed <- function(paths, only_best = FALSE, only_share
 #' @importFrom tibble tibble
 #' @importFrom purrr map_chr
 #' @importFrom stringr str_split
+#' @family parsers
 #' @export
 #' @examples
 #' version_path <- file.path(params$inputs, "inputs", "versions.yml")
@@ -298,6 +302,7 @@ software_version_parsed <- function(paths) {
 #'   pathogensurveillance output.
 #'
 #' @return List of [ape::phylo()] objects named by file path
+#' @family parsers
 #'
 #' @export
 core_tree_parsed <- function(paths) {
@@ -311,12 +316,29 @@ core_tree_parsed <- function(paths) {
 #'
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
+#' @param rename If `TRUE`, rename the tip labels to sample IDs and reference IDs.
 #'
 #' @return List of [ape::phylo()] objects named by file path
+#' @family parsers
 #'
 #' @export
-variant_tree_parsed <- function(paths) {
-  tree_parsed(variant_tree_path(paths))
+variant_tree_parsed <- function(paths, rename = TRUE) {
+  path_data <- variant_tree_path_data(paths)
+  trees <- psminer:::tree_parsed(path_data$path)
+
+  # Rename tree tips to sample/reference IDs
+  if (rename) {
+    trees <- lapply(seq_len(length(trees)), function(i) {
+      tree <- trees[[i]]
+      ref_id <- path_data$ref_id[path_data$path == names(trees)[i]]
+      tree$tip.label <- gsub(tree$tip.label, pattern = paste0('^', ref_id, '_'), replacement = '')
+      tree$tip.label[tree$tip.label == 'REF'] <- ref_id
+      return(tree)
+    })
+    names(trees) <- path_data$path
+  }
+
+  return(trees)
 }
 
 #' Get phylogenies using a function
@@ -328,9 +350,10 @@ variant_tree_parsed <- function(paths) {
 #'   pathogensurveillance output.
 #'
 #' @return List of [ape::phylo()] objects named by file path
+#' @family parsers
 #'
 #' @keywords internal
-tree_parsed <- function(paths, func) {
+tree_parsed <- function(paths) {
   output <- lapply(paths, function(tree_path) {
     tree <- ape::read.tree(tree_path)
     tree <- phytools::midpoint_root(tree)
@@ -339,3 +362,31 @@ tree_parsed <- function(paths, func) {
   names(output) <- paths
   return(output)
 }
+
+#' Find and parse SNP alignments
+#'
+#' Returns parsed SNP alignments for each reference used in the
+#' variant analysis for a given pathogensurveillance output folder.
+#'
+#' @param paths The path to one or more folders that contain pathogensurveillance output.
+#' @param rename If `TRUE`, rename the sequence labels as sample IDs and reference IDs.
+#' @return list of [ape::DNAbin()], named by alignment file
+#' @family parsers
+#'
+#' @export
+variant_align_parsed <- function(path, rename = TRUE) {
+  align_data <- variant_align_path_data(path)
+  sample_data <- sample_meta_parsed(path)
+  ref_data <- ref_meta_parsed(path)
+  output <- lapply(seq_len(nrow(align_data)), function(i) {
+    out <- suppressWarnings(ape::read.dna(align_data$path[i], format = "fasta"))
+    if (rename && ! is.null(out)) {
+      rownames(out) <- gsub(rownames(out), pattern = paste0('^', align_data$ref_id[i], '_'), replacement = '')
+      rownames(out)[rownames(out) == 'REF'] <- align_data$ref_id[i]
+    }
+    return(out)
+  })
+  names(output) <- align_data$path
+  return(output)
+}
+

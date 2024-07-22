@@ -4,7 +4,7 @@
 \alias{tree_parsed}
 \title{Get phylogenies using a function}
 \usage{
-tree_parsed(paths, func)
+tree_parsed(paths)
 }
 \arguments{
 \item{paths}{The path to one or more folders that contain
@@ -17,4 +17,15 @@ List of \code{\link[ape:read.tree]{ape::phylo()}} objects named by file path
 Return a list of \code{\link[ape:read.tree]{ape::phylo()}} objects named by file path by searching for
 folders containing pathogensurveillance output.
 }
+\seealso{
+Other parsers: 
+\code{\link{core_tree_parsed}()},
+\code{\link{sendsketch_parsed}()},
+\code{\link{sendsketch_taxonomy_data_parsed}()},
+\code{\link{sendsketch_taxonomy_parsed}()},
+\code{\link{software_version_parsed}()},
+\code{\link{variant_align_parsed}()},
+\code{\link{variant_tree_parsed}()}
+}
+\concept{parsers}
 \keyword{internal}

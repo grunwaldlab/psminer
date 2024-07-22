@@ -11,40 +11,25 @@
 #' @param user_seed An optional integer specifying the seed for reproducibility.
 #' @param ... Additional arguments to be passed to internal functions.
 #' @return Minimum spanning network
-#' @export
+#'
+#' @keywords internal
 make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, interactive = knitr::is_html_output(), snp_threshold = NULL, snp_diff_prop = NULL, use_cutoff_predictor = FALSE, show_MLG_table = FALSE, user_seed = NULL, ...) {
 
   set.seed(user_seed)
-  snp_aln.gi <- DNAbin2genind(snp_fasta_alignment)
-  snp_aln.gi <- snp_aln.gi[indNames(snp_aln.gi) != "REF"]
-
-  name_key <- setNames(c(ref_data$reference_name, sample_data$sample_name),
-                       c(ref_data$reference_id, sample_data$sample_id))
-
-  sample_names <- sapply(indNames(snp_aln.gi), function(x) {
-    matched_name <- name_key[endsWith(x, names(name_key))]
-    if (length(matched_name) > 0) {
-      matched_name[1]
-    } else {
-      x
-    }
-  })
-
-  indNames(snp_aln.gi) <- sample_names
-  snp_sample_ids <- indNames(snp_aln.gi)
-  sample_data <- sample_data[sample_data$sample_name %in% snp_sample_ids, ]
-  mat <- match(indNames(snp_aln.gi), sample_data$sample_name)
-  sample_data <- sample_data[mat, ]
-  snp_genclone <- as.genclone(snp_aln.gi)
+  snp_aln.gi <- adegenet::DNAbin2genind(snp_fasta_alignment)
+  if (is.null(snp_aln.gi)) {
+    return(NULL)
+  }
+  snp_genclone <- poppr::as.genclone(snp_aln.gi)
 
   if (use_cutoff_predictor) {
     snpdist_stats <- filter_stats(snp_genclone)
     average_thresh <- cutoff_predictor(snpdist_stats$average$THRESHOLDS)
-    mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- average_thresh
+    poppr::mlg.filter(snp_genclone, distance = poppr::bitwise.dist, percent = TRUE) <- average_thresh
   } else if (!is.null(snp_threshold)) {
-    mlg.filter(snp_genclone, distance = bitwise.dist, percent = FALSE) <- snp_threshold
+    poppr::mlg.filter(snp_genclone, distance = poppr::bitwise.dist, percent = FALSE) <- snp_threshold
   } else if (!is.null(snp_diff_prop)) {
-    mlg.filter(snp_genclone, distance = bitwise.dist, percent = TRUE) <- snp_diff_prop
+    poppr::mlg.filter(snp_genclone, distance = poppr::bitwise.dist, percent = TRUE) <- snp_diff_prop
   }
 
   if (is.null(population)) {
@@ -52,6 +37,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
     population <- 'no_factor_provided'
   }
 
+  sample_data <- sample_data[sample_data$sample_id %in% rownames(snp_fasta_alignment), , drop = FALSE]
   user_factor <- sample_data[[population]]
   node_color <- as.factor(ifelse(is.na(user_factor) | user_factor == "", "Unknown", user_factor))
   myColors <- rainbow(length(unique(node_color)))
@@ -61,14 +47,14 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
   setPop(snp_genclone) <- ~color_node_by
 
   if (!is.null(snp_threshold)) {
-    ms.loc <- poppr.msn(snp_genclone,
-                        distmat = bitwise.dist(snp_genclone, percent = FALSE),
+    ms.loc <- poppr::poppr.msn(snp_genclone,
+                        distmat = poppr::bitwise.dist(snp_genclone, percent = FALSE),
                         include.ties = TRUE,
                         showplot = FALSE)
   }
   else {
-    ms.loc <- poppr.msn(snp_genclone,
-                        distmat = bitwise.dist(snp_genclone, percent = TRUE),
+    ms.loc <- poppr::poppr.msn(snp_genclone,
+                        distmat = poppr::bitwise.dist(snp_genclone, percent = TRUE),
                         include.ties = TRUE,
                         showplot = FALSE)
   }
@@ -76,8 +62,8 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
   the_edges <- igraph::E(ms.loc$graph)$weight
   edges <- as.list(the_edges)
 
-  if (length(V(ms.loc$graph)) > 1) {
-    plot_poppr_msn(
+  if (length(igraph::V(ms.loc$graph)) > 1) {
+    output <- poppr::plot_poppr_msn(
       snp_genclone,
       poppr_msn = ms.loc,
       palette = myColors,
@@ -88,32 +74,33 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
       ...
     )
   } else {
-    text_plot <- ggplot() +
+    output <- ggplot() +
       annotate("text", x = 4, y = 25, size=8, label = "All samples are in the same multilocus genotype.") +
       theme_void()
-    print(text_plot)
   }
 
 
-  if (show_MLG_table) {
-    idlist <- mlg.id(snp_genclone)
-    mlglist <- data.frame("MLG", "strain")
-    colnames(mlglist) <- c("V1", "V2")
+  # if (show_MLG_table) {
+  #   idlist <- mlg.id(snp_genclone)
+  #   mlglist <- data.frame("MLG", "strain")
+  #   colnames(mlglist) <- c("V1", "V2")
+  #
+  #   for (name in names(idlist)) {
+  #     newframe <- as.data.frame(cbind(paste0("MLG", "_", name), idlist[[name]]))
+  #     mlglist <- rbind(mlglist, newframe)
+  #   }
+  #
+  #   colnames(mlglist) <- c("Multi-locus genotype", "Strain")
+  #   mlglist <- mlglist[mlglist$Strain != "strain",]
+  #
+  #   if (interactive) {
+  #     DT::datatable(mlglist, class = "display nowrap", ...) %>%
+  #       formatStyle(colnames(mlglist), "white-space" = "nowrap")
+  #
+  #   } else {
+  #     print(mlglist)
+  #   }
+  # }
 
-    for (name in names(idlist)) {
-      newframe <- as.data.frame(cbind(paste0("MLG", "_", name), idlist[[name]]))
-      mlglist <- rbind(mlglist, newframe)
-    }
-
-    colnames(mlglist) <- c("Multi-locus genotype", "Strain")
-    mlglist <- mlglist[mlglist$Strain != "strain",]
-
-    if (interactive) {
-      DT::datatable(mlglist, class = "display nowrap", ...) %>%
-        formatStyle(colnames(mlglist), "white-space" = "nowrap")
-
-    } else {
-      print(mlglist)
-    }
-  }
+  return(output)
 }

@@ -44,3 +44,4 @@ Minimum spanning network
 \description{
 Make Minimum spanning network
 }
+\keyword{internal}
