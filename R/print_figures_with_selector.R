@@ -16,8 +16,9 @@
 #' @param imglist_class The CSS class used as the prefix for the IDs of the
 #'   selector dropdown HTML elements. This must be unique amoung other calls to
 #'   this functions in a single HTML file.
-#' @param ... Passed to [grDevices::png()]
 #' @param zoom If `TRUE`, add JS code to allow the image to be zoomed.
+#' @param zoom_slider If `TRUE`, add a slider to the plot to control the zoom.
+#' @param ... Passed to [grDevices::png()]
 #'
 #' @return
 #' @export
@@ -37,7 +38,7 @@
 #'   print(ggplot(df, aes(x=weight)) + geom_histogram())
 #' }
 #' print_figures_with_selector(ggplot_func, n, 'Number', 'ggplot_test_id')
-print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_class = paste0(id_prefix, '_list'), zoom = TRUE, ...) {
+print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_class = paste0(id_prefix, '_list'), zoom = TRUE, zoom_slider = FALSE, ...) {
 
   # Get combinations of input parameters
   plot_data <- expand.grid(selector, stringsAsFactors = FALSE)
@@ -86,7 +87,7 @@ print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_
     cat(paste0('  new Zoomist(".zoomist-container-', id_prefix, '", {\n'))
     cat(paste0('    maxScale: 4,\n'))
     cat(paste0('    bounds: true,\n'))
-    cat(paste0('    slider: true,\n'))
+    cat(paste0('    slider: ', tolower(zoom_slider), ',\n'))
     cat(paste0('    zoomer: true\n'))
     cat(paste0('  })\n'))
     cat(paste0('</script>\n'))
