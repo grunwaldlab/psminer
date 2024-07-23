@@ -44,7 +44,7 @@ n <- c(10, 100, 1000)
 base_plot_func <- function(x) {
   hist(rnorm(x))
 }
-print_figures_with_selector(base_plot_func, n, 'Count', 'base_test_id')
+print_figures_with_selector(base_plot_func, list(Count = n), 'base_test_id')
 
 ggplot_func <- function(x) {
   df <- data.frame(
@@ -53,5 +53,5 @@ ggplot_func <- function(x) {
   )
   print(ggplot(df, aes(x=weight)) + geom_histogram())
 }
-print_figures_with_selector(ggplot_func, n, 'Number', 'ggplot_test_id')
+print_figures_with_selector(ggplot_func, list(Number = n), 'ggplot_test_id')
 }

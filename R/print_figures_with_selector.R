@@ -27,7 +27,7 @@
 #' base_plot_func <- function(x) {
 #'   hist(rnorm(x))
 #' }
-#' print_figures_with_selector(base_plot_func, n, 'Count', 'base_test_id')
+#' print_figures_with_selector(base_plot_func, list(Count = n), 'base_test_id')
 #'
 #' ggplot_func <- function(x) {
 #'   df <- data.frame(
@@ -36,7 +36,7 @@
 #'   )
 #'   print(ggplot(df, aes(x=weight)) + geom_histogram())
 #' }
-#' print_figures_with_selector(ggplot_func, n, 'Number', 'ggplot_test_id')
+#' print_figures_with_selector(ggplot_func, list(Number = n), 'ggplot_test_id')
 print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_class = paste0(id_prefix, '_list'), zoom = TRUE, ...) {
 
   # Get combinations of input parameters
@@ -74,7 +74,7 @@ print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_
     cat(paste0('<b>', selector_id, ':  </b>\n'))
     cat(paste0('<select id="', selector_class_id[selector_id], '">\n'))
     cat(paste0('  <option value="', selector[[selector_id]], '">', selector[[selector_id]], '</option>', collapse = '\n'))
-    cat(paste0('</select>\n'))
+    cat(paste0('\n</select>\n'))
   }
 
   # Add zooming widget
@@ -115,7 +115,6 @@ print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_
   cat(paste0('    var img = document.getElementById("', img_elem_id, '");\n'))
   cat(paste0('    var selectors = selectorIds.map((id) => document.getElementById(id));\n'))
   cat(paste0('    var plot_id = selectors.map((selector) => selector.options[selector.selectedIndex].value).join("-");\n'))
-  cat(paste0('    console.log(plot_id);\n'))
   cat(paste0('    img.src = plots[plot_id];\n'))
   cat(paste0('    return false;\n'))
   cat(paste0('  }\n'))
