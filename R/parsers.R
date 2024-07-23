@@ -32,6 +32,35 @@ status_message_parsed <- function(paths) {
   return(output)
 }
 
+#' Get summary of pipeline status data
+#'
+#' Return a [tibble::tibble()] (table) with the numbers of issues encountered by the
+#' pipeline. The contents of all status message files found in the given paths
+#' will be combined.
+#'
+#' @param paths The path to one or more folders that contain
+#'   pathogensurveillance output.
+#'
+#' @return A [tibble::tibble()] with counts of messages attributes
+#'
+#' @export
+status_message_parsed_summary <- function(paths) {
+  message_data <- status_message_parsed(paths)
+  output <- do.call(rbind, lapply(split(message_data, message_data$workflow), function(subset) {
+    data.frame(
+      workflow = unique(subset$workflow),
+      errors = sum(subset$level == 'ERROR'),
+      warnings = sum(subset$level == 'WARNING'),
+      notes = sum(subset$level == 'NOTE'),
+      samples = length(unique(subset$sample_id)),
+      references = length(unique(subset$reference_id)),
+      report_groups = length(unique(subset$report_group_id))
+    )
+  }))
+  output <- tibble::as_tibble(output)
+  return(output)
+}
+
 #' Get parsed sample metadata
 #'
 #' Return a [tibble::tibble()] (table) with sample metadata. The contents of all sample
