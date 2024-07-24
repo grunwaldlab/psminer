@@ -16,7 +16,7 @@ status_message_table <- function(paths) {
   # Make step status column and sort table by it
   symbol_key <- c(
     NOTE = '✅' ,
-    WARNING = '⚠',
+    WARNING = '🟡',
     ERROR = '❌'
   )
   message_data <- message_data[order(match(message_data$level, names(symbol_key))), ]
@@ -24,6 +24,7 @@ status_message_table <- function(paths) {
 
   # Format the analysis step to look nicer
   message_data$workflow <- tools::toTitleCase(gsub(tolower(message_data$workflow), pattern = '_', replacement = ' '))
+  message_data$level <- tools::toTitleCase(gsub(tolower(message_data$level), pattern = '_', replacement = ' '))
 
   # Rename and reorder columns
   col_name_key <- c(
@@ -76,7 +77,7 @@ status_message_table_summary <- function(paths) {
     message_data <- message_data[order(message_data$status), ]
     symbol_key <- c(
       '✅' ,
-      '⚠',
+      '🟡',
       '❌'
     )
     message_data$status <- symbol_key[message_data$status]

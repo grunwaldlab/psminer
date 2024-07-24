@@ -47,7 +47,14 @@ print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_
   plot_data$base64_plot <- unlist(lapply(seq_len(nrow(plot_data)), function(i) {
     temp_path <- tempfile(fileext = '.png')
     png(temp_path, ...)
-    suppressWarnings(do.call(plot_func, unname(as.list(plot_data[i, seq_len(length(selector)), drop = FALSE]))))
+    args <- unname(lapply(plot_data, function(column) {
+      if (is.list(column)) {
+        return(column[[i]])
+      } else {
+        return(column[i])
+      }
+    }))
+    suppressMessages(suppressWarnings(do.call(plot_func, args)))
     dev.off()
     if (! file.exists(temp_path)) {
       png(temp_path, ...)
