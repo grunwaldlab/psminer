@@ -16,6 +16,8 @@
 #' @param imglist_class The CSS class used as the prefix for the IDs of the
 #'   selector dropdown HTML elements. This must be unique amoung other calls to
 #'   this functions in a single HTML file.
+#' @param hide_single_selector If `TRUE`, don't show selector dropdown if it
+#'   contains only one choice.
 #' @param zoom If `TRUE`, add JS code to allow the image to be zoomed.
 #' @param zoom_slider If `TRUE`, add a slider to the plot to control the zoom.
 #' @param ... Passed to [grDevices::png()]
@@ -38,12 +40,17 @@
 #'   print(ggplot(df, aes(x=weight)) + geom_histogram())
 #' }
 #' print_figures_with_selector(ggplot_func, list(Number = n), 'ggplot_test_id')
-print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_class = paste0(id_prefix, '_list'), zoom = TRUE, zoom_slider = FALSE, ...) {
+print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_class = paste0(id_prefix, '_list'), hide_single_selector = TRUE, zoom = TRUE, zoom_slider = FALSE, ...) {
 
   # Get combinations of input parameters
   plot_data <- expand.grid(selector, stringsAsFactors = FALSE)
 
   # Make plots encoded in base64
+  quiet <- function(x) {
+    sink(tempfile())
+    on.exit(sink())
+    invisible(force(x))
+  }
   plot_data$base64_plot <- unlist(lapply(seq_len(nrow(plot_data)), function(i) {
     temp_path <- tempfile(fileext = '.png')
     png(temp_path, ...)
@@ -54,7 +61,7 @@ print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_
         return(column[i])
       }
     }))
-    suppressMessages(suppressWarnings(do.call(plot_func, args)))
+    quiet(do.call(plot_func, args))
     dev.off()
     if (! file.exists(temp_path)) {
       png(temp_path, ...)
@@ -69,6 +76,10 @@ print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_
     return(paste0('data:image/png;base64,', output))
 
   }))
+  # Dont show selectors with only one option
+  if (hide_single_selector) {
+    selector <- selector[lapply(selector, length) > 1]
+  }
   plot_data[names(selector)] <- lapply(plot_data[names(selector)], as.character)
   plot_data$plot_id <- apply(plot_data[names(selector)], MARGIN = 1, paste0, collapse = '-')
 
@@ -132,4 +143,5 @@ print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_
   cat('\n<!--/html_preserve-->\n')
 
 }
+
 

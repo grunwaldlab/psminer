@@ -1,3 +1,48 @@
+#' Print a table of sample metadata
+#'
+#' Selects columns in the sample metadata to print and format the result for
+#' use as a static table in PDF or an interactive table in HTML.
+#'
+#' @param input The path to one or more folders that contain
+#'   pathogensurveillance output or a table in the format of the
+#'   [sample_meta_parsed()] output.
+#' @param interactive Whether to use an HTML-based interactive format or not (default: TRUE)
+#' @param ... Passed to `DT::datatable`.
+#'
+#' @export
+sample_meta_table <- function(input, interactive = knitr::is_html_output(), ...) {
+
+  # Parse the input if it is a file/folder path
+  if (is.data.frame(input)) {
+    sample_data <- input
+  } else {
+    sample_data <- sample_meta_parsed(input)
+  }
+
+  # Subset and reformat data for printing
+  # column_key <- c(
+  #   sample_id = 'Sample ID',
+  #   path = 'Read paths',
+  #   path_2 = 'Reverse Reads',
+  #   reference_id = 'Reference ID',
+  #   reference_name =  'Reference'
+  # )
+  # formatted_data <- sample_data[, names(column_key)]
+  # colnames(formatted_data) <- column_key
+  formatted_data <- sample_data
+
+  # Print table
+  if (interactive) {
+    DT::datatable(formatted_data, class = "display nowrap", ...) %>%
+      formatStyle(colnames(formatted_data), "white-space" = "nowrap")
+
+  } else {
+    print_static_table(formatted_data, compressed_cols = c('Forward Reads', 'Reverse Reads', 'Reference'))
+  }
+
+}
+
+
 #' Get table of pipeline status data
 #'
 #' Return a formatted interactive table with the data on the issues encountered
@@ -6,11 +51,17 @@
 #'
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
+#' @param interactive Whether to produce interactive tables
+#'   (TRUE) or static tables (FALSE). Defaults to TRUE if the environment
+#'   supports HTML output, otherwise FALSE. Interactive tables offer enhanced
+#'   browsing capabilities, while static tables are best for printed pdf
+#'   reports.
+#' @param ... Passed to `DT::datatable`.
 #'
-#' @return A [DT::datatable] with details for errors, warnings, notes.
+#' @return A table with details for errors, warnings, notes.
 #'
 #' @export
-status_message_table <- function(paths) {
+status_message_table <- function(paths, interactive = knitr::is_html_output(), ...) {
   message_data <- status_message_parsed(paths)
 
   # Make step status column and sort table by it
@@ -38,8 +89,14 @@ status_message_table <- function(paths) {
   colnames(print_data) <- col_name_key
 
   # Create table for output
-  DT::datatable(print_data, options = list(pageLength = 5, autoWidth = TRUE), escape = FALSE, rownames = message_data$status) %>%
-    DT::formatStyle(colnames(print_data), "white-space" = "nowrap")
+  if (interactive) {
+    output <- DT::datatable(print_data, options = list(pageLength = 5, autoWidth = TRUE), escape = FALSE, rownames = message_data$status, ...) %>%
+      DT::formatStyle(colnames(print_data), "white-space" = "nowrap")
+  } else {
+    output <- print_static_table(print_data)
+  }
+
+  return(output)
 }
 
 
@@ -51,11 +108,17 @@ status_message_table <- function(paths) {
 #'
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
+#' @param interactive Whether to produce interactive tables
+#'   (TRUE) or static tables (FALSE). Defaults to TRUE if the environment
+#'   supports HTML output, otherwise FALSE. Interactive tables offer enhanced
+#'   browsing capabilities, while static tables are best for printed pdf
+#'   reports.
+#' @param ... Passed to `DT::datatable`.
 #'
-#' @return A [DT::datatable] with counts of errors, warnings, notes.
+#' @return A table with counts of errors, warnings, notes.
 #'
 #' @export
-status_message_table_summary <- function(paths) {
+status_message_table_summary <- function(paths, interactive = knitr::is_html_output(), ...) {
 
   col_name_key <- c(
     workflow = 'Pipeline Step',
@@ -96,6 +159,13 @@ status_message_table_summary <- function(paths) {
   } else {
     status_symbols <- message_data$status
   }
-  DT::datatable(print_data, options = list(pageLength = 5, autoWidth = TRUE), escape = FALSE, rownames = status_symbols) %>%
-    DT::formatStyle(colnames(print_data), "white-space" = "nowrap")
+
+  if (interactive) {
+    output <- DT::datatable(print_data, options = list(pageLength = 5, autoWidth = TRUE), escape = FALSE, rownames = status_symbols, ...) %>%
+      DT::formatStyle(colnames(print_data), "white-space" = "nowrap")
+  } else {
+    output <- print_static_table(print_data)
+  }
+
+  return(output)
 }

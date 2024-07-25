@@ -17,7 +17,7 @@
 #' @examples
 #' make_ani_heatmap(ani_matrix, ref_data, samp_data, interactive=FALSE)
 
-make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = knitr::is_html_output(),height = 1000, width = 1000, dpi = 100) {
+make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = knitr::is_html_output(), height = 1000, width = 1000, dpi = 100) {
   # Rename rows/columns for plotting
   name_key <- c(
     setNames(ref_data$ref_name, ref_data$ref_id),
