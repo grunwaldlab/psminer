@@ -23,6 +23,7 @@ version_data <- parse_software_meta(version_path)
 }
 \seealso{
 Other parsers: 
+\code{\link{busco_tree_parsed}()},
 \code{\link{core_tree_parsed}()},
 \code{\link{sendsketch_parsed}()},
 \code{\link{sendsketch_taxonomy_data_parsed}()},

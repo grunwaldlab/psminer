@@ -29,6 +29,7 @@ paths containing \code{pathogensurveillance} output.
 }
 \seealso{
 Other parsers: 
+\code{\link{busco_tree_parsed}()},
 \code{\link{core_tree_parsed}()},
 \code{\link{sendsketch_parsed}()},
 \code{\link{sendsketch_taxonomy_parsed}()},

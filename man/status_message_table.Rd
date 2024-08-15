@@ -4,14 +4,22 @@
 \alias{status_message_table}
 \title{Get table of pipeline status data}
 \usage{
-status_message_table(paths)
+status_message_table(paths, interactive = knitr::is_html_output(), ...)
 }
 \arguments{
 \item{paths}{The path to one or more folders that contain
 pathogensurveillance output.}
+
+\item{interactive}{Whether to produce interactive tables
+(TRUE) or static tables (FALSE). Defaults to TRUE if the environment
+supports HTML output, otherwise FALSE. Interactive tables offer enhanced
+browsing capabilities, while static tables are best for printed pdf
+reports.}
+
+\item{...}{Passed to \code{DT::datatable}.}
 }
 \value{
-A \link[DT:datatable]{DT::datatable} with details for errors, warnings, notes.
+A table with details for errors, warnings, notes.
 }
 \description{
 Return a formatted interactive table with the data on the issues encountered

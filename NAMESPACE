@@ -2,6 +2,7 @@
 
 export(busco_ref_path)
 export(busco_ref_path_data)
+export(busco_tree_parsed)
 export(busco_tree_path)
 export(busco_tree_path_data)
 export(considered_ref_meta_path)

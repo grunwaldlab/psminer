@@ -9,7 +9,9 @@ print_figures_with_selector(
   selector,
   id_prefix,
   imglist_class = paste0(id_prefix, "_list"),
+  hide_single_selector = TRUE,
   zoom = TRUE,
+  zoom_slider = FALSE,
   ...
 )
 }
@@ -30,7 +32,12 @@ single HTML file.}
 selector dropdown HTML elements. This must be unique amoung other calls to
 this functions in a single HTML file.}
 
+\item{hide_single_selector}{If \code{TRUE}, don't show selector dropdown if it
+contains only one choice.}
+
 \item{zoom}{If \code{TRUE}, add JS code to allow the image to be zoomed.}
+
+\item{zoom_slider}{If \code{TRUE}, add a slider to the plot to control the zoom.}
 
 \item{...}{Passed to \code{\link[grDevices:png]{grDevices::png()}}}
 }
