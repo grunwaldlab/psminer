@@ -305,8 +305,9 @@ find_group_result_path <- function(paths) {
     if (! file.exists(group_id_path)) {
       return(FALSE)
     }
-    group_contents <- readLines(group_id_path)
-    return(length(group_contents) == 1 && startsWith(basename(path), group_contents))
+    return(TRUE)
+    # group_contents <- readLines(group_id_path)
+    # return(length(group_contents) == 1 && startsWith(basename(path), group_contents))
   }
   subdir_paths <- subdir_paths[unlist(lapply(subdir_paths, is_valid_dir))]
 
