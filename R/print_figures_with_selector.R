@@ -103,7 +103,7 @@ print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_
     cat(paste0('<script type="module">\n'))
     cat(paste0('  import Zoomist from "https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.js"\n'))
     cat(paste0('  new Zoomist(".zoomist-container-', id_prefix, '", {\n'))
-    cat(paste0('    maxScale: 4,\n'))
+    cat(paste0('    maxScale: 10,\n'))
     cat(paste0('    bounds: true,\n'))
     cat(paste0('    slider: ', tolower(zoom_slider), ',\n'))
     cat(paste0('    zoomer: true\n'))
