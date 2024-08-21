@@ -25,6 +25,7 @@ version_data <- parse_software_meta(version_path)
 Other parsers: 
 \code{\link{busco_tree_parsed}()},
 \code{\link{core_tree_parsed}()},
+\code{\link{multigene_tree_parsed}()},
 \code{\link{sendsketch_parsed}()},
 \code{\link{sendsketch_taxonomy_data_parsed}()},
 \code{\link{sendsketch_taxonomy_parsed}()},

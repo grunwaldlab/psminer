@@ -22,6 +22,7 @@ folders containing pathogensurveillance output.
 \seealso{
 Other parsers: 
 \code{\link{core_tree_parsed}()},
+\code{\link{multigene_tree_parsed}()},
 \code{\link{sendsketch_parsed}()},
 \code{\link{sendsketch_taxonomy_data_parsed}()},
 \code{\link{sendsketch_taxonomy_parsed}()},

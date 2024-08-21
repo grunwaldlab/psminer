@@ -402,6 +402,30 @@ busco_tree_parsed <- function(paths, rename = TRUE) {
   return(trees)
 }
 
+#' Get mulitgene phylogenies
+#'
+#' Return a list of [ape::phylo()] objects named by file path by searching for
+#' folders containing pathogensurveillance output. This includes all types of
+#' multigene trees produced by pathogensurveillance, such as the core gene
+#' phylogeny and the busco gene phylogeny.
+#'
+#' @param paths The path to one or more folders that contain
+#'   pathogensurveillance output.
+#' @param rename If `TRUE`, rename the tip labels to sample IDs and reference
+#'   IDs.
+#'
+#' @return List of [ape::phylo()] objects named by file path
+#' @family parsers
+#'
+#' @export
+multigene_tree_parsed <- function(paths, rename = TRUE) {
+  return(c(
+    busco_tree_parsed(paths, rename = rename),
+    core_tree_parsed(paths)
+  ))
+}
+
+
 #' Get phylogenies using a function
 #'
 #' Return a list of [ape::phylo()] objects named by file path by searching for

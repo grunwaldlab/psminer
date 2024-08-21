@@ -17,8 +17,77 @@
 #'
 #' @export
 core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
+  generalized_tree_plot(input, core_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
+}
+
+#' Plot busco gene phylogeny
+#'
+#' Plot the busco gene phylogenies present in the output of a pathogensurveillance
+#' run.
+#'
+#' @param input The path to one or more folders that contain
+#'   pathogensurveillance output or paths to tree files.
+#' @param collapse_by_tax A [base::character()] vector of taxonomic
+#'   classifications, each delimited by `;`, and named by sample or reference
+#'   ids present in `sample_meta` or `ref_meta`. These are used to provide a
+#'   taxonomic tree that functions as a backbone to combine multiple trees into
+#'   a single one. (Default: return a list of plots instead of a single plot)
+#' @param interactive Whether to use an HTML-based interactive format or not
+#'   (default: TRUE)
+#'
+#' @return  A list of plots, unless `collapse_by_tax` is useded, in which case a single plot is returned.
+#'
+#' @export
+busco_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
+  generalized_tree_plot(input, busco_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
+}
+
+#' Plot multigene phylogeny
+#'
+#' Plot the any multigene phylogenies present in the output of a pathogensurveillance
+#' run. This includes core gene phylogenies and busco gene phylogenes.
+#'
+#' @param input The path to one or more folders that contain
+#'   pathogensurveillance output or paths to tree files.
+#' @param collapse_by_tax A [base::character()] vector of taxonomic
+#'   classifications, each delimited by `;`, and named by sample or reference
+#'   ids present in `sample_meta` or `ref_meta`. These are used to provide a
+#'   taxonomic tree that functions as a backbone to combine multiple trees into
+#'   a single one. (Default: return a list of plots instead of a single plot)
+#' @param interactive Whether to use an HTML-based interactive format or not
+#'   (default: TRUE)
+#'
+#' @return  A list of plots, unless `collapse_by_tax` is useded, in which case a single plot is returned.
+#'
+#' @export
+multigene_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
+  generalized_tree_plot(input, multigene_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
+}
+
+#' Plot generic phylogeny
+#'
+#' Plot phylogenies present in the output of a pathogensurveillance run.
+#'
+#' @param input The path to one or more folders that contain
+#'   pathogensurveillance output or paths to tree files.
+#' @param parser A function that takes directory paths as input and returns
+#'   parsed trees found in those directories, such as
+#'   [psminer::core_tree_parsed()].
+#' @param collapse_by_tax A [base::character()] vector of taxonomic
+#'   classifications, each delimited by `;`, and named by sample or reference
+#'   ids present in `sample_meta` or `ref_meta`. These are used to provide a
+#'   taxonomic tree that functions as a backbone to combine multiple trees into
+#'   a single one. (Default: return a list of plots instead of a single plot)
+#' @param interactive Whether to use an HTML-based interactive format or not
+#'   (default: TRUE)
+#'
+#' @return  A list of plots, unless `collapse_by_tax` is useded, in which case a
+#'   single plot is returned.
+#'
+#' @keywords internal
+generalized_tree_plot <- function(input, parser, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
   # If no trees are found, return an empty list
-  trees <-  core_tree_parsed(input)
+  trees <-  parser(input)
   if (length(trees) == 0) {
     return(list())
   }
