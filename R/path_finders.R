@@ -296,20 +296,11 @@ find_static_dir_path <- function(paths, dir_name, file_description, dir_required
 #'
 #' @keywords internal
 find_group_result_path <- function(paths) {
-  # Find all directories in a given path
   subdir_paths <- list.dirs(paths)
-
-  # Filter for valid input directories
   is_valid_dir <- function(path) {
-    group_id_path <- file.path(path, 'group_id.txt')
-    if (! file.exists(group_id_path)) {
-      return(FALSE)
-    }
-    return(TRUE)
-    # group_contents <- readLines(group_id_path)
-    # return(length(group_contents) == 1 && startsWith(basename(path), group_contents))
+    group_id_path <- file.path(path, 'pathogensurveillance_run_info.yml')
+    return(file.exists(group_id_path))
   }
   subdir_paths <- subdir_paths[unlist(lapply(subdir_paths, is_valid_dir))]
-
   return(subdir_paths)
 }
