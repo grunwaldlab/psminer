@@ -155,8 +155,19 @@ pocp_matrix_parsed <- function(paths) {
 #' @return A [base::character()] vector with the groups from all input paths
 #'
 #' @export
-report_group_parsed <- function(paths) {
-  report_group_path_data(paths)$report_group_id
+run_info_parsed <- function(paths) {
+  path_data <- run_info_path_data(paths)
+  do.call(rbind, lapply(path_data$path, function(p) {
+    run_info <- yaml::read_yaml(p)
+    run_info <- lapply(run_info, function(x) {
+      if (is.null(x)) {
+        return(NA_character_)
+      } else {
+        return(paste0(x, collapse = ';'))
+      }
+    })
+    tibble::as_tibble(run_info)
+  }))
 }
 
 #' Get parsed sendsketch results

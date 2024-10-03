@@ -28,7 +28,7 @@ Other path tables:
 \code{\link{estimated_ani_matrix_path_data}()},
 \code{\link{pocp_matrix_path_data}()},
 \code{\link{ref_meta_path_data}()},
-\code{\link{report_group_path_data}()},
+\code{\link{run_info_path_data}()},
 \code{\link{sample_meta_path_data}()},
 \code{\link{sendsketch_path_data}()},
 \code{\link{software_version_path_data}()},

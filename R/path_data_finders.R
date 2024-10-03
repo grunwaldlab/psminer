@@ -69,18 +69,18 @@ core_ref_path_data <- function(paths) {
   make_path_data_with_group(paths, core_ref_path)
 }
 
-#' Find the report group file path data
+#' Find the run info file path data
 #'
-#' Return a table with the file containing the name of the report group for a
-#' given pathogensurveillance output folder.
+#' Return a table with the file containing the information about a run in a
+#' pathogensurveillance output folder.
 #'
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
 #' @export
-report_group_path_data <- function(paths) {
-  make_path_data_with_group(paths, report_group_path)
+run_info_path_data <- function(paths) {
+  make_path_data_with_group(paths, run_info_path)
 }
 
 #' Find the variant analysis reference path data
@@ -290,8 +290,8 @@ make_path_data_with_group <- function(paths, path_func) {
 find_path_report_group <- function(paths) {
   find_one <- function(path) {
     while (path != dirname(path)) {
-      if ("group_id.txt" %in% list.files(path)) {
-        return(readLines(file.path(path, "group_id.txt")))
+      if ("pathogensurveillance_run_info.yml" %in% list.files(path)) {
+        return(yaml::read_yaml(file.path(path, "pathogensurveillance_run_info.yml"))$group_id)
       }
       path <- dirname(path)
     }

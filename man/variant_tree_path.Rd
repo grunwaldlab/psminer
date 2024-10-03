@@ -26,7 +26,7 @@ Other path finders:
 \code{\link{estimated_ani_matrix_path}()},
 \code{\link{pocp_matrix_path}()},
 \code{\link{ref_meta_path}()},
-\code{\link{report_group_path}()},
+\code{\link{run_info_path}()},
 \code{\link{sample_meta_path}()},
 \code{\link{selected_ref_meta_path}()},
 \code{\link{sendsketch_path}()},

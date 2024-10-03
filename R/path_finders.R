@@ -73,8 +73,8 @@ core_ref_path <- function(paths) {
 #' @return character vector of length 1
 #' @family path finders
 #' @export
-report_group_path <- function(paths) {
-  find_static_file_path(paths, 'group_id.txt', 'report group name file')
+run_info_path <- function(paths) {
+  find_static_file_path(paths, 'pathogensurveillance_run_info.yml', 'report group name file')
 }
 
 #' Find the variant analysis reference data file path
@@ -87,7 +87,7 @@ report_group_path <- function(paths) {
 #' @family path finders
 #' @export
 variant_ref_path <- function(paths) {
-  find_static_file_path(paths, 'mapping_references.csv', 'variant analysis refernece file')
+  find_static_file_path(paths, 'mapping_references.csv', 'variant analysis reference file')
 }
 
 #' Find the status message CSV file path
