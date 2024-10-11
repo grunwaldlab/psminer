@@ -23,9 +23,9 @@ make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = kn
     setNames(ref_data$ref_name, ref_data$ref_id),
     setNames(sample_data$name, sample_data$sample_id)
   )
+  name_key <- stats::setNames(make.unique(name_key, sep = ' '), names(name_key))
   colnames(ani_matrix) <- name_key[colnames(ani_matrix)]
   rownames(ani_matrix) <- name_key[rownames(ani_matrix)]
-
   if (interactive) {
     heatmap_ani <- heatmaply(ani_matrix,
                              fontsize_row = 8, fontsize_col = 8, width = width, height = height)
