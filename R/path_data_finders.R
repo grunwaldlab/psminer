@@ -36,9 +36,7 @@ ref_meta_path_data <- function(paths) {
 #' @family path tables
 #' @export
 busco_tree_path_data <- function(paths) {
-  output <- make_path_data_with_group(paths, busco_tree_path)
-  output$ref_id_key <- file.path(dirname(output$path), 'read2tree_ref_meta.csv')
-  return(output)
+  make_path_data_with_group(paths, busco_tree_path)
 }
 
 #' Find the BUSCO analysis reference path data

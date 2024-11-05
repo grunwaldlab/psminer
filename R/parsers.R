@@ -388,28 +388,14 @@ variant_tree_parsed <- function(paths, rename = TRUE) {
 #'
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
-#' @param rename If `TRUE`, rename the tip labels to sample IDs and reference IDs.
 #'
 #' @return List of [ape::phylo()] objects named by file path
 #' @family parsers
 #'
 #' @export
-busco_tree_parsed <- function(paths, rename = TRUE) {
+busco_tree_parsed <- function(paths) {
   path_data <- busco_tree_path_data(paths)
   trees <- psminer:::tree_parsed(path_data$path)
-  ref_id_keys <- lapply(path_data$ref_id_key, read.csv)
-
-  # Rename tree tips to sample/reference IDs
-  if (rename) {
-    trees <- lapply(seq_len(length(trees)), function(i) {
-      tree <- trees[[i]]
-      id_key <- setNames(ref_id_keys[[i]]$ref_id, ref_id_keys[[i]]$r2t_ref_id)
-      tree$tip.label[tree$tip.label %in% names(id_key)] <- unname(id_key[tree$tip.label[tree$tip.label %in% names(id_key)]])
-      return(tree)
-    })
-    names(trees) <- path_data$path
-  }
-
   return(trees)
 }
 
@@ -422,16 +408,14 @@ busco_tree_parsed <- function(paths, rename = TRUE) {
 #'
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
-#' @param rename If `TRUE`, rename the tip labels to sample IDs and reference
-#'   IDs.
 #'
 #' @return List of [ape::phylo()] objects named by file path
 #' @family parsers
 #'
 #' @export
-multigene_tree_parsed <- function(paths, rename = TRUE) {
+multigene_tree_parsed <- function(paths) {
   return(c(
-    busco_tree_parsed(paths, rename = rename),
+    busco_tree_parsed(paths),
     core_tree_parsed(paths)
   ))
 }

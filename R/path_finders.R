@@ -204,7 +204,7 @@ sendsketch_path <- function(paths) {
 #' @family path finders
 #' @export
 variant_align_path <- function(paths) {
-  find_static_dir_path(paths, 'snp_alignments', 'SNP alignment')
+  find_static_dir_path(paths, 'snp_alignments', 'SNP alignment', dir_required = FALSE, file_required = FALSE)
 }
 
 #' Find the SNP tree paths

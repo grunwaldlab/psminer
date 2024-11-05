@@ -4,13 +4,11 @@
 \alias{busco_tree_parsed}
 \title{Get BUSCO phylogeny}
 \usage{
-busco_tree_parsed(paths, rename = TRUE)
+busco_tree_parsed(paths)
 }
 \arguments{
 \item{paths}{The path to one or more folders that contain
 pathogensurveillance output.}
-
-\item{rename}{If \code{TRUE}, rename the tip labels to sample IDs and reference IDs.}
 }
 \value{
 List of \code{\link[ape:read.tree]{ape::phylo()}} objects named by file path
