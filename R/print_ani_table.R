@@ -75,10 +75,15 @@ print_pocp_table <- function(pairwise_matrix, sample_data, ref_data, interactive
       best_ref_match_name <- "NA (No reference used)"
       best_ref_match_pocp <- "NA (No reference used)"
     }
-    samp_samp_comp <- pairwise_matrix[id, ! colnames(pairwise_matrix) %in% ref_data$ref_id & colnames(pairwise_matrix) != id, drop = FALSE]
-    best_match <- which.max(samp_samp_comp)
-    best_samp_match_name <- sample_data$name[sample_data$sample_id == names(best_match)]
-    best_samp_match_pocp <- format_number(unname(unlist(samp_samp_comp[best_match])))
+    if (nrow(sample_data) > 1) {
+      samp_samp_comp <- pairwise_matrix[id, ! colnames(pairwise_matrix) %in% ref_data$ref_id & colnames(pairwise_matrix) != id, drop = FALSE]
+      best_match <- which.max(samp_samp_comp)
+      best_samp_match_name <- sample_data$name[sample_data$sample_id == names(best_match)]
+      best_samp_match_pocp <- format_number(unname(unlist(samp_samp_comp[best_match])))
+    } else {
+      best_samp_match_name <- "NA (Too few samples)"
+      best_samp_match_pocp <- "NA (Too few samples)"
+    }
     data.frame(
       check.names = FALSE,
       'Sample' = sample_data$name[sample_data$sample_id == id],
