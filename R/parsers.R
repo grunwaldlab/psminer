@@ -14,7 +14,7 @@ status_message_parsed <- function(paths) {
   path_data <- status_message_path_data(paths)
   if (nrow(path_data) > 0) {
     output <- do.call(rbind, lapply(1:nrow(path_data), function(index) {
-      table <- readr::read_csv(path_data$path[index], col_types = 'ccccc', sep = '\t')
+      table <- readr::read_tsv(path_data$path[index], col_types = 'ccccc')
       table$report_group_id <- path_data$report_group_id[index]
       return(table)
     }))
