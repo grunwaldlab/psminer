@@ -14,7 +14,7 @@ pathogensurveillance output.}
 \code{tibble} with \code{report_group_id} and \code{path} columns
 }
 \description{
-Return a table with the file paths of the CSVs of metadata for references
+Return a table with the file paths of the TSVs of metadata for references
 considered by the pipeline for download for a given pathogensurveillance
 output folder.
 }

@@ -1,6 +1,6 @@
 #' Find sample metadata path data
 #'
-#' Return the file path data to the CSV containing the sample metadata for a given
+#' Return the file path data to the TSV containing the sample metadata for a given
 #' pathogensurveillance output folder.
 #'
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
@@ -13,7 +13,7 @@ sample_meta_path_data <- function(paths) {
 
 #' Find reference metadata path data
 #'
-#' Return the file path data to the CSV containing the reference metadata for a given
+#' Return the file path data to the TSV containing the reference metadata for a given
 #' pathogensurveillance output folder.
 #'
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
@@ -41,7 +41,7 @@ busco_tree_path_data <- function(paths) {
 
 #' Find the BUSCO analysis reference path data
 #'
-#' Return a table with the file path to the CSV with a list of references used
+#' Return a table with the file path to the TSV with a list of references used
 #' in the BUSCO analysis for a given pathogensurveillance output folder.
 #'
 #' @param paths The path to one or more folders that contain pathogensurveillance
@@ -55,7 +55,7 @@ busco_ref_path_data <- function(paths) {
 
 #' Find the core gene analysis reference path data
 #'
-#' Return a table with the file path to the CSV with the list of references used
+#' Return a table with the file path to the TSV with the list of references used
 #' in the core gene analysis for a given pathogensurveillance output folder.
 #'
 #' @param paths The path to one or more folders that contain
@@ -83,7 +83,7 @@ run_info_path_data <- function(paths) {
 
 #' Find the variant analysis reference path data
 #'
-#' Return a table with the file path to the CSV with the list of references used
+#' Return a table with the file path to the TSV with the list of references used
 #' in the variant analysis for a given pathogensurveillance output folder.
 #'
 #' @param paths The path to one or more folders that contain
@@ -95,9 +95,9 @@ variant_ref_path_data <- function(paths) {
   make_path_data_with_group(paths, variant_ref_path)
 }
 
-#' Find the status message CSV path data
+#' Find the status message TSV path data
 #'
-#' Return a table with the file path to the CSV with the status reports,
+#' Return a table with the file path to the TSV with the status reports,
 #' warnings, and errors for a given pathogensurveillance output folder.
 #'
 #' @param paths The path to one or more folders that contain
@@ -111,7 +111,7 @@ status_message_path_data <- function(paths) {
 
 #' Find the POCP matrix path data
 #'
-#' Return a table with the file path to the CSV with the POCP (percent of
+#' Return a table with the file path to the TSV with the POCP (percent of
 #' conserved protein matrix for a given pathogensurveillance output folder.
 #'
 #' @param paths The path to one or more folders that contain
@@ -172,7 +172,7 @@ core_tree_path_data <- function(paths) {
 
 #' Find the considered NCBI reference metadata path data
 #'
-#' Return a table with the file paths of the CSVs of metadata for references
+#' Return a table with the file paths of the TSVs of metadata for references
 #' considered by the pipeline for download for a given pathogensurveillance
 #' output folder.
 #'
@@ -191,7 +191,7 @@ considered_ref_meta_path_data <- function(paths) {
 
 #' Find the downloaded reference metadata path data
 #'
-#' Return a table with the file paths of the CSVs of metadata for references
+#' Return a table with the file paths of the TSVs of metadata for references
 #' selected and downloaded for each sample for a given pathogensurveillance
 #' output folder.
 #'

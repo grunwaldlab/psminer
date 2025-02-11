@@ -1,8 +1,8 @@
 #' Parse sample metadata files
 #'
 #'
-#' @param sample_data_path The file path to the 'sample_data.csv' file
-#' @param assigned_refs_path The file path to the 'assigned_refs.csv' file
+#' @param sample_data_path The file path to the 'sample_data.tsv' file
+#' @param assigned_refs_path The file path to the 'assigned_refs.tsv' file
 #' @param group The name of the report group for specific set of samples.
 #'
 #' @return `data.frame` of metadata for samples, with one row for each sample in
@@ -10,8 +10,8 @@
 #'
 #' @export
 parse_sample_meta <- function(sample_data_path, assigned_refs_path, group) {
-  sample_data <- read.csv(sample_data_path, check.names = FALSE)
-  assigned_refs <- read.csv(assigned_refs_path, col.names = c('sample_id', 'reference_id'), header = FALSE)
+  sample_data <- read.csv(sample_data_path, check.names = FALSE, sep = '\t')
+  assigned_refs <- read.csv(assigned_refs_path, col.names = c('sample_id', 'reference_id'), header = FALSE, sep = '\t')
   # Subset to samples in the report group
   group_data <- strsplit(sample_data$report_group, split = ";")
   sample_data <- sample_data[map_lgl(group_data, function(x) group %in% x), ]
@@ -26,8 +26,8 @@ parse_sample_meta <- function(sample_data_path, assigned_refs_path, group) {
 #'
 #' @param ref_data_path The folder with files with the data on references
 #'   assigned to each sample. The individual files are named by sample ID.
-#' @param assigned_refs_path The file path to the 'assigned_refs.csv' file
-#' @param sample_data_path The file path to the 'sample_data.csv' file
+#' @param assigned_refs_path The file path to the 'assigned_refs.tsv' file
+#' @param sample_data_path The file path to the 'sample_data.tsv' file
 #' @param group The name of the report group for specific set of samples.
 #'
 #' @return Reformatted reference metadata table containing both refseq-defined
@@ -35,10 +35,10 @@ parse_sample_meta <- function(sample_data_path, assigned_refs_path, group) {
 #'
 #' @export
 parse_ref_meta <- function(ref_data_path, assigned_refs_path, sample_data_path, group) {
-  sample_data <- read.csv(sample_data_path, check.names = FALSE)
+  sample_data <- read.csv(sample_data_path, check.names = FALSE, sep = '\t')
   group_data <- strsplit(sample_data$report_group, split = ";")
   sample_data <- sample_data[map_lgl(group_data, function(x) group %in% x), ] # Subset to samples in the report group
-  assigned_refs <- read.csv(assigned_refs_path, col.names = c('sample_id', 'reference_id'), header = FALSE)
+  assigned_refs <- read.csv(assigned_refs_path, col.names = c('sample_id', 'reference_id'), header = FALSE, sep = '\t')
 
   # Get data for the references selected by the pipeline
   ref_file_names <- list.files(ref_data_path)

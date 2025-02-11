@@ -13,7 +13,7 @@ pocp_matrix_path(paths)
 character vector of length 1
 }
 \description{
-Return the file path to the CSV with the POCP (percent of conserved protein
+Return the file path to the TSV with the POCP (percent of conserved protein
 matrix for a given pathogensurveillance output folder.
 }
 \seealso{

@@ -14,7 +14,7 @@ status_message_parsed <- function(paths) {
   path_data <- status_message_path_data(paths)
   if (nrow(path_data) > 0) {
     output <- do.call(rbind, lapply(1:nrow(path_data), function(index) {
-      table <- readr::read_csv(path_data$path[index], col_types = 'ccccc')
+      table <- readr::read_csv(path_data$path[index], col_types = 'ccccc', sep = '\t')
       table$report_group_id <- path_data$report_group_id[index]
       return(table)
     }))
@@ -73,7 +73,7 @@ status_message_parsed_summary <- function(paths) {
 #'
 #' @export
 sample_meta_parsed <- function(paths) {
-  output <- dplyr::bind_rows(lapply(sample_meta_path(paths), read.csv, check.names = FALSE))
+  output <- dplyr::bind_rows(lapply(sample_meta_path(paths), read.csv, check.names = FALSE, sep = '\t'))
   output[] <- lapply(output, function(col_data) ifelse(col_data == 'null', NA_character_, col_data))
   output <- tibble::as_tibble(output)
   output <- unique(output)
@@ -93,7 +93,7 @@ sample_meta_parsed <- function(paths) {
 #'
 #' @export
 ref_meta_parsed <- function(paths) {
-  output <- dplyr::bind_rows(lapply(ref_meta_path(paths), read.csv, check.names = FALSE))
+  output <- dplyr::bind_rows(lapply(ref_meta_path(paths), read.csv, check.names = FALSE, sep = '\t'))
   output[] <- lapply(output, function(col_data) ifelse(col_data == 'null', NA_character_, col_data))
   output <- tibble::as_tibble(output)
   output <- unique(output)

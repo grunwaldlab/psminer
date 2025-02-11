@@ -13,7 +13,7 @@ sample_meta_path(paths)
 character vector of length 1
 }
 \description{
-Return the file path to the CSV containing the sample metadata for a given
+Return the file path to the TSV containing the sample metadata for a given
 pathogensurveillance output folder.
 }
 \seealso{

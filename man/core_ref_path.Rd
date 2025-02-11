@@ -13,7 +13,7 @@ core_ref_path(paths)
 character vector of length 1
 }
 \description{
-Return the file path to the CSV with the list of references used in the core
+Return the file path to the TSV with the list of references used in the core
 gene analysis for a given pathogensurveillance output folder.
 }
 \seealso{

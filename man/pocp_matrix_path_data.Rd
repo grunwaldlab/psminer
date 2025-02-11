@@ -14,7 +14,7 @@ pathogensurveillance output.}
 \code{tibble} with \code{report_group_id} and \code{path} columns
 }
 \description{
-Return a table with the file path to the CSV with the POCP (percent of
+Return a table with the file path to the TSV with the POCP (percent of
 conserved protein matrix for a given pathogensurveillance output folder.
 }
 \seealso{

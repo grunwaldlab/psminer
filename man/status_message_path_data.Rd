@@ -2,7 +2,7 @@
 % Please edit documentation in R/path_data_finders.R
 \name{status_message_path_data}
 \alias{status_message_path_data}
-\title{Find the status message CSV path data}
+\title{Find the status message TSV path data}
 \usage{
 status_message_path_data(paths)
 }
@@ -14,7 +14,7 @@ pathogensurveillance output.}
 \code{tibble} with \code{report_group_id} and \code{path} columns
 }
 \description{
-Return a table with the file path to the CSV with the status reports,
+Return a table with the file path to the TSV with the status reports,
 warnings, and errors for a given pathogensurveillance output folder.
 }
 \seealso{

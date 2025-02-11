@@ -10,9 +10,9 @@ parse_ref_meta(ref_data_path, assigned_refs_path, sample_data_path, group)
 \item{ref_data_path}{The folder with files with the data on references
 assigned to each sample. The individual files are named by sample ID.}
 
-\item{assigned_refs_path}{The file path to the 'assigned_refs.csv' file}
+\item{assigned_refs_path}{The file path to the 'assigned_refs.tsv' file}
 
-\item{sample_data_path}{The file path to the 'sample_data.csv' file}
+\item{sample_data_path}{The file path to the 'sample_data.tsv' file}
 
 \item{group}{The name of the report group for specific set of samples.}
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/path_finders.R
 \name{status_message_path}
 \alias{status_message_path}
-\title{Find the status message CSV file path}
+\title{Find the status message TSV file path}
 \usage{
 status_message_path(paths)
 }
@@ -13,7 +13,7 @@ status_message_path(paths)
 character vector of length 1
 }
 \description{
-Return the file path to the CSV with the status reports, warnings, and errors
+Return the file path to the TSV with the status reports, warnings, and errors
 for a given pathogensurveillance output folder.
 }
 \seealso{

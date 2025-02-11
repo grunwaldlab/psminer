@@ -13,7 +13,7 @@ sample_meta_path_data(paths)
 \code{tibble} with \code{report_group_id} and \code{path} columns
 }
 \description{
-Return the file path data to the CSV containing the sample metadata for a given
+Return the file path data to the TSV containing the sample metadata for a given
 pathogensurveillance output folder.
 }
 \seealso{

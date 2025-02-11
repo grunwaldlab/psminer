@@ -7,9 +7,9 @@
 parse_sample_meta(sample_data_path, assigned_refs_path, group)
 }
 \arguments{
-\item{sample_data_path}{The file path to the 'sample_data.csv' file}
+\item{sample_data_path}{The file path to the 'sample_data.tsv' file}
 
-\item{assigned_refs_path}{The file path to the 'assigned_refs.csv' file}
+\item{assigned_refs_path}{The file path to the 'assigned_refs.tsv' file}
 
 \item{group}{The name of the report group for specific set of samples.}
 }

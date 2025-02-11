@@ -13,7 +13,7 @@ busco_ref_path(paths)
 character vector of length 1
 }
 \description{
-Return the file path to the CSV with a list of references used in the BUSCO
+Return the file path to the TSV with a list of references used in the BUSCO
 analysis for a given pathogensurveillance output folder.
 }
 \seealso{

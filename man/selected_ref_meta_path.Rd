@@ -13,7 +13,7 @@ selected_ref_meta_path(paths)
 character vector of length 1
 }
 \description{
-Return the file paths of the CSVs of metadata for references selected and
+Return the file paths of the TSVs of metadata for references selected and
 downloaded for each sample for a given pathogensurveillance output folder.
 }
 \seealso{
