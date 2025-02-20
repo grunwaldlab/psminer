@@ -231,8 +231,9 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
     mean_edge_len <- mean(unlist(lapply(trees, function(x) x$edge.length)))
     base_tree$edge.length <- rep(mean_edge_len, nrow(base_tree$edge))
     combined_tree <- base_tree
+    index_key <- match(base_tree$tip.label, tree_tax[[ncol(tree_tax)]])
     for (index in rev(seq_along(trees))) {
-      combined_tree <- ape::bind.tree(combined_tree, trees[[index]], where = index)
+      combined_tree <- ape::bind.tree(combined_tree, trees[[index_key[index]]], where = index)
     }
   }
 
@@ -331,7 +332,7 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
       scale_linetype_identity()
 
     plotted_tree <- plotted_tree %<+% tip_data +
-      scale_x_continuous(expand = expansion(add = c(0.05, max(nchar(tip_data$tip_label)) * 0.1 / sqrt(nrow(tip_data))))) +
+      scale_x_continuous(expand = expansion(add = c(0.1, 0.1 + max(nchar(tip_data$tip_label)) * 0.15 / sqrt(nrow(tip_data))))) +
       ggnewscale::new_scale_color() +
       geom_tiplab(aes(label = tip_label, color = tip_color)) +
       geom_tippoint(aes(color = tip_color), alpha = 0) + # Invisible tips just there to make override.aes below change the legend color shapes
