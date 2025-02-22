@@ -17,9 +17,10 @@ table.
 }
 \examples{
 
-input_paths <- c(
-  system.file('extdata/feature_test.tsv',      package = 'psminer'),
-  system.file('extdata/feature_test_refs.csv', package = 'psminer')
-)
+input_paths <- system.file(package = 'psminer',
+                           file.path('extdata', c(
+                             'feature_test.tsv',
+                             'feature_test_refs.csv'
+                           )))
 
 }
