@@ -29,7 +29,7 @@ parse_path_surveil_input <- function(input_paths) {
 #' @param known_columns Column names to convert similar column names to
 #'
 #' @keywords internal
-clean_input_table <- function(table, known_columns) {
+clean_input_table <- function(table, known_columns = known_input_columns()) {
 
   # Remove all whitespace
   table[] <- lapply(table, trimws)
@@ -54,7 +54,7 @@ clean_input_table <- function(table, known_columns) {
   modified_names <- tolower(modified_names)
   modified_names <- gsub('[ -]+', '_', modified_names)
   underscore_replace_key <- known_columns
-  names(underscore_replace_key) <- gsub ('_+', '', known_columns)
+  names(underscore_replace_key) <- gsub('_+', '', known_columns)
   colnames_to_replace <- underscore_replace_key[modified_names]
   modified_names[!is.na(colnames_to_replace)] <- colnames_to_replace[! is.na(colnames_to_replace)]
   colnames(table)[modified_names %in% known_columns] <- modified_names[modified_names %in% known_columns]
@@ -69,6 +69,31 @@ clean_input_table <- function(table, known_columns) {
     ))
   }
   table <- table[, ! is_headerless, drop = FALSE]
+
+  # Check for duplicated columns
+  present_known_cols <- colnames(table)[colnames(table) %in% known_columns]
+  duplicated_cols <- unique(present_known_cols[duplicated(present_known_cols)])
+  if (length(duplicated_cols) > 0) {
+    stop(call. = FALSE,
+         'The following columns occur more than once in the ', csv_name, ' CSV: ',
+         paste0('"', duplicated_cols, '"', collapse = ', ')
+    )
+  }
+
+  # Reorder columns and add any missing columns
+  empty_columns <- lapply(known_columns, function(column) {
+    rep(NA, nrow(table))
+  })
+  names(empty_columns) <- known_columns
+  reordered <- as.data.frame(empty_columns)
+  reordered[colnames(table)] <- table
+  table <- reordered
+
+  # Add default values for some columns
+  defaults <- default_column_values()
+  table[names(defaults)] <- lapply(names(defaults), function(col) {
+    ifelse(! is.na(table[[col]]), table[[col]], defaults[col])
+  })
 
   return(table)
 }
@@ -125,34 +150,110 @@ read_input_tables <- function(input_paths, read_all_sheets = TRUE) {
 }
 
 
-known_columns <- c(
-  'id',
-  'ref_group_id',
-  'report_id',
-  'name',
-  'description',
-  'input_type',
-  'data_type',
-  'data_source',
-  'enabled',
-  'ref_primary_usage',
-  'ref_contextual_usage',
-  'color_by',
-  'ploidy',
-  'latitude',
-  'longitude',
-  'location',
-  'country',
-  'region',
-  'subregion',
-  'place',
-  'district',
-  'date',
-  'year',
-  'month',
-  'day',
-  'hour',
-  'minute',
-  'second',
-  'link'
-)
+#' Columns used by `pathogensurveillance`
+#'
+#' Column in input tables that are used by the `pathogensurveillance` pipeline.
+#' Other columns can be given, but only these are used.
+#'
+#' @return A `vector` of column names
+#'
+#' @examples
+#' known_input_columns()
+#'
+#' @export
+known_input_columns <- function() {
+  c(
+    'id',
+    'ref_group_id',
+    'report_id',
+    'name',
+    'description',
+    'input_type',
+    'data_type',
+    'data_source',
+    'enabled',
+    'ref_primary_usage',
+    'ref_contextual_usage',
+    'color_by',
+    'ploidy',
+    'latitude',
+    'longitude',
+    'location',
+    'country',
+    'region',
+    'subregion',
+    'place',
+    'district',
+    'date',
+    'year',
+    'month',
+    'day',
+    'hour',
+    'minute',
+    'second',
+    'link'
+  )
+}
+
+
+#' Defaults for known columns
+#'
+#' These are used if a cell is left blank.
+#'
+#' @return A `vector` of default values named by column names.
+#'
+#' @examples
+#' default_column_values()
+#'
+#' @keywords internal
+default_column_values <- function() {
+  c(
+    input_type = 'sample',
+    report_group_id = 'miscellaneous',
+    enabled = TRUE,
+    query_max = 10,
+    ref_primary_usage = 'optional',
+    ref_contextual_usage = 'optional',
+    color_by = 'input_type'
+  )
+}
+
+
+#' Types of data supported by the pipeline
+#'
+#' These are the valid values that can be supplied to the `data_type` column.
+#'
+#' @return A character `vector`
+#'
+#' @examples
+#' known_data_types()
+#'
+#' @export
+known_data_types <- function() {
+  c(
+    'illumina',
+    'nanopore',
+    'pacbio',
+    'assembly',
+    'ncbi accession',
+    'ncbi sra query',
+    'ncbi assembly query',
+    'image',
+    'observation'
+  )
+}
+
+#' Characters that cant be in IDs
+#'
+#' Regular expression for characters that cannot appear in IDs
+#'
+#' @return A character `vector` of length 1
+#'
+#' @examples
+#' invalid_id_char_pattern()
+#'
+#' @export
+invalid_id_char_pattern <- function() {
+  '[\\/:;*?"<>| .()-]+'
+}
+

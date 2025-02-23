@@ -4,7 +4,7 @@
 \alias{clean_input_table}
 \title{Fix formatting errors}
 \usage{
-clean_input_table(table, known_columns)
+clean_input_table(table, known_columns = known_input_columns())
 }
 \arguments{
 \item{table}{The input table}

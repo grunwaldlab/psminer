@@ -7,14 +7,17 @@
 read_input_tables(input_paths, read_all_sheets = TRUE)
 }
 \arguments{
+\item{input_paths}{The paths to one or more files containing tables}
+
 \item{read_all_sheets}{If \code{TRUE}, read all sheets in spreadsheet files like
 .ods and .xlsx}
 }
 \value{
-A \code{list} of \href{tibble::tibble()}{tibble}
+A \code{list} of \code{tibble}.
 }
 \description{
-Read input tables from supported formats
+When a spreadsheet format such as .ods or .xlsx is supplied, each sheet is
+returned as its own table.
 }
 \examples{
 input_paths <- system.file(c('extdata/xls_example.xls', 'extdata/feature_test.tsv'), package = 'psminer')
