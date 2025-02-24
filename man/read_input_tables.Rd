@@ -4,13 +4,20 @@
 \alias{read_input_tables}
 \title{Read input tables from supported formats}
 \usage{
-read_input_tables(input_paths, read_all_sheets = TRUE)
+read_input_tables(
+  input_paths,
+  read_all_sheets = TRUE,
+  add_input_metadata = TRUE
+)
 }
 \arguments{
 \item{input_paths}{The paths to one or more files containing tables}
 
 \item{read_all_sheets}{If \code{TRUE}, read all sheets in spreadsheet files like
 .ods and .xlsx}
+
+\item{add_input_metadata}{Whether to add \verb{_input_path_}, \verb{_sheet_name_} and
+\verb{_row_index_} columns to each table to record where each row came from.}
 }
 \value{
 A \code{list} of \code{tibble}.
@@ -20,7 +27,12 @@ When a spreadsheet format such as .ods or .xlsx is supplied, each sheet is
 returned as its own table.
 }
 \examples{
-input_paths <- system.file(c('extdata/xls_example.xls', 'extdata/feature_test.tsv'), package = 'psminer')
+input_paths <- system.file(package = 'psminer',
+                           file.path('extdata', c(
+                             'feature_test.tsv',
+                             'feature_test_refs.csv',
+                             'ods_example.ods'
+                           )))
 psminer:::read_input_tables(input_paths)
 
 }

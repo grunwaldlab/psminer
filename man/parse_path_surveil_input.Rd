@@ -20,7 +20,9 @@ table.
 input_paths <- system.file(package = 'psminer',
                            file.path('extdata', c(
                              'feature_test.tsv',
-                             'feature_test_refs.csv'
+                             'feature_test_refs.csv',
+                             'ods_example.ods'
                            )))
+parse_path_surveil_input(input_paths)
 
 }
