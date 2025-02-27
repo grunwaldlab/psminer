@@ -4,11 +4,14 @@
 \alias{parse_path_surveil_input}
 \title{Parse one or more inputs to \code{pathogensurveillance}}
 \usage{
-parse_path_surveil_input(input_paths)
+parse_path_surveil_input(input_paths, fail_on_warning = FALSE)
 }
 \arguments{
 \item{input_paths}{The paths to one or more tables in TSV, CSV, or ODS
 (LibreOffice Calc), xls, or xlsx files (Excel) format.}
+
+\item{fail_on_warning}{If \code{TRUE}, things that will normally cause a warning
+will instead cause an error.}
 }
 \description{
 Parse and validate one or more input table of sample/reference metadata to
