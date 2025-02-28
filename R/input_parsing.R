@@ -39,26 +39,280 @@ parse_path_surveil_input <- function(input_paths, fail_on_warning = FALSE) {
   apply_validation(validate_usage)
   apply_validation(validate_type)
   apply_validation(validate_query_max)
+  apply_validation(validate_ref_primary_usage)
+  apply_validation(validate_ref_contextual_usage)
+  apply_validation(validate_ploidy)
+  apply_validation(validate_color_by)
+  apply_validation(validate_location_cols)
+  apply_validation(validate_date_cols)
   apply_validation(validate_source_illumina)
   apply_validation(validate_source_nanopore)
   apply_validation(validate_source_pacbio)
   apply_validation(validate_source_assembly)
+  apply_validation(validate_source_image)
+  apply_validation(validate_source_observation)
   apply_validation(validate_source_ncbi_accession)
   apply_validation(validate_source_sra_query)
   apply_validation(validate_source_assembly_query)
-  apply_validation(validate_source_image)
-  apply_validation(validate_source_observation)
+
 
   return(metadata)
 }
 
+
+#' @keywords internal
+validate_date_cols <- function(metadata) {
+  # # Convert user-supplied time zones to same format
+  # tz_data <- lutz::tz_list()
+  # metadata$time_zone <- ifelse(metadata$time_zone %in% tz_data$zone,
+  #                              tz_data$tz_name[match(metadata$time_zone, tz_data$zone)],
+  #                              metadata$time_zone)
+  # metadata$time_zone <- ifelse(metadata$time_zone %in% tz_data$utc_offset_h,
+  #                              tz_data$tz_name[match(metadata$time_zone, tz_data$utc_offset_h)],
+  #                              metadata$time_zone)
+  #
+  # # Infer time zone from locaton data
+  # predicted_tz <- lutz::tz_lookup_coords(lat = metadata$latitude, lon = metadata$longitude, warn = FALSE)
+  # metadata$time_zone <- ifelse(is.na(metadata$time_zone) & ! is.na(predicted_tz), predicted_tz, metadata$time_zone)
+
+  # Parse dates
+  date_time_formats <- c(
+    'Y-Om-d H:M:S',
+    'Y-Om-d H:M',
+    'Y-Om-d H',
+    'Y-Om-d I:M:SOp',
+    'Y-Om-d I:MOp',
+    'Y-Om-d IOp',
+    'Y-Om-d',
+    'Y-Om',
+    'Y',
+    'Om/d/Y H:M:S',
+    'Om/d/Y H:M',
+    'Om/d/Y H',
+    'Om/d/Y I:M:SOp',
+    'Om/d/Y I:MOp',
+    'Om/d/Y IOp',
+    'Om/d/Y',
+    'Om/Y'
+  )
+  parsed_dates <- lubridate::parse_date_time(metadata$date, orders = date_time_formats, quiet = TRUE)
+  # parsed_dates <- lapply(seq_len(nrow(metadata)), function(i) {
+  #   lubridate::parse_date_time(metadata$date[i], orders = date_time_formats, quiet = TRUE,
+  #                              tz = ifelse(is.na(metadata$time_zone[i]), 'UTC', metadata$time_zone[i]))
+  # })
+  is_invalid <- is.na(parsed_dates) & ! is.na(metadata$date)
+  messages <- make_warning_message(
+    metadata,
+    which(is_invalid),
+    paste0('Samples do not have valid values for the `date` column.')
+  )
+  metadata$date <- lubridate::format_ISO8601(parsed_dates)
+
+  # Split dates into columns for parts of date/time
+  date_part_func <- list(
+    year = lubridate::year,
+    month = lubridate::month,
+    day = lubridate::day,
+    hour = lubridate::hour,
+    minute = lubridate::minute,
+    second = lubridate::second
+    # time_zone = lubridate::tz
+  )
+  date_parts_missing <- apply(metadata[, names(date_part_func), drop = FALSE], MARGIN = 1, function(x) all(is.na(x)))
+  metadata[, names(date_part_func)] <- lapply(seq_along(date_part_func), function(i) {
+    ifelse(date_parts_missing, sapply(parsed_dates, date_part_func[[i]]), metadata[[names(date_part_func)[i]]])
+  })
+
+  list(metadata = metadata, messages = messages)
+}
+
+#' @keywords internal
+validate_location_cols <- function(metadata) {
+  # Parse location, latitude, and longitude columns
+  loc_is_coord <- is_coordinate(metadata$location) & ! is.na(metadata$location)
+  metadata$location[loc_is_coord] <- convert_coord_to_decimal_degrees(metadata$location[loc_is_coord])
+  loc_is_address <- ! loc_is_coord & ! is.na(metadata$location)
+  location_data <- tidygeocoder::geo(address = metadata$location[loc_is_address],
+                                     full_results = TRUE, progress_bar = FALSE,
+                                     custom_query = list("accept-language" = "en-US"))
+  location_data <- unique(location_data[! is.na(location_data$lat), , drop = FALSE])
+  metadata$latitude <- convert_coord_part_to_decimal_degrees(metadata$latitude)
+  metadata$longitude <- convert_coord_part_to_decimal_degrees(metadata$longitude)
+
+  # Use data from the location if latitude and longitude columns are missing values
+  missing_long_lat <- is.na(metadata$latitude) | is.na(metadata$longitude)
+  replace_with_coord_loc <- loc_is_coord & missing_long_lat
+  split_loc <- strsplit(metadata$location, split = ', ')
+  metadata$latitude[replace_with_coord_loc] <- vapply(split_loc[replace_with_coord_loc], FUN.VALUE = numeric(1), function(x) {
+    as.numeric(x[1])
+  })
+  metadata$longitude[replace_with_coord_loc] <- vapply(split_loc[replace_with_coord_loc], FUN.VALUE = numeric(1), function(x) {
+    as.numeric(x[2])
+  })
+  replace_with_lookup_loc <- missing_long_lat & metadata$location %in% location_data$address
+  metadata$latitude[replace_with_lookup_loc] <- vapply(metadata$location[replace_with_lookup_loc], FUN.VALUE = numeric(1), function(x) {
+    location_data$lat[location_data$address == x]
+  })
+  metadata$longitude[replace_with_lookup_loc] <- vapply(metadata$location[replace_with_lookup_loc], FUN.VALUE = numeric(1), function(x) {
+    location_data$long[location_data$address == x]
+  })
+
+  # Infer location from latitude and longitude, giving preference to parsed version of user location
+  loc_to_lookup <- ! is.na(metadata$latitude) & ! is.na(metadata$longitude)
+  coord_data <- tidygeocoder::reverse_geo(lat = metadata$latitude[loc_to_lookup], long = metadata$longitude[loc_to_lookup],
+                                          full_results = TRUE, custom_query = list("accept-language" = "en-US"),
+                                          progress_bar = FALSE)
+  parsed_locations <- location_data$display_name[match(metadata$location, location_data$address)]
+  metadata$location[loc_to_lookup] <- coord_data$address
+  metadata$location[! is.na(parsed_locations)] <- parsed_locations[! is.na(parsed_locations)]
+  metadata$location[is.na(metadata$location)] <- ''
+
+  # Add individual columns for major place name hierarchy elements
+  grouped_level_key <- list(
+    country = c('country'),
+    region = c('state', 'region'),
+    subregion = c('county', 'municipality'),
+    place = c('city', 'town', 'village', 'hamlet'),
+    part = c('district', 'city_district', 'subdistrict', 'place')
+  )
+  add_place_names <- apply(metadata[loc_to_lookup, names(grouped_level_key)], MARGIN = 1, function(x) {
+    all(is.na(x))
+  })
+  metadata[loc_to_lookup, names(grouped_level_key)] <- lapply(seq_along(grouped_level_key), function(i) {
+    cols <- grouped_level_key[[i]][grouped_level_key[[i]] %in% colnames(coord_data)]
+    downloaded_names <- unlist(apply(coord_data[, cols], MARGIN = 1, simplify = FALSE, function(row) {
+      row[! is.na(row)][1]
+    }))
+    ifelse(add_place_names, downloaded_names, metadata[[ names(grouped_level_key)[i]]][loc_to_lookup])
+  })
+
+  # Report problems
+  is_invalid <- ! is_valid_lat(metadata$latitude) | ! is_valid_long(metadata$longitude)
+  messages <- make_warning_message(
+    metadata,
+    which(is_invalid),
+    paste0('Samples do not have valid values for the `latitude` or `longitude` columns.')
+  )
+  metadata$enabled[is_invalid] <- FALSE
+
+  list(metadata = metadata, messages = messages)
+}
+
+
+#' @keywords internal
+is_coordinate <- function(text) {
+  grepl(text, pattern = '^[NSWE0-9,.°"”\' -]+$')
+}
+
+
+#' @keywords internal
+split_coord <- function(text) {
+  split_text <- strsplit(trimws(text), split = '[, ]+')
+  lengths <- vapply(split_text, length, FUN.VALUE = numeric(1))
+  is_odd <- lengths %% 2 != 0
+  if (any(is_odd)) {
+    warning('Could not split coordinates into equal parts. Replaceing with NA.')
+    split_text[is_odd] <- rep(list(c(NA_character_, NA_character_)), sum(is_odd))
+  }
+  lapply(split_text, function(x) {
+    c(
+      paste0(x[1:(length(x) / 2)], collapse = ''),
+      paste0(x[((length(x) / 2) + 1):length(x)], collapse = '')
+    )
+  })
+}
+
+
+#' @keywords internal
+convert_coord_part_to_decimal_degrees <- function(coord_parts) {
+  vapply(coord_parts, FUN.VALUE = numeric(1), function(coord_part) {
+    if (is.na(coord_part) | coord_part == '') {
+      return(as.numeric(coord_part))
+    }
+    coord_part <- trimws(coord_part)
+    is_negative <- grepl(coord_part, pattern = '[SW-]+')
+    coord_part <- gsub(coord_part, pattern = '[NWSE-]+', replacement = '')
+    coord_part <- gsub(coord_part, pattern = '”', replacement = '"')
+    coord_part <- gsub(coord_part, pattern = "''", replacement = '"')
+    if (grepl(coord_part, pattern = '^[0-9.]+$')) {
+      output <- as.numeric(coord_part)
+    } else if (grepl(coord_part, pattern = "^[0-9]{1,3}°[0-9.]+'$")) {
+      subparts <- strsplit(coord_part, split = '°')[[1]]
+      degrees <- as.numeric(subparts[1])
+      minutes <- as.numeric(gsub(subparts[2], pattern = "'", replacement = ''))
+      output <- degrees + minutes / 60
+    } else if (grepl(coord_part, pattern = "^[0-9]{1,3}°[0-9.]+'[0-9.]+\"$")) {
+      subparts <- strsplit(coord_part, split = "[°']")[[1]]
+      degrees <- as.numeric(subparts[1])
+      minutes <- as.numeric(subparts[2])
+      seconds <- as.numeric(gsub(subparts[3], pattern = '"', replacement = ''))
+      output <- degrees + minutes / 60 + seconds / 3600
+    }
+    if (is_negative) {
+      output <- output * -1
+    }
+    return(output)
+  })
+}
+
+
+#' @keywords internal
+convert_coord_to_decimal_degrees <- function(coord_text) {
+  parts <- lapply(split_coord(coord_text), convert_coord_part_to_decimal_degrees)
+  vapply(parts, FUN.VALUE = character(1), function(x) {
+    if (any(is.na(x))) {
+      return(NA_character_)
+    }
+    paste0(x, collapse = ', ')
+  })
+}
+
+
+#' @keywords internal
+can_be_numeric <- function(values) {
+  ! suppressWarnings(is.na(as.numeric(as.character(values))))
+}
+
+
+#' @keywords internal
+is_valid_lat <- function(values) {
+  vapply(values, FUN.VALUE = logical(1), function(x) {
+    is.na(x) || (can_be_numeric(x) && as.numeric(x) >= -90 && as.numeric(x) <= 90)
+  })
+}
+
+
+#' @keywords internal
+is_valid_long <- function(values) {
+  vapply(values, FUN.VALUE = logical(1), function(x) {
+    is.na(x) || (can_be_numeric(x) && as.numeric(x) >= -180 && as.numeric(x) <= 180)
+  })
+}
+
+
+#' @keywords internal
+split_address <- function(values) {
+  strsplit(values, split = ' *, *')
+}
+
+
+#' @keywords internal
+validate_ploidy <- function(metadata) {
+  is_invalid <- ! grepl(metadata$ploidy, pattern = '[0-9]+')
+  messages <- make_warning_message(
+    metadata,
+    which(is_invalid),
+    paste0('Value in `ploidy` column does not appear to be an integer.')
+  )
+  metadata$enabled[is_invalid] <- FALSE
+  list(metadata = metadata, messages = messages)
+}
+
+
 #' @keywords internal
 validate_query_max <- function(metadata) {
-  can_be_numeric <- function(values) {
-    ! suppressWarnings(is.na(as.numeric(as.character(values))))
-  }
   is_percentage <- endsWith(metadata$query_max, '%')
-  metadata$query_max <- gusb(metadata$query_max, pattern = ' *%+$', replacement = '')
+  metadata$query_max <- gsub(metadata$query_max, pattern = ' *%+$', replacement = '')
   is_invalid <- ! can_be_numeric(metadata$query_max)
   messages <- make_warning_message(
     metadata,
@@ -251,8 +505,8 @@ validate_source_generic <- function(metadata, type, must_exist = TRUE, min_count
     messages <- rbind(messages, make_warning_message(
       subset_meta,
       which(is_invalid_start),
-      pasteo('Invalid prefix for value in the `source` column. For `', type, '` input, one of the following prefixs are required: ',
-             pasteo(starts_with, collapse = ', '))
+      paste0('Invalid prefix for value in the `source` column. For `', type, '` input, one of the following prefixs are required: ',
+             paste0(starts_with, collapse = ', '))
     ))
   }
 
@@ -266,8 +520,8 @@ validate_source_generic <- function(metadata, type, must_exist = TRUE, min_count
     messages <- rbind(messages, make_warning_message(
       subset_meta,
       which(is_invalid_end),
-      pasteo('Invalid suffix for value in the `source` column. For `', type, '` input, one of the following suffixes are required: ',
-             pasteo(ends_with, collapse = ', '))
+      paste0('Invalid suffix for value in the `source` column. For `', type, '` input, one of the following suffixes are required: ',
+             paste0(ends_with, collapse = ', '))
     ))
   }
 
@@ -291,34 +545,77 @@ validate_enabled <- function(metadata) {
   list(metadata = metadata, messages = messages)
 }
 
+
+#' @keywords internal
+validate_color_by <- function(metadata) {
+  defualt_color_by <- c('usage')
+  metadata$color_by <- vapply(strsplit(metadata$color_by, split = ';'), FUN.VALUE = character(1), function(parts) {
+    paste0(unique(c(defualt_color_by, parts[! is.na(parts)])), collapse = ';')
+  })
+  validate_categorical(
+    metadata,
+    column = 'color_by',
+    choices = colnames(metadata)
+  )
+}
+
+
 #' @keywords internal
 validate_type <- function(metadata) {
-  valid_values <- valid_types()
-  metadata$type <- gsub(metadata$type, pattern = ' +', replacement = ' ')
-  cleaned_values <- valid_values[match(tolower(metadata$type), tolower(valid_values))]
-  is_invalid <- is.na(cleaned_values)
-  metadata$enabled[is_invalid] <- FALSE
-  messages <- make_warning_message(
+  validate_categorical(
     metadata,
-    which(is_invalid),
-    paste0('Invalid value in `type` column. Must be one of: ', paste0(valid_values, collapse = ', '))
+    column = 'type',
+    choices = valid_types()
   )
-  metadata$type <- cleaned_values
-  list(metadata = metadata, messages = messages)
 }
+
 
 #' @keywords internal
 validate_usage <- function(metadata) {
-  metadata$usage <- gsub(metadata$usage, pattern = ' +', replacement = ' ')
-  is_invalid <- ! metadata$usage %in% valid_usages()
-  metadata$enabled[! is_invalid] <- FALSE
+  validate_categorical(
+    metadata,
+    column = 'usage',
+    choices = valid_usages()
+  )
+}
+
+
+#' @keywords internal
+validate_ref_primary_usage <- function(metadata) {
+  validate_categorical(
+    metadata,
+    column = 'ref_primary_usage',
+    choices = valid_ref_usages()
+  )
+}
+
+
+#' @keywords internal
+validate_ref_contextual_usage <- function(metadata) {
+  validate_categorical(
+    metadata,
+    column = 'ref_contextual_usage',
+    choices = valid_ref_usages()
+  )
+}
+
+
+#' @keywords internal
+validate_categorical <- function(metadata, column, choices) {
+  metadata[[column]] <- gsub(metadata[[column]], pattern = ' +', replacement = ' ')
+  cleaned_values <- choices[match(tolower(metadata[[column]]), tolower(choices))]
+  is_invalid <- is.na(cleaned_values)
   messages <- make_warning_message(
     metadata,
     which(is_invalid),
-    paste0('Invalid value in `type` column. Must be one of: ', paste0(valid_usages(), ', '))
+    paste0('Invalid value in `', column, '` column. Must be one of: ', paste0(choices, collapse = ', '))
   )
+  metadata$enabled[is_invalid] <- FALSE
+  metadata[[column]] <- cleaned_values
   list(metadata = metadata, messages = messages)
+
 }
+
 
 #' @keywords internal
 make_warning_message <- function(metadata, index, message) {
@@ -433,7 +730,7 @@ read_input_tables <- function(input_paths, read_all_sheets = TRUE, add_input_met
   })
 
   # Replace any characters in ID columns that cannot appear in file names
-  id_cols <- c('id', 'ref_group_id', 'report_id')
+  id_cols <- c('data_id', 'bio_id', 'report_id')
   replace_id_chars <- function(values) {
     gsub(values, pattern = invalid_id_char_pattern(), replacement = '_')
   }
@@ -565,6 +862,7 @@ known_input_columns <- function() {
     'hour',
     'minute',
     'second',
+    # 'time_zone',
     'link',
     '_input_path_',
     '_sheet_name_',
@@ -590,8 +888,7 @@ default_column_values <- function() {
     enabled = TRUE,
     query_max = 10,
     ref_primary_usage = 'optional',
-    ref_contextual_usage = 'optional',
-    color_by = 'usage'
+    ref_contextual_usage = 'optional'
   )
 }
 
@@ -676,5 +973,26 @@ valid_usages <- function() {
     'reference',
     'sample metadata',
     'reference metadata'
+  )
+}
+
+
+#' Values for the `ref_*_usage` columns
+#'
+#' Valid values for the `ref_primary_usage` and `ref_contextual_usage` columns
+#' of `pathogensurveillance` input tables.
+#'
+#' @return A character `vector`
+#'
+#' @examples
+#' valid_ref_usages()
+#'
+#' @export
+valid_ref_usages <- function() {
+  c(
+    'optional',
+    'required',
+    'excluded',
+    'exclusive'
   )
 }

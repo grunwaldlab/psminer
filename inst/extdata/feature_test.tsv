@@ -1,34 +1,34 @@
-id	name	   Description	enabled	input_type	data_type	Data Source	report id	ref_group id	refprimaryusage	Ref-contextual-usage	latitude	longitude	location	country	region	subregion	place	part	date	year	month	day	time	image	link
-local_ref	Local ref		TRUE	reference	assembly	tests/data/refs/reference-22-331.fna	all;subset	xan_ref					44.57242199274744, -123.24597493258212						13-Feb-2024 06:00:00						
-local ref  - B			TRUE	reference	illumina	tests/data/reads/22-299_R1.fastq.gz ; test/data/reads/22-299_R2.fastq.gz	all;subset	xan_ref		required			44.573665628438384, -123.23928886852318						02-Feb-2024 16:00:3						
-			TRUE	reference	pacbio	test/data/reads_small/ERR11479060.fastq.gz	all;subset	plas_ref					44.56694438714396, -123.25117520462796						2-Feb-2024 2:0:3						
-			TRUE	reference	nanopore	test/data/reads_small/ERR14084304.fastq.gz	all;subset	plas_ref	optional	optional			N 44° 34' 1.857”, W 123° 13' 58.038”						17-Jan-2024 2:00am						
-		A pretty great ref!	TRUE	reference	NCBI accession	GCF_013388375.1	all;subset	xan_ref	exclusive				44°34'1.858''N 123°13'58.039''W						1-Jan-2024 3:20pm						
-			TRUE	reference	NCBI assembly query	Malaria	all;subset	plas_ref		excluded			N44°34'1.8583'', W123°13'58.0372''						11-Jan-2024 2:20:00 PM						
-			TRUE	reference	NCBI SRA query	Xanthomonas	All ; subset	xan_ref					44°34'1.859”N, 123°13'58.0395”W							2024	JAN	02			
-meta			TRUE	reference metadata	assembly	invalid input	All ; subset						44°34'1.859''N, 123°13'58.0395''W						06-Jan-2024 17:23	2024	jan	06	17:23		
-__meta__			TRUE	reference metadata	illumina		All ; subset						44°34.0309133'N, 123°13.967355'W						23-March-2024						
-			TRUE	reference metadata	pacbio	invalid input	all						N44°34.0309133' W123°13.967355'						Oct-2022						
-	Custom meta	That’s some good meta!	TRUE	reference metadata	nanopore	invalid input	all						1141 NW 34th St, Corvallis, OR 97330	USA	Oregon	Benton	Corvallis	34th St	March 2021						
-			TRUE	reference metadata	NCBI accession		ALL						2999 NW Taylor Ave, Corvallis, OR 97330	USA	Oregon	Benton	Corvallis	Taylor Ave	2022						
-			TRUE	reference metadata	NCBI assembly query	invalid input	 ALL 						1817 NW 29th St, Corvallis, OR 97330	USA	Oregon								5:20 am		
-			TRUE	reference metadata	NCBI SRA query		 ALL 												40906.25						
-			TRUE	sample	assembly	tests/data/refs/reference-22-331.fna	 ALL 	plas_ref;xan_ref			45.467310577444	-123.838141680669	2400 NW 27th St, Corvallis, OR 97330	USA	Oregon	Benton				2023	April				
-			TRUE	sample	illumina	tests/data/reads_small/22-311_R1.fastq.gz ; tests/data/reads_small/22-311_R2.fastq.gz 	ALL	xan_ref			45.4432808255067	-123.828403212033	2400 NW 27th St, Corvallis, OR 97330	USA					9:00 AM						
-			TRUE	sample	illumina	https://github.com/grunwaldlab/pathogensurveillance/raw/master/test/data/reads_small/22-324_R1.fastq.gz ; https://github.com/grunwaldlab/pathogensurveillance/raw/master/test/data/reads_small/22-324_R2.fastq.gz 	all	xan_ref											Thursday, December 29, 2011						
-			TRUE	sample	illumina	https://github.com/grunwaldlab/pathogensurveillance/raw/master/test/data/reads_small/22-335_R1.fastq.gz  ;  https://github.com/grunwaldlab/pathogensurveillance/raw/master/test/data/reads_small/22-335_R2.fastq.gz 	all	xan_ref																	
-			FALSE	sample	pacbio	tests/data/reads_small/SRR10404483.fastq.gz	all				45.4521223930175	-123.852233817859	Oregon						12/21/2021						
-		A pretty great sample!	FALSE	sample	nanopore	tests/data/reads_small/SRR22464745.fastq.gz	all				45.487635447155	-123.773867784963	Nevada						2/29/2011						
-			TRUE	sample	NCBI accession	SRR18850314	All ; subset				45.4661053155534	-123.764014745536							22-09-2012						
-			TRUE	sample	NCBI accession	SRR18850310	All ; subset																		
-			TRUE	sample	NCBI accession	ERR13427439	All ; subset																		
-			TRUE	sample	NCBI accession	ERR5421722	All ; subset	euk_refs											Oct 12 2022 06:00:00						
-			TRUE	sample	NCBI assembly query	Limosilactobacillus	All ; subset				45.4571052115607	-123.720592629599							Oct 12 2022 07:00:00 AM						
-			TRUE	sample	NCBI SRA query	firmicutes 	All ; subset				45.3968313279087	-123.779715379296							Oct 12 2022 12:00:00 PM						
-		This has meta has “quotes”	TRUE	sample metadata	assembly	invalid input	all;subset				45°23.80998'	-123°46.78297'													
-	Custom meta		TRUE	sample metadata	illumina		all;subset				"45°23'48.5926"""	"-123°46'46.9751"""							Oct 12 2022 16:00:00						
-	Custom meta		TRUE	sample metadata	pacbio	invalid input	all;subset				N45°23.80993'	W123°46.78296'								2002					
-	Custom meta		TRUE	sample metadata	nanopore		all				"45°23'48.5928""N"	"123°46'46.9752""W"								2004					
-			TRUE	sample metadata	NCBI accession	invalid input	all																		
-			TRUE	sample metadata	NCBI assembly query		all						France												
-			TRUE	sample metadata	NCBI SRA query	Xanthomonas	all	plas_ref;xan_ref					Monmouth, OR 97361												
+data_id	name	   Description	enabled	usage	type	Source	report id	ref_group id	refprimaryusage	Ref-contextual-usage	latitude	longitude	location	country	region	subregion	place	part	date	year	month	day	time	time_zone	image	link
+local_ref	Local ref		TRUE	reference	assembly	tests/data/refs/reference-22-331.fna	all;subset	xan_ref					44.57242199274744, -123.24597493258212						2024-Feb-13 06:00:00							
+local ref  - B			TRUE	reference	illumina	tests/data/reads/22-299_R1.fastq.gz ; test/data/reads/22-299_R2.fastq.gz	all;subset	xan_ref		required			44.573665628438384, -123.23928886852318						2024-Feb-02 16:00:3							
+			TRUE	reference	pacbio	test/data/reads_small/ERR11479060.fastq.gz	all;subset	plas_ref					44.56694438714396, -123.25117520462796						2024-Feb-2 2:0:3					PDT		
+			TRUE	reference	nanopore	test/data/reads_small/ERR14084304.fastq.gz	all;subset	plas_ref	optional	optional			N 44° 34' 1.857”, W 123° 13' 58.038”						2024-Jan-17 2:00am							
+		A pretty great ref!	TRUE	reference	NCBI accession	GCF_013388375.1	all;subset	xan_ref	exclusive				44°34'1.858''N 123°13'58.039''W						2024-Jan-1 3:20pm							
+			TRUE	reference	NCBI assembly query	Malaria	all;subset	plas_ref		excluded			N44°34'1.8583'', W123°13'58.0372''						2024-Jan-11 2:20:00 PM							
+			TRUE	reference	NCBI SRA query	Xanthomonas	All ; subset	xan_ref					44°34'1.859”N, 123°13'58.0395”W							2024	JAN	2				
+meta			TRUE	reference metadata	assembly	invalid input	All ; subset						44°34'1.859''N, 123°13'58.0395''W						2024-Jan-06 17:23	2024	jan	6	17:23			
+__meta__			TRUE	reference metadata	illumina		All ; subset						44°34.0309133'N, 123°13.967355'W						2024-March-23							
+			TRUE	reference metadata	pacbio	invalid input	all						N44°34.0309133' W123°13.967355'						2022-Oct							
+	Custom meta	That’s some good meta!	TRUE	reference metadata	nanopore	invalid input	all						1141 NW 34th St, Corvallis, OR 97330	USA	Oregon	Benton	Corvallis	34th St	March 2021							
+			TRUE	reference metadata	NCBI accession		ALL						2999 NW Taylor Ave, Corvallis, OR 97330	USA	Oregon	Benton	Corvallis	Taylor Ave	2022							
+			TRUE	reference metadata	NCBI assembly query	invalid input	 ALL 						1817 NW 29th St, Corvallis, OR 97330	USA	Oregon								5:20 am			
+			TRUE	reference metadata	NCBI SRA query		 ALL 												40906.25							
+			TRUE	sample	assembly	tests/data/refs/reference-22-331.fna	 ALL 	plas_ref;xan_ref			45.467310577444	-123.838141680669	2400 NW 27th St, Corvallis, OR 97330	USA	Oregon	Benton				2023	April					
+			TRUE	sample	illumina	tests/data/reads_small/22-311_R1.fastq.gz ; tests/data/reads_small/22-311_R2.fastq.gz 	ALL	xan_ref			45.4432808255067	-123.828403212033	2400 NW 27th St, Corvallis, OR 97330	USA					9:00 AM							
+			TRUE	sample	illumina	https://github.com/grunwaldlab/pathogensurveillance/raw/master/test/data/reads_small/22-324_R1.fastq.gz ; https://github.com/grunwaldlab/pathogensurveillance/raw/master/test/data/reads_small/22-324_R2.fastq.gz 	all	xan_ref											Thursday, December 29, 2011							
+			TRUE	sample	illumina	https://github.com/grunwaldlab/pathogensurveillance/raw/master/test/data/reads_small/22-335_R1.fastq.gz  ;  https://github.com/grunwaldlab/pathogensurveillance/raw/master/test/data/reads_small/22-335_R2.fastq.gz 	all	xan_ref																		
+			FALSE	sample	pacbio	tests/data/reads_small/SRR10404483.fastq.gz	all				45.4521223930175	-123.852233817859	Oregon						12/21/2021							
+		A pretty great sample!	FALSE	sample	nanopore	tests/data/reads_small/SRR22464745.fastq.gz	all				45.487635447155	-123.773867784963	Nevada						2/29/2011							
+			TRUE	sample	NCBI accession	SRR18850314	All ; subset				45.4661053155534	-123.764014745536							22-09-2012							
+			TRUE	sample	NCBI accession	SRR18850310	All ; subset																			
+			TRUE	sample	NCBI accession	ERR13427439	All ; subset																			
+			TRUE	sample	NCBI accession	ERR5421722	All ; subset	euk_refs											Oct 12 2022 06:00:00							
+			TRUE	sample	NCBI assembly query	Limosilactobacillus	All ; subset				45.4571052115607	-123.720592629599							Oct 12 2022 07:00:00 AM							
+			TRUE	sample	NCBI SRA query	firmicutes 	All ; subset				45.3968313279087	-123.779715379296							Oct 12 2022 12:00:00 PM							
+		This has meta has “quotes”	TRUE	sample metadata	assembly	invalid input	all;subset				45°23.80998'	-123°46.78297'														
+	Custom meta		TRUE	sample metadata	illumina		all;subset				"45°23'48.5926"""	"-123°46'46.9751"""							Oct 12 2022 16:00:00							
+	Custom meta		TRUE	sample metadata	pacbio	invalid input	all;subset				N45°23.80993'	W123°46.78296'							2025-02-27T09:12:57−12:00 	2002						
+	Custom meta		TRUE	sample metadata	nanopore		all				"45°23'48.5928""N"	"123°46'46.9752""W"							2025-02-27T21:12:57Z	2004						
+			TRUE	sample metadata	NCBI accession	invalid input	all												20250227T211257Z							
+			TRUE	sample metadata	NCBI assembly query		all						France											WET		
+			TRUE	sample metadata	NCBI SRA query	Xanthomonas	all	plas_ref;xan_ref					Monmouth, OR 97361													
