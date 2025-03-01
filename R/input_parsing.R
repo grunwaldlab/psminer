@@ -43,7 +43,6 @@ parse_path_surveil_input <- function(input_paths, fail_on_warning = FALSE) {
   apply_validation(validate_ref_contextual_usage)
   apply_validation(validate_ploidy)
   apply_validation(validate_color_by)
-  apply_validation(validate_location_cols)
   apply_validation(validate_date_cols)
   apply_validation(validate_source_illumina)
   apply_validation(validate_source_nanopore)
@@ -51,9 +50,10 @@ parse_path_surveil_input <- function(input_paths, fail_on_warning = FALSE) {
   apply_validation(validate_source_assembly)
   apply_validation(validate_source_image)
   apply_validation(validate_source_observation)
-  apply_validation(validate_source_ncbi_accession)
   apply_validation(validate_source_sra_query)
   apply_validation(validate_source_assembly_query)
+  apply_validation(validate_source_ncbi_accession)
+  apply_validation(validate_location_cols)
 
 
   return(metadata)
@@ -62,18 +62,20 @@ parse_path_surveil_input <- function(input_paths, fail_on_warning = FALSE) {
 
 #' @keywords internal
 validate_date_cols <- function(metadata) {
-  # # Convert user-supplied time zones to same format
-  # tz_data <- lutz::tz_list()
-  # metadata$time_zone <- ifelse(metadata$time_zone %in% tz_data$zone,
-  #                              tz_data$tz_name[match(metadata$time_zone, tz_data$zone)],
-  #                              metadata$time_zone)
-  # metadata$time_zone <- ifelse(metadata$time_zone %in% tz_data$utc_offset_h,
-  #                              tz_data$tz_name[match(metadata$time_zone, tz_data$utc_offset_h)],
-  #                              metadata$time_zone)
-  #
-  # # Infer time zone from locaton data
-  # predicted_tz <- lutz::tz_lookup_coords(lat = metadata$latitude, lon = metadata$longitude, warn = FALSE)
-  # metadata$time_zone <- ifelse(is.na(metadata$time_zone) & ! is.na(predicted_tz), predicted_tz, metadata$time_zone)
+
+  # If both `date` and date part columns are used, give preference to date part columns
+  date_part_func <- list(
+    year = lubridate::year,
+    month = lubridate::month,
+    day = lubridate::day,
+    hour = lubridate::hour,
+    minute = lubridate::minute,
+    second = lubridate::second
+  )
+  has_parts <- apply(metadata[, names(date_part_func), drop = FALSE], MARGIN = 1, function(x) any(! is.na(x)))
+  metadata$date[has_parts] <- apply(metadata[has_parts, names(date_part_func), drop = FALSE], MARGIN = 1, function(row) {
+    paste0(row[!is.na(row)], collapse = ' ')
+  })
 
   # Parse dates
   date_time_formats <- c(
@@ -96,10 +98,6 @@ validate_date_cols <- function(metadata) {
     'Om/Y'
   )
   parsed_dates <- lubridate::parse_date_time(metadata$date, orders = date_time_formats, quiet = TRUE)
-  # parsed_dates <- lapply(seq_len(nrow(metadata)), function(i) {
-  #   lubridate::parse_date_time(metadata$date[i], orders = date_time_formats, quiet = TRUE,
-  #                              tz = ifelse(is.na(metadata$time_zone[i]), 'UTC', metadata$time_zone[i]))
-  # })
   is_invalid <- is.na(parsed_dates) & ! is.na(metadata$date)
   messages <- make_warning_message(
     metadata,
@@ -109,18 +107,8 @@ validate_date_cols <- function(metadata) {
   metadata$date <- lubridate::format_ISO8601(parsed_dates)
 
   # Split dates into columns for parts of date/time
-  date_part_func <- list(
-    year = lubridate::year,
-    month = lubridate::month,
-    day = lubridate::day,
-    hour = lubridate::hour,
-    minute = lubridate::minute,
-    second = lubridate::second
-    # time_zone = lubridate::tz
-  )
-  date_parts_missing <- apply(metadata[, names(date_part_func), drop = FALSE], MARGIN = 1, function(x) all(is.na(x)))
-  metadata[, names(date_part_func)] <- lapply(seq_along(date_part_func), function(i) {
-    ifelse(date_parts_missing, sapply(parsed_dates, date_part_func[[i]]), metadata[[names(date_part_func)[i]]])
+  metadata[, names(date_part_func)] <- lapply(date_part_func, function(func) {
+    func(parsed_dates)
   })
 
   list(metadata = metadata, messages = messages)
@@ -298,6 +286,16 @@ split_address <- function(values) {
 
 #' @keywords internal
 validate_ploidy <- function(metadata) {
+  # Assume haploid if missing
+  is_missing <- is.na(metadata$ploidy)
+  messages <- make_warning_message(
+    metadata,
+    which(is_missing),
+    paste0('Value in `ploidy` column is missing. Haploid (1) is assumed. Set the ploidy to avoid this warning.')
+  )
+  metadata$ploidy[is_missing] <- 1
+
+  # Check for invalid user inputs
   is_invalid <- ! grepl(metadata$ploidy, pattern = '[0-9]+')
   messages <- make_warning_message(
     metadata,
@@ -305,6 +303,7 @@ validate_ploidy <- function(metadata) {
     paste0('Value in `ploidy` column does not appear to be an integer.')
   )
   metadata$enabled[is_invalid] <- FALSE
+
   list(metadata = metadata, messages = messages)
 }
 
@@ -346,15 +345,143 @@ validate_source_assembly_query <- function(metadata) {
   )
 }
 
+#' @keywords internal
+is_latin_binomial <- function(x) {
+  grepl(x, pattern = '^[a-zA-Z]+ [a-zA-Z]+($| ).*$')
+}
 
 #' @keywords internal
-validate_source_sra_query <- function(metadata) {
-  validate_source_generic(
-    metadata,
-    type = 'NCBI SRA query',
-    must_exist = TRUE,
-    min_count = NULL
+validate_source_sra_query <- function(metadata, prefer_unique = TRUE, prefer_binomial = TRUE) {
+  is_sra_query <- ! is.na(metadata$type) &  ! is.na(metadata$source) & metadata$type == 'NCBI SRA query' & metadata$enabled
+  unique_query_data <- unique(metadata[is_sra_query, c('source', 'query_max'), drop = FALSE])
+  ncbi_result <- lapply(seq_len(nrow(unique_query_data)), function(i) {
+    get_ncbi_sra_runs(unique_query_data$source[i], max_count = unique_query_data$query_max[i])
+  })
+  new_sample_data <- do.call(rbind, lapply(which(is_sra_query), function(i) {
+    query_data <- ncbi_result[unique_query_data$source == metadata$source[i] & unique_query_data$query_max == metadata$query_max[i]][[1]]
+    output <- metadata[rep(i, nrow(query_data)), , drop = FALSE]
+    if (is.na(metadata$data_id[i])) {
+      output$data_id <- query_data$ncbi_acc
+    } else {
+      output$data_id <- paste0(metadata$data_id[i], query_data$ncbi_acc)
+    }
+    if (is.na(metadata$bio_id[i])) {
+      output$bio_id <- query_data$biosample
+    } else {
+      output$bio_id <- paste0(metadata$bio_id[i], query_data$biosample)
+    }
+    if (is.na(metadata$name[i])) {
+      output$name <- query_data$scientific_name
+    } else {
+      output$name <- paste0(metadata$name[i], query_data$scientific_name)
+    }
+    if (is.na(metadata$description[i])) {
+      output$description <- query_data$title
+    } else {
+      output$description <- paste0(metadata$description[i], query_data$title)
+    }
+    output$type <- "NCBI accession"
+    output$source <- query_data$ncbi_acc
+    rownames(output) <- NULL
+    output
+  }))
+  metadata <- rbind(
+    metadata[! is_sra_query, ],
+    new_sample_data
   )
+  list(metadata = metadata, messages = NULL)
+}
+
+
+#' Get metadata for SRA accessions using a query
+#'
+#' Get metadata for SRA accessions associated with a query to NCBI.
+#'
+#' @param query The query to use
+#' @param max_count The maximum number or proportion of results to download
+#' @param prefer_unique Give preference to diverse taxa, but still return
+#'   duplicates if not enough unique taxa are found to satisfy `max_count`.
+#' @param prefer_bionomial
+#' @keywords internal
+get_ncbi_sra_runs <- function(query, max_count = 10, prefer_unique = TRUE, prefer_binomial = TRUE) {
+  # Search for SRA accession but don't download metadata yet
+  search_result <- rentrez::entrez_search(db = 'sra', query, retmax = 10000, use_history = TRUE)
+
+  # Convert max_count if a proportion is supplied instead of a count
+  if (max_count < 1) {
+    max_count <- ceiling(max_count * search_result$count)
+  }
+
+  # Parse 500 results at a time
+  starts <- seq(from = 0 , to = length(search_result$ids) - 1, by = 500)
+  results <- NULL
+  preferred_results <- NULL
+  for (start in starts) {
+    summary_result <- rentrez::entrez_summary(db = 'sra', retmax = 500, retstart = start, web_history = search_result$web_history)
+    if (length(search_result$ids) == 1) {
+      summary_result <- list(summary_result)
+    }
+    run_data <- unlist(lapply(summary_result, function(x) {
+      if (length(x$runs) > 1) {
+        warning('Accession with multiple runs found. Only using first run.')
+      }
+      x$runs[1]
+    }))
+    expxml_data <- unlist(lapply(summary_result, function(x) {
+      if (length(x$expxml) > 1) {
+        warning('Accession with multiple runs found. Only using first run.')
+      }
+      x$expxml[1]
+    }))
+    batch_data <- data.frame(
+      ncbi_acc = gsub(run_data, pattern = '.+ acc="(.+?)" .+', replacement = '\\1'),
+      total_spots = gsub(run_data, pattern = '.+ total_spots="(.+?)" .+', replacement = '\\1'),
+      total_bases = gsub(run_data, pattern = '.+ total_bases="(.+?)" .+', replacement = '\\1'),
+      title = gsub(expxml_data, pattern = '.+<Title>(.+?)</Title>.+', replacement = '\\1'),
+      instrument_model = gsub(expxml_data, pattern = '.+<Platform instrument_model="(.+?)">(.+?)</Platform>.+', replacement = '\\1'),
+      platform = gsub(expxml_data, pattern = '.+<Platform instrument_model="(.+?)">(.+?)</Platform>.+', replacement = '\\2'),
+      total_runs = gsub(expxml_data, pattern = '.+ total_runs="(.+?)" .+', replacement = '\\1'),
+      total_size = gsub(expxml_data, pattern = '.+ total_size="(.+?)" .+', replacement = '\\1'),
+      experiment_acc = gsub(expxml_data, pattern = '.+<Experiment acc="(.+?)" .+', replacement = '\\1'),
+      study_acc = gsub(expxml_data, pattern = '.+<Study acc="(.+?)" .+', replacement = '\\1'),
+      sample_acc = gsub(expxml_data, pattern = '.+<Sample acc="(.+?)" .+', replacement = '\\1'),
+      taxid = gsub(expxml_data, pattern = '.+ taxid="(.+?)" .+', replacement = '\\1'),
+      scientific_name = gsub(expxml_data, pattern = '.+ ScientificName="(.+?)"/>.+', replacement = '\\1'),
+      library_strategy =  gsub(expxml_data, pattern = '.+<LIBRARY_STRATEGY>(.+?)</LIBRARY_STRATEGY>.+', replacement = '\\1'),
+      library_source =  gsub(expxml_data, pattern = '.+<LIBRARY_SOURCE>(.+?)</LIBRARY_SOURCE>.+', replacement = '\\1'),
+      library_selection =  gsub(expxml_data, pattern = '.+<LIBRARY_SELECTION>(.+?)</LIBRARY_SELECTION>.+', replacement = '\\1'),
+      bioproject =  gsub(expxml_data, pattern = '.+<Bioproject>(.+?)</Bioproject>.+', replacement = '\\1'),
+      biosample =  gsub(expxml_data, pattern = '.+<Biosample>(.+?)</Biosample>.+', replacement = '\\1')
+    )
+    rownames(batch_data) <- NULL
+    batch_data <- batch_data[batch_data$library_strategy == 'WGS' & batch_data$library_source == 'GENOMIC' & batch_data$total_bases > 100000, , drop = FALSE]
+    results <- rbind(results, batch_data)
+    preferred_batch_data <- batch_data
+    if (prefer_binomial) {
+      preferred_batch_data <- preferred_batch_data[is_latin_binomial(preferred_batch_data$scientific_name), , drop = FALSE]
+    }
+    if (prefer_unique) {
+      is_new <- ! duplicated(preferred_batch_data$taxid)
+      if (! is.null(preferred_results)) {
+        is_new <- is_new & ! preferred_batch_data$taxid %in% preferred_results$taxid
+      }
+      preferred_batch_data <- preferred_batch_data[is_new, , drop = FALSE]
+    }
+    preferred_results <- rbind(preferred_results, preferred_batch_data)
+    if (nrow(preferred_results) >= max_count) {
+      break
+    }
+  }
+
+  # Subset results to query maximum
+  if (nrow(preferred_results) >= max_count) {
+    output <- preferred_results
+  } else {
+    output <- rbind(preferred_results, results[! results$ncbi_acc %in% preferred_results$ncbi_acc, , drop = FALSE])
+  }
+  output <- output[seq_len(min(c(nrow(output), max_count))), , drop = FALSE]
+  rownames(output) <- NULL
+  return(output)
 }
 
 
@@ -393,7 +520,7 @@ validate_source_assembly <- function(metadata) {
     type = 'Assembly',
     must_exist = TRUE,
     max_count = 1,
-    ends_with = c('.fastq', '.fastq.gz', 'fq', 'fq.gz')
+    ends_with = valid_fasta_extentions()
   )
 }
 
@@ -404,7 +531,7 @@ validate_source_pacbio <- function(metadata) {
     type = 'Pacbio',
     must_exist = TRUE,
     max_count = 1,
-    ends_with = c('.fastq', '.fastq.gz', 'fq', 'fq.gz')
+    ends_with = valid_fastq_extentions()
   )
 }
 
@@ -415,7 +542,7 @@ validate_source_nanopore <- function(metadata) {
     type = 'Nanopore',
     must_exist = TRUE,
     max_count = 1,
-    ends_with = c('.fastq', '.fastq.gz', 'fq', 'fq.gz')
+    ends_with = valid_fastq_extentions()
   )
 }
 
@@ -426,10 +553,20 @@ validate_source_illumina <- function(metadata) {
     type = 'Illumina',
     must_exist = TRUE,
     max_count = 2,
-    ends_with = c('.fastq', '.fastq.gz', 'fq', 'fq.gz')
+    ends_with = valid_fastq_extentions()
   )
 }
 
+
+#' @keywords internal
+valid_fastq_extentions <- function() {
+  c('.fastq', '.fastq.gz', '.fq', '.fq.gz')
+}
+
+#' @keywords internal
+valid_fasta_extentions <- function() {
+  c('.fasta', '.fasta.gz', '.fa', '.fa.gz', '.fas', '.fas.gz')
+}
 
 #' Check that `source` counts and values
 #'
@@ -535,8 +672,8 @@ validate_source_generic <- function(metadata, type, must_exist = TRUE, min_count
 validate_enabled <- function(metadata) {
   is_enabled <- as.logical(metadata$enabled)
   is_invalid <- is.na(is_enabled)
-  metadata$enabled <- as.logical(metadata$enabled)
-  metadata$enabled[! is_invalid] <- FALSE
+  metadata$enabled <- is_enabled
+  metadata$enabled[is_invalid] <- FALSE
   messages <- make_warning_message(
     metadata,
     which(is_invalid),
@@ -555,7 +692,8 @@ validate_color_by <- function(metadata) {
   validate_categorical(
     metadata,
     column = 'color_by',
-    choices = colnames(metadata)
+    choices = colnames(metadata),
+    clean = FALSE
   )
 }
 
@@ -601,10 +739,28 @@ validate_ref_contextual_usage <- function(metadata) {
 
 
 #' @keywords internal
-validate_categorical <- function(metadata, column, choices) {
+validate_categorical <- function(metadata, column, choices, clean = TRUE) {
   metadata[[column]] <- gsub(metadata[[column]], pattern = ' +', replacement = ' ')
-  cleaned_values <- choices[match(tolower(metadata[[column]]), tolower(choices))]
-  is_invalid <- is.na(cleaned_values)
+  if (column %in% multi_input_columns()) {
+    if (clean) {
+      cleaned_parts <- lapply(strsplit(metadata[[column]], split = ';'), function(parts) {
+        choices[match(tolower(parts), tolower(choices))]
+      })
+    } else {
+      cleaned_parts <- strsplit(metadata[[column]], split = ';')
+    }
+    is_invalid <- vapply(cleaned_parts, FUN.VALUE = logical(1), function(parts) {
+      any(is.na(parts))
+    })
+    cleaned_values <- vapply(cleaned_parts, FUN.VALUE = character(1), paste0, collapse = ';')
+  } else {
+    if (clean) {
+      cleaned_values <- choices[match(tolower(metadata[[column]]), tolower(choices))]
+    } else {
+      cleaned_values <- metadata[[column]]
+    }
+    is_invalid <- is.na(cleaned_values)
+  }
   messages <- make_warning_message(
     metadata,
     which(is_invalid),
@@ -613,7 +769,6 @@ validate_categorical <- function(metadata, column, choices) {
   metadata$enabled[is_invalid] <- FALSE
   metadata[[column]] <- cleaned_values
   list(metadata = metadata, messages = messages)
-
 }
 
 
