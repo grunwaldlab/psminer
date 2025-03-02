@@ -56,7 +56,15 @@ parse_path_surveil_input <- function(input_paths, fail_on_warning = FALSE) {
   apply_validation(validate_location_cols)
 
 
-  return(metadata)
+  # Save/print messages
+  messages$description
+  data.frame(
+    data_id = metadata$data_id[messages$`_row_index_`],
+    usage = metadata$usage[messages$`_row_index_`],
+  )
+
+
+  list(metadata = metadata, messages = messages)
 }
 
 
@@ -336,16 +344,6 @@ validate_source_observation <- function(metadata) {
 }
 
 #' @keywords internal
-validate_source_assembly_query <- function(metadata) {
-  validate_source_generic(
-    metadata,
-    type = 'NCBI assembly query',
-    must_exist = TRUE,
-    min_count = NULL
-  )
-}
-
-#' @keywords internal
 is_latin_binomial <- function(x) {
   grepl(x, pattern = '^[a-zA-Z]+ [a-zA-Z]+($| ).*$')
 }
@@ -385,8 +383,9 @@ validate_source_sra_query <- function(metadata, prefer_unique = TRUE, prefer_bin
     rownames(output) <- NULL
     output
   }))
+  metadata$enabled[is_sra_query] <- FALSE
   metadata <- rbind(
-    metadata[! is_sra_query, ],
+    metadata,
     new_sample_data
   )
   list(metadata = metadata, messages = NULL)
@@ -478,6 +477,130 @@ get_ncbi_sra_runs <- function(query, max_count = 10, prefer_unique = TRUE, prefe
     output <- preferred_results
   } else {
     output <- rbind(preferred_results, results[! results$ncbi_acc %in% preferred_results$ncbi_acc, , drop = FALSE])
+  }
+  output <- output[seq_len(min(c(nrow(output), max_count))), , drop = FALSE]
+  rownames(output) <- NULL
+  return(output)
+}
+
+
+#' @keywords internal
+validate_source_assembly_query <- function(metadata, prefer_unique = TRUE, prefer_binomial = TRUE) {
+  is_query <- ! is.na(metadata$type) &  ! is.na(metadata$source) & metadata$type == 'NCBI assembly query' & metadata$enabled
+  unique_query_data <- unique(metadata[is_query, c('source', 'query_max'), drop = FALSE])
+  ncbi_result <- lapply(seq_len(nrow(unique_query_data)), function(i) {
+    get_ncbi_assemblies(unique_query_data$source[i], max_count = unique_query_data$query_max[i])
+  })
+  new_sample_data <- do.call(rbind, lapply(which(is_query), function(i) {
+    query_data <- ncbi_result[unique_query_data$source == metadata$source[i] & unique_query_data$query_max == metadata$query_max[i]][[1]]
+    output <- metadata[rep(i, nrow(query_data)), , drop = FALSE]
+    if (is.na(metadata$data_id[i])) {
+      output$data_id <- query_data$assemblyaccession
+    } else {
+      output$data_id <- paste0(metadata$data_id[i], query_data$assemblyaccession)
+    }
+    if (is.na(metadata$bio_id[i])) {
+      output$bio_id <- query_data$biosampleaccn
+    } else {
+      output$bio_id <- paste0(metadata$bio_id[i], query_data$biosampleaccne)
+    }
+    if (is.na(metadata$name[i])) {
+      output$name <- query_data$speciesname
+    } else {
+      output$name <- paste0(metadata$name[i], query_data$speciesname)
+    }
+    if (is.na(metadata$description[i])) {
+      output$description <- query_data$organism
+    } else {
+      output$description <- paste0(metadata$description[i], query_data$organism)
+    }
+    output$type <- "NCBI accession"
+    output$source <- query_data$assemblyaccession
+    rownames(output) <- NULL
+    output
+  }))
+  metadata$enabled[is_query] <- FALSE
+  metadata <- rbind(
+    metadata,
+    new_sample_data
+  )
+  list(metadata = metadata, messages = NULL)
+}
+
+
+#' Get metadata for NCBI assemblies using a query
+#'
+#' Get metadata for NCBI assemblies associated with a query to NCBI.
+#'
+#' @param query The query to use
+#' @param max_count The maximum number or proportion of results to download
+#' @param prefer_unique Give preference to diverse taxa, but still return
+#'   duplicates if not enough unique taxa are found to satisfy `max_count`.
+#' @param prefer_bionomial
+#'
+#' @keywords internal
+get_ncbi_assemblies <- function(query, max_count = 10, prefer_unique = TRUE, prefer_binomial = TRUE) {
+  # Search for SRA accession but don't download metadata yet
+  search_result <- rentrez::entrez_search(db = 'assembly', query, retmax = 10000, use_history = TRUE)
+
+  # Convert max_count if a proportion is supplied instead of a count
+  if (max_count < 1) {
+    max_count <- ceiling(max_count * search_result$count)
+  }
+
+  # Parse 500 results at a time
+  to_auto_extract <- c(
+    "uid", "rsuid", "gbuid", "assemblyaccession", "lastmajorreleaseaccession",
+    "latestaccession", "chainid", "assemblyname", "ucscname", "ensemblname",
+    "taxid", "organism", "speciestaxid", "speciesname", "assemblytype",
+    "assemblystatus", "wgs", "biosampleaccn", "biosampleid", "coverage",
+    "partialgenomerepresentation", "primary", "assemblydescription",
+    "releaselevel", "releasetype", "asmreleasedate_genbank", "asmreleasedate_refseq",
+    "seqreleasedate", "asmupdatedate", "submissiondate", "lastupdatedate",
+    "submitterorganization", "refseq_category", "fromtype", "annotrpturl",
+    "ftppath_genbank", "ftppath_refseq", "ftppath_assembly_rpt",
+    "ftppath_stats_rpt", "ftppath_regions_rpt", "sortorder", "meta"
+  )
+  starts <- seq(from = 0 , to = length(search_result$ids) - 1, by = 500)
+  results <- NULL
+  preferred_results <- NULL
+  for (start in starts) {
+    summary_result <- rentrez::entrez_summary(db = 'assembly', retmax = 500, retstart = start, web_history = search_result$web_history)
+    batch_data <- do.call(rbind, lapply(summary_result, function(x) {
+      out <- as.data.frame(x[to_auto_extract])
+      out$is_full_genome <- "full-genome-representation" %in% x$propertylist
+      out$is_latest <- "latest" %in% x$propertylist
+      out$bioprojects <- paste0(x$gb_bioprojects$bioprojectaccn, collapse = ';')
+      out$exclfromrefseq <- paste0(unlist(x$exclfromrefseq), collapse = ';')
+      out$sex <- x$biosource$sex
+      out$isolate <- x$biosource$isolate
+      out$infraspecies <- paste0(x$biosource$infraspecieslist$sub_value, collapse = ';')
+      return(out)
+    }))
+    rownames(batch_data) <- NULL
+    results <- rbind(results, batch_data)
+    preferred_batch_data <- batch_data
+    if (prefer_binomial) {
+      preferred_batch_data <- preferred_batch_data[is_latin_binomial(preferred_batch_data$speciesname), , drop = FALSE]
+    }
+    if (prefer_unique) {
+      is_new <- ! duplicated(preferred_batch_data$speciestaxid)
+      if (! is.null(preferred_results)) {
+        is_new <- is_new & ! preferred_batch_data$speciestaxid %in% preferred_results$speciestaxid
+      }
+      preferred_batch_data <- preferred_batch_data[is_new, , drop = FALSE]
+    }
+    preferred_results <- rbind(preferred_results, preferred_batch_data)
+    if (nrow(preferred_results) >= max_count) {
+      break
+    }
+  }
+
+  # Subset results to query maximum
+  if (nrow(preferred_results) >= max_count) {
+    output <- preferred_results
+  } else {
+    output <- rbind(preferred_results, results[! results$assemblyaccession %in% preferred_results$assemblyaccession, , drop = FALSE])
   }
   output <- output[seq_len(min(c(nrow(output), max_count))), , drop = FALSE]
   rownames(output) <- NULL
