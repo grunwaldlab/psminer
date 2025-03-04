@@ -8,7 +8,10 @@ get_ncbi_assemblies(
   query,
   max_count = 10,
   prefer_unique = TRUE,
-  prefer_binomial = TRUE
+  prefer_binomial = TRUE,
+  prefer_complete = TRUE,
+  prefer_refseq = TRUE,
+  only_latest = TRUE
 )
 }
 \arguments{
@@ -19,7 +22,19 @@ get_ncbi_assemblies(
 \item{prefer_unique}{Give preference to diverse taxa, but still return
 duplicates if not enough unique taxa are found to satisfy \code{max_count}.}
 
-\item{prefer_bionomial}{}
+\item{prefer_complete}{Prefer genomes with "Complete Genome" or "Chromosome"
+assembly status}
+
+\item{prefer_refseq}{Prefer genomes in RefSeq.}
+
+\item{only_latest}{Only include the most recent version of a genome assembly
+if there are multiple versions in the result.}
+
+\item{prefer_bionomial}{Prefer genomes with a standard looking genus/species
+name (no numbers)}
+}
+\value{
+A \code{data.frame}
 }
 \description{
 Get metadata for NCBI assemblies associated with a query to NCBI.

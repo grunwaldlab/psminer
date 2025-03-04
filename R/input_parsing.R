@@ -536,10 +536,20 @@ validate_source_assembly_query <- function(metadata, prefer_unique = TRUE, prefe
 #' @param max_count The maximum number or proportion of results to download
 #' @param prefer_unique Give preference to diverse taxa, but still return
 #'   duplicates if not enough unique taxa are found to satisfy `max_count`.
-#' @param prefer_bionomial
+#' @param prefer_bionomial Prefer genomes with a standard looking genus/species
+#'   name (no numbers)
+#' @param prefer_complete Prefer genomes with "Complete Genome" or "Chromosome"
+#'   assembly status
+#' @param prefer_refseq Prefer genomes in RefSeq.
+#' @param only_latest Only include the most recent version of a genome assembly
+#'   if there are multiple versions in the result.
+#'
+#' @return A `data.frame`
 #'
 #' @keywords internal
-get_ncbi_assemblies <- function(query, max_count = 10, prefer_unique = TRUE, prefer_binomial = TRUE) {
+get_ncbi_assemblies <- function(query, max_count = 10, prefer_unique = TRUE,
+                                prefer_binomial = TRUE, prefer_complete = TRUE,
+                                prefer_refseq = TRUE, only_latest = TRUE) {
   # Search for SRA accession but don't download metadata yet
   search_result <- rentrez::entrez_search(db = 'assembly', query, retmax = 10000, use_history = TRUE)
 
@@ -565,7 +575,10 @@ get_ncbi_assemblies <- function(query, max_count = 10, prefer_unique = TRUE, pre
   results <- NULL
   preferred_results <- NULL
   for (start in starts) {
+    # Download a batch of assembly metadata
     summary_result <- rentrez::entrez_summary(db = 'assembly', retmax = 500, retstart = start, web_history = search_result$web_history)
+
+    # Convert nested lists and XML to a table
     batch_data <- do.call(rbind, lapply(summary_result, function(x) {
       out <- as.data.frame(x[to_auto_extract])
       out$is_full_genome <- "full-genome-representation" %in% x$propertylist
@@ -575,11 +588,54 @@ get_ncbi_assemblies <- function(query, max_count = 10, prefer_unique = TRUE, pre
       out$sex <- x$biosource$sex
       out$isolate <- x$biosource$isolate
       out$infraspecies <- paste0(x$biosource$infraspecieslist$sub_value, collapse = ';')
+      meta <- xml2::read_xml(paste0('<root>', out$meta, '</root>'))
+      stats <- paste0(
+        xml2::xml_attr(xml2::xml_find_all(meta, './/Stat'), 'category'),
+        '_',
+        xml2::xml_attr(xml2::xml_find_all(meta, './/Stat'), 'sequence_tag')
+      )
+      values <- xml2::xml_contents(xml2::xml_find_all(meta, './/Stat'))
+      out[stats] <- as.list(as.character(values))
+      out$assembly_level <- as.character(xml2::xml_contents(xml2::xml_find_all(meta, './assembly-level')))
+      out$assembly_status <- as.character(xml2::xml_contents(xml2::xml_find_all(meta, './assembly-status')))
+      out$representative_status <- as.character(xml2::xml_contents(xml2::xml_find_all(meta, './representative-status')))
+      out$submitter_organization <- as.character(xml2::xml_contents(xml2::xml_find_all(meta, './submitter-organization')))
+      out$meta <- NULL
       return(out)
     }))
     rownames(batch_data) <- NULL
+
+    # Save all results for this batch
     results <- rbind(results, batch_data)
+
+    # Remove assemblies that have a more recent accession in the results
+    filter_for_latest <- function(table, all_results) {
+      grouped <- split(all_results$assemblyaccession, sub(all_results$assemblyaccession, pattern = '\\.[0-9]+$', replacement = ''))
+      latest <- vapply(grouped, FUN.VALUE = character(1), function(x) {
+        versions <- as.numeric(sub(x, pattern = '^.+\\.([0-9]+)$', replacement = '\\1'))
+        x[which.max(versions)]
+      })
+      table[table$assemblyaccession %in% latest, , drop = FALSE]
+    }
+    if (only_latest) {
+      results <- filter_for_latest(results, results)
+      batch_data <- filter_for_latest(batch_data, results)
+    }
+
+    # Create subset containing only preferred types of assemblies to see if there are enough yet
     preferred_batch_data <- batch_data
+    if (prefer_complete) {
+      is_complete <- function(table) {
+        table$assemblystatus %in% c('Complete Genome', 'Chromosome') & table$partialgenomerepresentation == 'false'
+      }
+      preferred_batch_data <- preferred_batch_data[is_complete(preferred_batch_data), , drop = FALSE]
+    }
+    if (prefer_refseq) {
+      is_refseq <- function(table) {
+        startsWith(table$assemblyaccession, 'GCF_')
+      }
+      preferred_batch_data <- preferred_batch_data[is_refseq(preferred_batch_data), , drop = FALSE]
+    }
     if (prefer_binomial) {
       preferred_batch_data <- preferred_batch_data[is_latin_binomial(preferred_batch_data$speciesname), , drop = FALSE]
     }
@@ -600,7 +656,21 @@ get_ncbi_assemblies <- function(query, max_count = 10, prefer_unique = TRUE, pre
   if (nrow(preferred_results) >= max_count) {
     output <- preferred_results
   } else {
-    output <- rbind(preferred_results, results[! results$assemblyaccession %in% preferred_results$assemblyaccession, , drop = FALSE])
+    remaining <- results[! results$assemblyaccession %in% preferred_results$assemblyaccession, , drop = FALSE]
+    if (prefer_binomial || prefer_complete || prefer_refseq) {
+      priority <- list(decreasing = TRUE)
+      if (prefer_complete) {
+        priority <- c(priority, list(is_complete(remaining)))
+      }
+      if (prefer_refseq) {
+        priority <- c(priority, list(is_refseq(remaining)))
+      }
+      if (prefer_binomial) {
+        priority <- c(priority, list(is_latin_binomial(remaining$speciesname)))
+      }
+      remaining <- remaining[do.call(order, priority), ]
+    }
+    output <- rbind(preferred_results, remaining)
   }
   output <- output[seq_len(min(c(nrow(output), max_count))), , drop = FALSE]
   rownames(output) <- NULL
@@ -609,6 +679,7 @@ get_ncbi_assemblies <- function(query, max_count = 10, prefer_unique = TRUE, pre
 
 
 #' @keywords internal
+
 validate_source_ncbi_accession <- function(metadata) {
   validate_source_generic(
     metadata,
@@ -1010,7 +1081,8 @@ read_input_tables <- function(input_paths, read_all_sheets = TRUE, add_input_met
   # Replace any characters in ID columns that cannot appear in file names
   id_cols <- c('data_id', 'bio_id', 'report_id')
   replace_id_chars <- function(values) {
-    gsub(values, pattern = invalid_id_char_pattern(), replacement = '_')
+    out <- gsub(values, pattern = invalid_id_char_pattern(), replacement = '_')
+    gsub(out, pattern = '_+', replacement = '_') # Some programs replace runs of underscores
   }
   combined_tables[id_cols] <- lapply(id_cols, function(col) {
     if (col %in% multi_cols) {
