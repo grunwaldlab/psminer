@@ -1,0 +1,4 @@
+data_id,ref_group_id,ref_primary_usage,Ref CONTEXTUAL___usage,type, source
+O_tauri_ref,euk_refs,exclusive,exclusive,NCBI accession,GCF_000214015.3
+,euk_refs,exclusive,exclusive,NCBI accession,GCF_000002765.6
+xan_ref,,optional,required,NCBI accession,GCF_013388375.1
