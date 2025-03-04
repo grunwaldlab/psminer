@@ -14,7 +14,7 @@ status_message_parsed <- function(paths) {
   path_data <- status_message_path_data(paths)
   if (nrow(path_data) > 0) {
     output <- do.call(rbind, lapply(1:nrow(path_data), function(index) {
-      table <- readr::read_tsv(path_data$path[index], col_types = 'ccccc')
+      table <- read.table(path_data$path[index], sep = '\t', check.names = FALSE)
       table$report_group_id <- path_data$report_group_id[index]
       return(table)
     }))
@@ -195,10 +195,11 @@ sendsketch_parsed <- function(paths, only_best = FALSE) {
 
   # Internal function to parse a single file
   parse_one_file <- function(path, report_group_id, sample_id) {
-    data <- readr::read_tsv(path,
-                            skip = 2,
-                            show_col_types = FALSE,
-                            col_types = 'ccccdccccddddddddddddddcccdddddddcccc')
+    data <- read.table(path, sep = '\t', skip = 2,
+                       show_col_types = FALSE, check.names = FALSE)
+    numeric_cols <- c(5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+                      27, 28, 29, 30, 31, 32, 33)
+    data[numeric_cols] <- lapply(data[numeric_cols], as.numeric)
     return(dplyr::bind_cols(
       sample_id = rep(sample_id, nrow(data)),
       report_group_id = rep(report_group_id, nrow(data)),
@@ -206,10 +207,10 @@ sendsketch_parsed <- function(paths, only_best = FALSE) {
     ))
   }
 
-  # Use purrr to parse all files and combine them into one data frame
-  sketch_data <- purrr::map_dfr(seq_len(nrow(path_data)), function(i) {
+  # Parse all files and combine them into one data frame
+  sketch_data <- do.call(rbind, lapply(seq_len(nrow(path_data)), function(i) {
     parse_one_file(path_data$path[i], path_data$report_group_id[i], path_data$sample_id[i])
-  })
+  }))
 
   # Convert percentage fields from character to numeric
   sketch_data$WKID <- as.numeric(gsub("%", "", sketch_data$WKID))
@@ -297,15 +298,11 @@ sendsketch_taxonomy_data_parsed <- function(paths, only_best = FALSE, only_share
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return A [tibble::tibble()] with columns `module`, `program`, and `version` detailing the software versions.
-#' @importFrom yaml read_yaml
-#' @importFrom tibble tibble
-#' @importFrom purrr map_chr
-#' @importFrom stringr str_split
 #' @family parsers
 #' @export
 #' @examples
 #' version_path <- file.path(params$inputs, "inputs", "versions.yml")
-#' version_data <- parse_software_meta(version_path)
+#' version_data <- software_version_parsed(version_path)
 software_version_parsed <- function(paths) {
 
   parse_one <- function(version_path) {
@@ -317,13 +314,10 @@ software_version_parsed <- function(paths) {
       stop("Failed to read YAML file: ", e$message)
     })
     # Transforming the data into a tibble
+    split_version_data <- stringr::str_split(names(raw_version_data), pattern = '\\.', n = 2)
     version_data <- tibble::tibble(
-      module = purrr::map_chr(stringr::str_split(
-        names(raw_version_data), pattern = '\\.', n = 2
-      ), `[`, 1),
-      program = purrr::map_chr(stringr::str_split(
-        names(raw_version_data), pattern = '\\.', n = 2
-      ), `[`, 2),
+      module = vapply(split_version_data, FUN.VALUE = character(1), `[`, 1),
+      program = vapply(split_version_data, FUN.VALUE = character(1), `[`, 2),
       version = unname(raw_version_data),
     )
     return(version_data)

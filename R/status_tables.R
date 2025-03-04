@@ -28,25 +28,11 @@
 #'   objects for static output.
 #'
 #' @importFrom dplyr filter group_by summarize left_join select mutate case_when
-#' @importFrom tidyr replace_na
-#' @importFrom purrr imap reduce
 #' @importFrom DT datatable formatStyle
 #' @importFrom magrittr %>%
 #' @importFrom knitr kable is_html_output
+#'
 #' @export
-#'
-#' @examples
-#' # Load messages from pipeline output
-#' messages <- readr::read_tsv("path/to/messages.tsv") %>%
-#'   tidyr::separate(message, into = c("level", "message"), sep = "\t")
-#'
-#' # Generate tables with interactive output
-#' tables <- status_tables(messages, interactive = TRUE)
-#' tables$simpleTable
-#' tables$detailedSamplesTable
-#' tables$detailedGroupsTable
-#'
-#' # Note: To view interactive tables, set interactive = TRUE and run in an R environment that supports HTML widgets.
 status_message_tables <- function(input, interactive = knitr::is_html_output()) {
   # Parse the input if it is a file/folder path
   if (is.data.frame(input)) {
@@ -65,8 +51,8 @@ status_message_tables <- function(input, interactive = knitr::is_html_output()) 
   )
 
   # Flatten the list to make it easier to use for mapping
-  step_flat <- purrr::imap(workflow_to_step, function(val, name) setNames(rep(name, length(val)), val)) %>%
-    purrr::reduce(c)
+  step_flat <- rep(names(workflow_to_step), vapply(workflow_to_step, FUN.VALUE = numeric(1), length))
+  names(step_flat) <- unlist(workflow_to_step)
 
   # Map workflows to major steps
   messages$major_step <- step_flat[messages$workflow]
@@ -79,10 +65,10 @@ status_message_tables <- function(input, interactive = knitr::is_html_output()) 
   report_group_issues <- dplyr::filter(messages, is.na(sample_id)) %>%
     dplyr::group_by(major_step) %>%
     dplyr::summarise(Group_Failures = n(), .groups = 'drop')
+  report_group_issues$Group_Failures[is.na(report_group_issues$Group_Failures)] <- 0
 
   # Merge report group issues into summary data
   summary_data_full <- dplyr::left_join(summary_data, report_group_issues, by = "major_step") %>%
-    tidyr::replace_na(list(Group_Failures = 0)) %>%
     dplyr::mutate(Sample_Issues = Failures - Group_Failures) %>%
     dplyr::select(major_step, Group_Failures, Sample_Issues)
 

@@ -9,9 +9,8 @@
 #' @param ... Passed to `DT::datatable`.
 #'
 #' @return Returns the table to print
-#' @export
 #'
-#' @examples
+#' @export
 print_ani_table <- function(pairwise_matrix, sample_data, ref_data, interactive = knitr::is_html_output(), ...) {
   # Create table to print
   output <- do.call(rbind, lapply(sample_data$sample_id, function(id) { # loop over sample IDs and combine results into a table
@@ -59,9 +58,8 @@ print_ani_table <- function(pairwise_matrix, sample_data, ref_data, interactive 
 #' @param ... Passed to `DT::datatable`.
 #'
 #' @return Returns the table to print
-#' @export
 #'
-#' @examples
+#' @export
 print_pocp_table <- function(pairwise_matrix, sample_data, ref_data, interactive = knitr::is_html_output(), ...) {
   # Create table to print
   sample_ids_in_matrix <- sample_data$sample_id[sample_data$sample_id %in% row.names(pairwise_matrix)]

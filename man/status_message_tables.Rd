@@ -35,16 +35,3 @@ Interactive tables are generated using DT::datatable, providing a dynamic way
 to explore the data. Static tables are produced with knitr::kable, suitable
 for static reports and documentation.
 }
-\examples{
-# Load messages from pipeline output
-messages <- readr::read_tsv("path/to/messages.tsv") \%>\%
-  tidyr::separate(message, into = c("level", "message"), sep = "\t")
-
-# Generate tables with interactive output
-tables <- status_tables(messages, interactive = TRUE)
-tables$simpleTable
-tables$detailedSamplesTable
-tables$detailedGroupsTable
-
-# Note: To view interactive tables, set interactive = TRUE and run in an R environment that supports HTML widgets.
-}

@@ -19,7 +19,7 @@ Each software module and program, along with its version, is extracted and organ
 }
 \examples{
 version_path <- file.path(params$inputs, "inputs", "versions.yml")
-version_data <- parse_software_meta(version_path)
+version_data <- software_version_parsed(version_path)
 }
 \seealso{
 Other parsers: 

@@ -22,7 +22,6 @@
 #' @param zoom_slider If `TRUE`, add a slider to the plot to control the zoom.
 #' @param ... Passed to [grDevices::png()]
 #'
-#' @return
 #' @export
 #'
 #' @examples

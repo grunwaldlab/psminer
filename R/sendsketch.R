@@ -21,8 +21,6 @@
 #'   when used in an R Markdown document or Shiny application. The table will
 #'   have interactive features such as sorting and search enabled.
 #'
-#' @importFrom dplyr arrange group_by slice_head ungroup select rename
-#' @importFrom magrittr %>%
 #' @export
 #'
 #' @examples
@@ -40,13 +38,8 @@ sendsketch_table <- function(input, interactive = knitr::is_html_output()) {
   }
 
   # Sort and filter data
-  final_table <- sketch_data %>%
-    select(sample_id, WKID, ANI, Complt, taxName) %>%
-    rename(Sample = sample_id,
-           `WKID (%)` = WKID,
-           `ANI (%)` = ANI,
-           `Completeness (%)` = Complt,
-           `Top Hit` = taxName)
+  final_table <- sketch_data[, c('sample_id', 'WKID', 'ANI', 'Complt', 'taxName'), drop = FALSE]
+  names(final_table) <- c('Sample', 'WKID (%)', 'WKID (%)', 'c', 'Completeness (%)', 'Top Hit')
 
   if (interactive) {
     # Define a function called 'bordered_bar'
@@ -99,8 +92,6 @@ sendsketch_table <- function(input, interactive = knitr::is_html_output()) {
 #'
 #' @return A `data.frame`
 #'
-#' @importFrom dplyr arrange group_by slice_head ungroup select rename
-#' @importFrom magrittr %>%
 #' @export
 #'
 #' @examples
@@ -110,19 +101,11 @@ sendsketch_table <- function(input, interactive = knitr::is_html_output()) {
 #' # If you want to sort by Completeness and then WKID, keeping the top 2 entries for each sample_id:
 #' sendsketch_best_hits(sketch_data, sort_columns = c("sample_id", "Complt", "WKID"), top_n = 2)
 sendsketch_best_hits <- function(sketch_data, sort_columns = c("WKID", "ANI", "Complt"), top_n = 1) {
-  # Prepare sorting expressions
-  sorting_exprs <- lapply(sort_columns, function(col) {
-    expr <- paste0("desc(", col, ")")
-    rlang::parse_expr(expr)
-  })
-
-  # Sort and filter data
-  final_table <- sketch_data %>%
-    arrange(!!!sorting_exprs) %>%
-    group_by(sample_id, report_group_id) %>%
-    slice_head(n = top_n) %>%
-    ungroup()
-
+  sketch_data <- sketch_data[do.call(order, sketch_data[sort_columns]), , drop = FALSE]
+  split_data <- split(sketch_data, sketch_data[c('sample_id', 'report_group_id')])
+  final_table <- do.call(rbind, lapply(split_data, function(x) {
+    x[seq_len(top_n)]
+  }))
   return(final_table)
 }
 

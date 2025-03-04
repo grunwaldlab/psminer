@@ -1,28 +1,48 @@
 Package: psminer
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Utilities for the pathogensurveillance pipeline
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
-Depends:
-        rcrossref,
-        dplyr,
-        ape,
-        phylocanvas,
-        ggtree,
-        magrittr,
-        heatmaply,
-        pheatmap,
-        ggplot2,
-        readr,
-        leaflet,
-        metacoder,
-        phytools,
-        ggnewscale,
-        adegenet
+Authors@R:
+    c(person(given = "Zachary", 
+             family = "Foster",
+             role = c("aut", "cre"),
+             email = "zacharyfoster1989@gmail.com"),
+      person(given = "Matha",
+             family = "Sudermann",
+             role = c("aut")),
+      person(given = "Camilo",
+             family = "Parada-Rojas",
+             role = c("aut")),
+      person(given = "Niklaus",
+             family = "Grunwald", 
+             role = c("fnd"),
+             email = "grunwaln@science.oregonstate.edu"))
+Maintainer: Zachary Foster <zacharyfoster1989@gmail.com>
+Description: Utilities for interacting with the pathogensurveillance pipeline.
+  Provides functions to easily find, read, analyze, and plot the contents of
+  output directories of pathogensurveillance. In addition, the pipeline uses
+  this package to parse input files, allowing for users to validate input files
+  outside of the pipleine before running it. Pathogensurveillance also uses this
+  package to generate most of the figures and tables in the output reports, allowing
+  users to generate more customized versions of these when needed.
+License: GPL-2 | GPL-3
+Imports:
+  rcrossref,
+  dplyr,
+  ape,
+  phylocanvas,
+  ggtree,
+  magrittr,
+  heatmaply,
+  pheatmap,
+  ggplot2,
+  leaflet,
+  metacoder,
+  phytools,
+  ggnewscale,
+  adegenet,
+  DT,
+  knitr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.2
