@@ -27,7 +27,6 @@ Description: Utilities for interacting with the pathogensurveillance pipeline.
   users to generate more customized versions of these when needed.
 License: GPL-2 | GPL-3
 Imports:
-  rcrossref,
   ape,
   ggtree,
   magrittr,
