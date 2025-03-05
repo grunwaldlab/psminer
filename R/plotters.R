@@ -361,3 +361,236 @@ variant_msn_plot <- function(path, combine = TRUE) {
 
 
 }
+
+
+#' Make Minimum spanning network
+#'
+#' @param snp_fasta_alignment A DNA alignment in fasta format.
+#' @param sample_data A data frame containing information about samples.
+#' @param population A character string specifying the column name in sample_data to be used for stratification.
+#' @param interactive A logical value indicating whether Whether or not to produce an interactive HTML/javascript-based figures or tables or a static ones.
+#' @param snp_threshold An integer specifying the number of SNPs to be used as the threshold for filtering. User can specify whole numbers or alternatively, a relative proportion using 'snp_diff_prop', but not both. Default is NULL.
+#' @param snp_diff_prop A numeric value specifying the proportion of SNPs to be used as the threshold for filtering. If user prefers to specify whole numbers, use 'snp_threshold' instead. Default is NULL.
+#' @param use_cutoff_predictor A logical value indicating whether to use cutoff predictor for determining SNP threshold.
+#' @param show_MLG_table A logical value indicating whether to display a table of multi-locus genotypes.
+#' @param user_seed An optional integer specifying the seed for reproducibility.
+#' @param ... Additional arguments to be passed to internal functions.
+#' @return Minimum spanning network
+#'
+#' @keywords internal
+make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, interactive = FALSE, snp_threshold = NULL, snp_diff_prop = NULL, use_cutoff_predictor = FALSE, show_MLG_table = FALSE, user_seed = NULL, ...) {
+
+  set.seed(user_seed)
+  snp_aln.gi <- adegenet::DNAbin2genind(snp_fasta_alignment)
+  if (is.null(snp_aln.gi)) {
+    return(NULL)
+  }
+  snp_genclone <- poppr::as.genclone(snp_aln.gi)
+
+  if (use_cutoff_predictor) {
+    snpdist_stats <- poppr::filter_stats(snp_genclone)
+    average_thresh <- poppr::cutoff_predictor(snpdist_stats$average$THRESHOLDS)
+    poppr::mlg.filter(snp_genclone, distance = poppr::bitwise.dist, percent = TRUE) <- average_thresh
+  } else if (!is.null(snp_threshold)) {
+    poppr::mlg.filter(snp_genclone, distance = poppr::bitwise.dist, percent = FALSE) <- snp_threshold
+  } else if (!is.null(snp_diff_prop)) {
+    poppr::mlg.filter(snp_genclone, distance = poppr::bitwise.dist, percent = TRUE) <- snp_diff_prop
+  }
+
+  if (is.null(population)) {
+    sample_data$no_factor_provided <- 'Sample (No factor provided)'
+    population <- 'no_factor_provided'
+  }
+
+  sample_data <- sample_data[sample_data$sample_id %in% rownames(snp_fasta_alignment), , drop = FALSE]
+  user_factor <- sample_data[[population]]
+  node_color <- as.factor(ifelse(is.na(user_factor) | user_factor == "", "Unknown", user_factor))
+  myColors <- grDevices::rainbow(length(unique(node_color)))
+  names(myColors) <- levels(node_color)
+  num_columns <- ncol(sample_data)
+  adegenet::strata(snp_genclone) <- cbind(sample_data[, c(1:num_columns)], color_node_by = node_color)
+  adegenet::setPop(snp_genclone) <- ~color_node_by
+
+  if (!is.null(snp_threshold)) {
+    ms.loc <- poppr::poppr.msn(snp_genclone,
+                               distmat = poppr::bitwise.dist(snp_genclone, percent = FALSE),
+                               include.ties = TRUE,
+                               showplot = FALSE)
+  }
+  else {
+    ms.loc <- poppr::poppr.msn(snp_genclone,
+                               distmat = poppr::bitwise.dist(snp_genclone, percent = TRUE),
+                               include.ties = TRUE,
+                               showplot = FALSE)
+  }
+
+  the_edges <- igraph::E(ms.loc$graph)$weight
+  edges <- as.list(the_edges)
+
+  if (length(igraph::V(ms.loc$graph)) > 1) {
+    output <- poppr::plot_poppr_msn(
+      snp_genclone,
+      poppr_msn = ms.loc,
+      palette = myColors,
+      mlg = FALSE,
+      quantiles = FALSE,
+      wscale = FALSE,
+      inds = "None",
+      ...
+    )
+  } else {
+    output <- ggplot2::ggplot() +
+      ggplot2::annotate("text", x = 4, y = 25, size=8, label = "All samples are in the same multilocus genotype.") +
+      ggplot2::theme_void()
+  }
+
+
+  # if (show_MLG_table) {
+  #   idlist <- mlg.id(snp_genclone)
+  #   mlglist <- data.frame("MLG", "strain")
+  #   colnames(mlglist) <- c("V1", "V2")
+  #
+  #   for (name in names(idlist)) {
+  #     newframe <- as.data.frame(cbind(paste0("MLG", "_", name), idlist[[name]]))
+  #     mlglist <- rbind(mlglist, newframe)
+  #   }
+  #
+  #   colnames(mlglist) <- c("Multi-locus genotype", "Strain")
+  #   mlglist <- mlglist[mlglist$Strain != "strain",]
+  #
+  #   if (interactive) {
+  #     DT::datatable(mlglist, class = "display nowrap", ...) %>%
+  #       formatStyle(colnames(mlglist), "white-space" = "nowrap")
+  #
+  #   } else {
+  #     print(mlglist)
+  #   }
+  # }
+
+  return(output)
+}
+
+
+
+#' Make an ANI heatmap and dendrogram.
+#'
+#' The ANI heatmap is based on approximate ANI similarity matrix output by Sourmash
+#'
+#' @param ani_matrix Approximate ANI matrix output from Sourmash analysis
+#' @param sample_data A tibble/data.frame with the sample metadata
+#' @param ref_data A tibble/data.frame with information on references used in analysis
+#' @param interactive Whether to use an HTML-based interactive format or not (default: TRUE)
+#' @param height The height in pixels. If not `interactive`, this is divided by `dpi` to convert it to inches.
+#' @param width The width in pixels. If not `interactive`, this is divided by `dpi` to convert it to inches.
+#' @param dpi How pixels are converted to inches
+#'
+#' @return A heatmap and dendrogram
+#'
+#' @export
+#'
+#' @examples
+#' make_ani_heatmap(ani_matrix, ref_data, samp_data, interactive=FALSE)
+make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = FALSE, height = 1000, width = 1000, dpi = 100) {
+  # Rename rows/columns for plotting
+  name_key <- c(
+    stats::setNames(ref_data$ref_name, ref_data$ref_id),
+    stats::setNames(sample_data$name, sample_data$sample_id)
+  )
+  name_key <- stats::setNames(make.unique(name_key, sep = ' '), names(name_key))
+  colnames(ani_matrix) <- name_key[colnames(ani_matrix)]
+  rownames(ani_matrix) <- name_key[rownames(ani_matrix)]
+  if (interactive) {
+    heatmap_ani <- heatmaply::heatmaply(ani_matrix, fontsize_row = 8, fontsize_col = 8, width = width, height = height)
+  } else {
+    heatmap_ani <- pheatmap::pheatmap(ani_matrix, show_rownames = TRUE, labels_row = colnames(ani_matrix), width = width / dpi, height = height / dpi)
+  }
+  return(heatmap_ani)
+}
+
+
+#' Make sunburst plot of sendsketch taxonomy
+#'
+#' Converts classifications of top hits in sendsketch output into an interactive
+#' sunburst plot.
+#'
+#' @param input The path to one or more folders that contain
+#'   pathogensurveillance output or a table in the format of the
+#'   [sendsketch_parsed()] output.
+#' @param interactive Whether or not to produce an interactive
+#'   HTML/javascript-based plot or a static one.
+#' @param ... Passed to `sendsketch_best_hits`
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' sendsketch_taxonomy_plot(path)
+#' sendsketch_taxonomy_plot(path, interactive = TRUE)
+#'
+#' @export
+sendsketch_taxonomy_plot <- function(input, interactive = TRUE, ...) {
+
+  # Parse the input if it is a file/folder path
+  if (is.data.frame(input)) {
+    sketch_data <- input
+  } else {
+    sketch_data <- sendsketch_parsed(input, only_best = TRUE)
+  }
+
+  # Sort and filter data
+  top_hits <- sendsketch_best_hits(sketch_data, ...)
+
+  # Make table with values duplicated for each taxon in all classifications
+  split_taxa <- strsplit(top_hits$taxonomy, split = ';')
+  tax_data <- do.call(rbind, lapply(seq_len(nrow(top_hits)), function(i) {
+    n_taxa <- length(split_taxa[[i]])
+    out <- top_hits[rep(i, n_taxa), , drop = FALSE]
+    out$taxon <- vapply(seq_len(n_taxa), FUN.VALUE = character(1), function(n) {
+      paste0(split_taxa[[i]][1:n], collapse = ';')
+    })
+    out$supertaxon <- c(NA_character_, out$taxon[1:(n_taxa - 1)])
+    out$tip <- vapply(seq_len(n_taxa), FUN.VALUE = character(1), function(n) {
+      split_taxa[[i]][n]
+    })
+    rownames(out) <- NULL
+    return(out)
+  }))
+
+  # Convert to edge list
+  plot_data <- unique(tax_data[, c('supertaxon', 'taxon', 'tip'), drop = FALSE])
+  plot_data$count <- vapply(plot_data$taxon, FUN.VALUE = numeric(1), function(t) {
+    sum(t == tax_data$taxon)
+  })
+
+  # Make unique IDs for each taxon
+  id_key <- as.character(seq_len(nrow(plot_data)))
+  names(id_key) <- plot_data$taxon
+  plot_data$from <- id_key[plot_data$supertaxon]
+  plot_data$to <- id_key[plot_data$taxon]
+
+  # Rename taxon to just the tip taxon name and include rank if needed to make unique
+  plot_data$rank <- sub(plot_data$tip, pattern = '^([a-z]+?):(.+)$', replacement = '\\1')
+  plot_data$name <- sub(plot_data$tip, pattern = '^([a-z]+?):(.+)$', replacement = '\\2')
+  plot_data$is_unique <- vapply(plot_data$name, FUN.VALUE = logical(1), function(x) {
+    sum(x == plot_data$name) <= 1
+  })
+  plot_data$name <- ifelse(plot_data$is_unique, plot_data$name, plot_data$tip)
+
+  output <- plotly::plot_ly(
+    type = 'sunburst',
+    ids = plot_data$to,
+    labels = plot_data$name,
+    parents = plot_data$from,
+    values = plot_data$count,
+    domain = list(column = 0),
+    branchvalues = 'total'
+  )
+
+  if (! interactive) {
+    temp_file_html <- tempfile(fileext = ".html")
+    temp_file_png <- tempfile(fileext = ".png")
+    htmlwidgets::saveWidget(widget = plotly::config(output, displayModeBar = FALSE), file = temp_file_html)
+    output <- webshot2::webshot(url = temp_file_html, file = temp_file_png,
+                                delay = 1, vheight = 750, vwidth = 750, zoom = 2)
+  }
+
+  return(output)
+}
