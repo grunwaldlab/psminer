@@ -1,0 +1,4 @@
+"sample_id"	"reference_id"	"workflow"	"level"	"message"
+"LM1"	"GCF_000014445_1"	"VARIANT_ANALYSIS"	"WARNING"	"Sample is excluded from variant calling analysis because there are too few samples aligned to this reference to make a tree."
+"FF1"	"GCF_001457635_1"	"VARIANT_ANALYSIS"	"WARNING"	"Sample is excluded from variant calling analysis because there are too few samples aligned to this reference to make a tree."
+"LW1"	"GCF_900187315_1"	"VARIANT_ANALYSIS"	"WARNING"	"Sample is excluded from variant calling analysis because there are too few samples aligned to this reference to make a tree."

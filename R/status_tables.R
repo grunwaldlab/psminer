@@ -32,6 +32,10 @@
 #' @importFrom magrittr %>%
 #' @importFrom knitr kable is_html_output
 #'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' status_message_tables(path)
+#'
 #' @export
 status_message_tables <- function(input, interactive = knitr::is_html_output()) {
   # Parse the input if it is a file/folder path

@@ -35,3 +35,8 @@ Interactive tables are generated using DT::datatable, providing a dynamic way
 to explore the data. Static tables are produced with knitr::kable, suitable
 for static reports and documentation.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+status_message_tables(path)
+
+}
