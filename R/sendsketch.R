@@ -127,8 +127,13 @@ sendsketch_best_hits <- function(sketch_data, sort_columns = c("WKID", "ANI", "C
 #'   HTML/javascript-based plot or a static one.
 #' @param ... Passed to `sendsketch_best_hits`
 #'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' sendsketch_taxonomy_plot(path)
+#' sendsketch_taxonomy_plot(path, interactive = TRUE)
+#'
 #' @export
-sendsketch_taxonomy_plot <- function(input, interactive = knitr::is_html_output(), ...) {
+sendsketch_taxonomy_plot <- function(input, interactive = TRUE, ...) {
 
   # Parse the input if it is a file/folder path
   if (is.data.frame(input)) {
@@ -140,31 +145,46 @@ sendsketch_taxonomy_plot <- function(input, interactive = knitr::is_html_output(
   # Sort and filter data
   top_hits <- sendsketch_best_hits(sketch_data, ...)
 
-  # Parse taxonomic data
-  x <- metacoder::parse_tax_data(tax_data = top_hits,
-                                 class_cols = 'taxonomy',
-                                 class_key = c("taxon_rank", "taxon_name"),
-                                 class_regex = "([a-z]+)?:?([a-zA-Z0-9.-_, ]+)",
-                                 class_sep = ";")
-  x <- metacoder::filter_taxa(x, taxon_ranks == "s", supertaxa = TRUE)
+  # Make table with values duplicated for each taxon in all classifications
+  split_taxa <- strsplit(top_hits$taxonomy, split = ';')
+  tax_data <- do.call(rbind, lapply(seq_len(nrow(top_hits)), function(i) {
+    n_taxa <- length(split_taxa[[i]])
+    out <- top_hits[rep(i, n_taxa), , drop = FALSE]
+    out$taxon <- vapply(seq_len(n_taxa), FUN.VALUE = character(1), function(n) {
+      paste0(split_taxa[[i]][1:n], collapse = ';')
+    })
+    out$supertaxon <- c(NA_character_, out$taxon[1:(n_taxa - 1)])
+    out$tip <- vapply(seq_len(n_taxa), FUN.VALUE = character(1), function(n) {
+      split_taxa[[i]][n]
+    })
+    rownames(out) <- NULL
+    return(out)
+  }))
 
-  # Replace duplicated names with their name + rank
-  duplicated_names <- metacoder::taxon_names(x)[duplicated(metacoder::taxon_names(x))]
-  unique_taxon_names <- paste0(metacoder::taxon_names(x), " (", metacoder::taxon_ranks(x), ")")
-  names(unique_taxon_names) <- metacoder::taxon_ids(x)
-  unique_tax_names <- ifelse(metacoder::taxon_names(x) %in% duplicated_names, unique_taxon_names, metacoder::taxon_names(x))
-  names(unique_tax_names) <- metacoder::taxon_ids(x)
+  # Convert to edge list
+  plot_data <- unique(tax_data[, c('supertaxon', 'taxon', 'tip'), drop = FALSE])
+  plot_data$count <- vapply(plot_data$taxon, FUN.VALUE = numeric(1), function(t) {
+    sum(t == tax_data$taxon)
+  })
 
-  # Convert to an edge list for plotting
-  plot_data <- x$edge_list
-  plot_data$count <- metacoder::n_obs(x)[plot_data$to]
-  plot_data$from <- unique_tax_names[plot_data$from]
-  plot_data$to <- unique_tax_names[plot_data$to]
+  # Make unique IDs for each taxon
+  id_key <- as.character(seq_len(nrow(plot_data)))
+  names(id_key) <- plot_data$taxon
+  plot_data$from <- id_key[plot_data$supertaxon]
+  plot_data$to <- id_key[plot_data$taxon]
+
+  # Rename taxon to just the tip taxon name and include rank if needed to make unique
+  plot_data$rank <- sub(plot_data$tip, pattern = '^([a-z]+?):(.+)$', replacement = '\\1')
+  plot_data$name <- sub(plot_data$tip, pattern = '^([a-z]+?):(.+)$', replacement = '\\2')
+  plot_data$is_unique <- vapply(plot_data$name, FUN.VALUE = logical(1), function(x) {
+    sum(x == plot_data$name) <= 1
+  })
+  plot_data$name <- ifelse(plot_data$is_unique, plot_data$name, plot_data$tip)
 
   output <- plotly::plot_ly(
     type = 'sunburst',
     ids = plot_data$to,
-    labels = plot_data$to,
+    labels = plot_data$name,
     parents = plot_data$from,
     values = plot_data$count,
     domain = list(column = 0),

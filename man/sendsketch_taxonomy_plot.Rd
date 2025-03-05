@@ -4,7 +4,7 @@
 \alias{sendsketch_taxonomy_plot}
 \title{Make sunburst plot of sendsketch taxonomy}
 \usage{
-sendsketch_taxonomy_plot(input, interactive = knitr::is_html_output(), ...)
+sendsketch_taxonomy_plot(input, interactive = TRUE, ...)
 }
 \arguments{
 \item{input}{The path to one or more folders that contain
@@ -19,4 +19,10 @@ HTML/javascript-based plot or a static one.}
 \description{
 Converts classifications of top hits in sendsketch output into an interactive
 sunburst plot.
+}
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+sendsketch_taxonomy_plot(path)
+sendsketch_taxonomy_plot(path, interactive = TRUE)
+
 }

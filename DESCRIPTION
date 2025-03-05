@@ -35,7 +35,6 @@ Imports:
   pheatmap,
   ggplot2,
   leaflet,
-  metacoder,
   phytools,
   ggnewscale,
   adegenet,
