@@ -212,12 +212,12 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
     ranks <- colnames(collapse_by_tax)[colnames(collapse_by_tax) != 'sample_id']
     n_unique_taxa <- unlist(lapply(collapse_by_tax[ranks], function(x) length(unique(x))))
     if (! any(n_unique_taxa == 1)) {
-      collapse_by_tax <- dplyr::bind_cols(sample_id = collapse_by_tax$sample_id, root = 'Life', collapse_by_tax[ranks])
+      collapse_by_tax <- cbind(sample_id = collapse_by_tax$sample_id, root = 'Life', collapse_by_tax[ranks])
       ranks <- c('root', ranks)
     }
     # Subset taxonomy data to just the part used by each tree
     collapse_by_tax[ranks] <- lapply(collapse_by_tax[ranks], as.factor)
-    tree_tax <- dplyr::bind_rows(lapply(trees, function(tree) {
+    tree_tax <- do.call(rbind, lapply(trees, function(tree) {
       sample_ids <- tree$tip.label[tree$tip.label %in% sample_meta$sample_id]
       tax_subset <- collapse_by_tax[collapse_by_tax$sample_id %in% sample_ids, colnames(collapse_by_tax) != 'sample_id']
       tax_subset <- tax_subset[, apply(tax_subset, MARGIN = 2, function(col) length(unique(col)) == 1)]

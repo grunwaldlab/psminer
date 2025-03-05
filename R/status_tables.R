@@ -47,7 +47,7 @@ status_message_tables <- function(input, interactive = knitr::is_html_output()) 
     initial_identification = "COARSE_SAMPLE_TAXONOMY",
     rigorous_identification = c("CORE_GENOME_PHYLOGENY", "DOWNLOAD_REFERENCES", "GENOME_ASSEMBLY"),
     report = c("CUSTOM_DUMPSOFTWAREVERSIONS", "MAIN_REPORT"),
-    qc = c("FASTQC", "INPUT_CHECK", "MULTIQC", "RECORD_MESSAGES")
+    qc = c("FASTQC", "PREPARE_INPUT", "MULTIQC", "RECORD_MESSAGES")
   )
 
   # Flatten the list to make it easier to use for mapping
@@ -58,13 +58,15 @@ status_message_tables <- function(input, interactive = knitr::is_html_output()) 
   messages$major_step <- step_flat[messages$workflow]
 
   # Adjusted summarization logic to use 'level' for calculating Failures and identifying group issues
-  summary_data <- dplyr::group_by(messages, major_step) %>%
-    dplyr::summarise(Failures = sum(level == "WARNING" | level == "ERROR"), .groups = 'drop')
+  summary_data <- do.call(rbind, lapply(split(messages, messages$major_step), function(x) {
+    data.frame(major_step = unique(x$major_step), Failures = sum(x$level %in% c("WARNING", "ERROR")))
+  }))
+  rownames(summary_data) <- NULL
 
   # Calculate report group issues
   report_group_issues <- dplyr::filter(messages, is.na(sample_id)) %>%
     dplyr::group_by(major_step) %>%
-    dplyr::summarise(Group_Failures = n(), .groups = 'drop')
+    dplyr::summarise(Group_Failures = dplyr::n(), .groups = 'drop')
   report_group_issues$Group_Failures[is.na(report_group_issues$Group_Failures)] <- 0
 
   # Merge report group issues into summary data

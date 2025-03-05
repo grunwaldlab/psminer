@@ -73,7 +73,7 @@ status_message_parsed_summary <- function(paths) {
 #'
 #' @export
 sample_meta_parsed <- function(paths) {
-  output <- dplyr::bind_rows(lapply(sample_meta_path(paths), utils::read.csv, check.names = FALSE, sep = '\t'))
+  output <- do.call(rbind, lapply(sample_meta_path(paths), utils::read.csv, check.names = FALSE, sep = '\t'))
   output[] <- lapply(output, function(col_data) ifelse(col_data == 'null', NA_character_, col_data))
   output <- tibble::as_tibble(output)
   output <- unique(output)
@@ -93,7 +93,7 @@ sample_meta_parsed <- function(paths) {
 #'
 #' @export
 ref_meta_parsed <- function(paths) {
-  output <- dplyr::bind_rows(lapply(ref_meta_path(paths), utils::read.csv, check.names = FALSE, sep = '\t'))
+  output <- do.call(rbind, lapply(ref_meta_path(paths), utils::read.csv, check.names = FALSE, sep = '\t'))
   output[] <- lapply(output, function(col_data) ifelse(col_data == 'null', NA_character_, col_data))
   output <- tibble::as_tibble(output)
   output <- unique(output)
@@ -199,7 +199,7 @@ sendsketch_parsed <- function(paths, only_best = FALSE) {
     numeric_cols <- c(5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
                       27, 28, 29, 30, 31, 32, 33)
     data[numeric_cols] <- lapply(data[numeric_cols], as.numeric)
-    return(dplyr::bind_cols(
+    return(cbind(
       sample_id = rep(sample_id, nrow(data)),
       report_group_id = rep(report_group_id, nrow(data)),
       data
@@ -273,7 +273,7 @@ sendsketch_taxonomy_parsed <- function(paths, remove_ranks = FALSE, only_best = 
 #' @export
 sendsketch_taxonomy_data_parsed <- function(paths, only_best = FALSE, only_shared = FALSE) {
   sendsketch_data <- sendsketch_parsed(paths, only_best = only_best)
-  output <- dplyr::bind_rows(lapply(1:nrow(sendsketch_data), function(index) {
+  output <- do.call(rbind, lapply(1:nrow(sendsketch_data), function(index) {
     split_tax <- strsplit(sendsketch_data$taxonomy[index], split = ';', fixed = TRUE)[[1]]
     taxon_names <- gsub(split_tax, pattern = '^[a-z]+:', replacement = '')
     ranks <- gsub(split_tax, pattern = '^([a-z]*):?.+$', replacement = '\\1')
@@ -313,7 +313,7 @@ software_version_parsed <- function(paths) {
     )
     return(version_data)
   }
-  unique(dplyr::bind_rows(lapply(software_version_path(paths), parse_one)))
+  unique(do.call(rbind, lapply(software_version_path(paths), parse_one)))
 }
 
 
