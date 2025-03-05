@@ -8,6 +8,8 @@ get_bibtex_from_doi(doi, ...)
 }
 \arguments{
 \item{doi}{The DOI (Digital Object Identifier) for the publication.}
+
+\item{...}{Passed to \code{rcrossref::cr_cn}}
 }
 \value{
 A character string containing the BibTeX citation.

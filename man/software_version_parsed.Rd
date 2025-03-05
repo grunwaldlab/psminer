@@ -11,11 +11,13 @@ software_version_parsed(paths)
 pathogensurveillance output.}
 }
 \value{
-A \code{\link[tibble:tibble]{tibble::tibble()}} with columns \code{module}, \code{program}, and \code{version} detailing the software versions.
+A \code{\link[tibble:tibble]{tibble::tibble()}} with columns \code{module}, \code{program}, and \code{version}
+detailing the software versions.
 }
 \description{
-Reads a YAML file containing software version information and transforms it into a tibble.
-Each software module and program, along with its version, is extracted and organized.
+Reads a YAML file containing software version information and transforms it
+into a tibble. Each software module and program, along with its version, is
+extracted and organized.
 }
 \examples{
 version_path <- file.path(params$inputs, "inputs", "versions.yml")

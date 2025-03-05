@@ -7,11 +7,11 @@
 variant_msn_plot(path, combine = TRUE)
 }
 \arguments{
+\item{path}{The path to one or more folders that contain
+pathogensurveillance output.}
+
 \item{combine}{If \code{TRUE} combine multiple MSNs into a single figure and
 return a single figure. If \code{FALSE}, return a list of figures.}
-
-\item{input}{The path to one or more folders that contain
-pathogensurveillance output.}
 }
 \description{
 Plot a minimum spanning network for each group of samples aligned to a

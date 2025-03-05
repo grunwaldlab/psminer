@@ -39,7 +39,6 @@ print_ani_table <- function(pairwise_matrix, sample_data, ref_data, interactive 
   if (interactive) {
     DT::datatable(output, class = "display nowrap", ...) %>%
       formatStyle(colnames(output), "white-space" = "nowrap")
-
   } else {
     print_static_table(output)
   }
@@ -97,7 +96,6 @@ print_pocp_table <- function(pairwise_matrix, sample_data, ref_data, interactive
   if (interactive) {
     DT::datatable(output, class = "display nowrap", ...) %>%
       formatStyle(colnames(output), "white-space" = "nowrap")
-
   } else {
     print_static_table(output)
   }

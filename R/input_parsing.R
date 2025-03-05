@@ -197,7 +197,7 @@ validate_location_cols <- function(metadata) {
 
 #' @keywords internal
 is_coordinate <- function(text) {
-  grepl(text, pattern = '^[NSWE0-9,.°"”\' -]+$')
+  grepl(text, pattern = '^[NSWE0-9,.\u00B0"\u201D\u201C\' -]+$') # \u00B0 = degree symbol
 }
 
 
@@ -228,17 +228,18 @@ convert_coord_part_to_decimal_degrees <- function(coord_parts) {
     coord_part <- trimws(coord_part)
     is_negative <- grepl(coord_part, pattern = '[SW-]+')
     coord_part <- gsub(coord_part, pattern = '[NWSE-]+', replacement = '')
-    coord_part <- gsub(coord_part, pattern = '”', replacement = '"')
+    coord_part <- gsub(coord_part, pattern = '\u201D', replacement = '"') # replace fancy quotes
+    coord_part <- gsub(coord_part, pattern = '\u201C', replacement = '"') # replace fancy quotes
     coord_part <- gsub(coord_part, pattern = "''", replacement = '"')
     if (grepl(coord_part, pattern = '^[0-9.]+$')) {
       output <- as.numeric(coord_part)
-    } else if (grepl(coord_part, pattern = "^[0-9]{1,3}°[0-9.]+'$")) {
-      subparts <- strsplit(coord_part, split = '°')[[1]]
+    } else if (grepl(coord_part, pattern = "^[0-9]{1,3}\u00B0[0-9.]+'$")) {
+      subparts <- strsplit(coord_part, split = '\u00B0')[[1]]
       degrees <- as.numeric(subparts[1])
       minutes <- as.numeric(gsub(subparts[2], pattern = "'", replacement = ''))
       output <- degrees + minutes / 60
-    } else if (grepl(coord_part, pattern = "^[0-9]{1,3}°[0-9.]+'[0-9.]+\"$")) {
-      subparts <- strsplit(coord_part, split = "[°']")[[1]]
+    } else if (grepl(coord_part, pattern = "^[0-9]{1,3}\u00B0[0-9.]+'[0-9.]+\"$")) {
+      subparts <- strsplit(coord_part, split = "[\u00B0']")[[1]]
       degrees <- as.numeric(subparts[1])
       minutes <- as.numeric(subparts[2])
       seconds <- as.numeric(gsub(subparts[3], pattern = '"', replacement = ''))
@@ -400,7 +401,9 @@ validate_source_sra_query <- function(metadata, prefer_unique = TRUE, prefer_bin
 #' @param max_count The maximum number or proportion of results to download
 #' @param prefer_unique Give preference to diverse taxa, but still return
 #'   duplicates if not enough unique taxa are found to satisfy `max_count`.
-#' @param prefer_bionomial
+#' @param prefer_binomial Prefer genomes with a standard looking genus/species
+#'   name (no numbers)
+#'
 #' @keywords internal
 get_ncbi_sra_runs <- function(query, max_count = 10, prefer_unique = TRUE, prefer_binomial = TRUE) {
   # Search for SRA accession but don't download metadata yet
@@ -536,7 +539,7 @@ validate_source_assembly_query <- function(metadata, prefer_unique = TRUE, prefe
 #' @param max_count The maximum number or proportion of results to download
 #' @param prefer_unique Give preference to diverse taxa, but still return
 #'   duplicates if not enough unique taxa are found to satisfy `max_count`.
-#' @param prefer_bionomial Prefer genomes with a standard looking genus/species
+#' @param prefer_binomial Prefer genomes with a standard looking genus/species
 #'   name (no numbers)
 #' @param prefer_complete Prefer genomes with "Complete Genome" or "Chromosome"
 #'   assembly status
@@ -1003,15 +1006,6 @@ make_warning_message <- function(metadata, index, message) {
 #' @param read_all_sheets If `TRUE`, read all sheets in spreadsheet files like
 #'   .ods and .xlsx
 #'
-#' @examples
-#' input_paths <- system.file(package = 'psminer',
-#'                            file.path('extdata', c(
-#'                              'feature_test.tsv',
-#'                              'feature_test_refs.csv',
-#'                              'ods_example.ods'
-#'                            )))
-#' psminer:::read_input_tables(input_paths)
-#'
 #' @keywords internal
 read_input_tables <- function(input_paths, read_all_sheets = TRUE, add_input_metadata = TRUE) {
 
@@ -1019,11 +1013,11 @@ read_input_tables <- function(input_paths, read_all_sheets = TRUE, add_input_met
   input_paths <- unique(input_paths)
   read_one <- function(path) {
     if (endsWith(path, '.csv')) {
-      output <- list(tibble::as_tibble(read.csv(path, check.names = FALSE)))
+      output <- list(tibble::as_tibble(utils::read.csv(path, check.names = FALSE)))
       names(output) <- path
       sheets <- NA
     } else if (endsWith(path, '.tsv')) {
-      output <- list(tibble::as_tibble(read.csv(path, check.names = FALSE, sep = '\t')))
+      output <- list(tibble::as_tibble(utils::read.csv(path, check.names = FALSE, sep = '\t')))
       names(output) <- path
       sheets <- NA
     } else if (endsWith(path, '.ods')) {
@@ -1148,7 +1142,7 @@ clean_input_table <- function(table, known_columns = known_input_columns()) {
   is_headerless <- colnames(table) == '' | is.na(colnames(table))
   if (any(is_headerless & ! is_empty)) {
     stop(call. = FALSE, paste0(
-      'The following columns in the ', csv_name, ' input CSV have values but no header: ',
+      'The following columns in an input CSV have values but no header: ',
       paste0(which(is_headerless & ! is_empty), collapse = ', ')
     ))
   }
@@ -1159,7 +1153,7 @@ clean_input_table <- function(table, known_columns = known_input_columns()) {
   duplicated_cols <- unique(present_known_cols[duplicated(present_known_cols)])
   if (length(duplicated_cols) > 0) {
     stop(call. = FALSE,
-         'The following columns occur more than once in the ', csv_name, ' CSV: ',
+         'The following columns occur more than once in an input CSV: ',
          paste0('"', duplicated_cols, '"', collapse = ', ')
     )
   }
@@ -1230,7 +1224,7 @@ known_input_columns <- function() {
 #' @examples
 #' default_column_values()
 #'
-#' @keywords internal
+#' @export
 default_column_values <- function() {
   c(
     usage = 'sample',

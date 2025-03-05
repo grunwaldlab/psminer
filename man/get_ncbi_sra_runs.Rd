@@ -18,6 +18,9 @@ get_ncbi_sra_runs(
 
 \item{prefer_unique}{Give preference to diverse taxa, but still return
 duplicates if not enough unique taxa are found to satisfy \code{max_count}.}
+
+\item{prefer_binomial}{Prefer genomes with a standard looking genus/species
+name (no numbers)}
 }
 \description{
 Get metadata for SRA accessions associated with a query to NCBI.

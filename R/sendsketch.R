@@ -39,7 +39,7 @@ sendsketch_table <- function(input, interactive = knitr::is_html_output()) {
 
   # Sort and filter data
   final_table <- sketch_data[, c('sample_id', 'WKID', 'ANI', 'Complt', 'taxName'), drop = FALSE]
-  names(final_table) <- c('Sample', 'WKID (%)', 'WKID (%)', 'c', 'Completeness (%)', 'Top Hit')
+  new_col_names <- c('Sample', 'WKID (%)', 'WKID (%)', 'Completeness (%)', 'Top Hit')
 
   if (interactive) {
     # Define a function called 'bordered_bar'
@@ -51,11 +51,12 @@ sendsketch_table <- function(input, interactive = knitr::is_html_output()) {
     }
 
     # Apply the bordered_bar function
-    final_table$`WKID (%)` <- sapply(final_table$`WKID (%)`, function(x) bordered_bar(x, 'lightblue'))
-    final_table$`ANI (%)` <- sapply(final_table$`ANI (%)`, function(x) bordered_bar(x, 'lightgreen'))
-    final_table$`Completeness (%)` <- sapply(final_table$`Completeness (%)`, function(x) bordered_bar(x, 'lightpink'))
+    final_table$WKID <- vapply(final_table$WKID, FUN.VALUE = character(1), function(x) bordered_bar(x, 'lightblue'))
+    final_table$ANI <- vapply(final_table$ANI, FUN.VALUE = character(1), function(x) bordered_bar(x, 'lightgreen'))
+    final_table$Complt <- vapply(final_table$Complt, FUN.VALUE = character(1), function(x) bordered_bar(x, 'lightpink'))
 
     # Render the table using DT for HTML output
+    names(final_table) <- new_col_names
     return(
       DT::datatable(final_table,
                     options = list(
@@ -71,6 +72,7 @@ sendsketch_table <- function(input, interactive = knitr::is_html_output()) {
       )
     )
   } else {
+    names(final_table) <- new_col_names
     return(print_static_table(final_table))
   }
 }
@@ -101,11 +103,13 @@ sendsketch_table <- function(input, interactive = knitr::is_html_output()) {
 #' # If you want to sort by Completeness and then WKID, keeping the top 2 entries for each sample_id:
 #' sendsketch_best_hits(sketch_data, sort_columns = c("sample_id", "Complt", "WKID"), top_n = 2)
 sendsketch_best_hits <- function(sketch_data, sort_columns = c("WKID", "ANI", "Complt"), top_n = 1) {
-  sketch_data <- sketch_data[do.call(order, sketch_data[sort_columns]), , drop = FALSE]
+  order_data <- c(list(decreasing = TRUE), unname(sketch_data[sort_columns]))
+  sketch_data <- sketch_data[do.call(order, order_data), , drop = FALSE]
   split_data <- split(sketch_data, sketch_data[c('sample_id', 'report_group_id')])
   final_table <- do.call(rbind, lapply(split_data, function(x) {
-    x[seq_len(top_n)]
+    x[seq_len(top_n), , drop = FALSE]
   }))
+  rownames(final_table) <- NULL
   return(final_table)
 }
 
@@ -113,12 +117,15 @@ sendsketch_best_hits <- function(sketch_data, sort_columns = c("WKID", "ANI", "C
 
 #' Make sunburst plot of sendsketch taxonomy
 #'
-#' Converts classifications of top hits in sendsketch output into an interactive sunburst plot.
+#' Converts classifications of top hits in sendsketch output into an interactive
+#' sunburst plot.
 #'
 #' @param input The path to one or more folders that contain
 #'   pathogensurveillance output or a table in the format of the
 #'   [sendsketch_parsed()] output.
-#' @param interactive Whether or not to produce an interactive HTML/javascript-based plot or a static one.
+#' @param interactive Whether or not to produce an interactive
+#'   HTML/javascript-based plot or a static one.
+#' @param ... Passed to `sendsketch_best_hits`
 #'
 #' @export
 sendsketch_taxonomy_plot <- function(input, interactive = knitr::is_html_output(), ...) {
@@ -167,7 +174,7 @@ sendsketch_taxonomy_plot <- function(input, interactive = knitr::is_html_output(
   if (! interactive) {
     temp_file_html <- tempfile(fileext = ".html")
     temp_file_png <- tempfile(fileext = ".png")
-    htmlwidgets::saveWidget(widget = config(output, displayModeBar = FALSE), file = temp_file_html)
+    htmlwidgets::saveWidget(widget = plotly::config(output, displayModeBar = FALSE), file = temp_file_html)
     output <- webshot2::webshot(url = temp_file_html, file = temp_file_png,
                                 delay = 1, vheight = 750, vwidth = 750, zoom = 2)
   }

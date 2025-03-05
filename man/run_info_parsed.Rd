@@ -14,6 +14,6 @@ pathogensurveillance output.}
 A \code{\link[base:character]{base::character()}} vector with the groups from all input paths
 }
 \description{
-Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with report group ID. The groups found in the given
-paths will be combined.
+Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with report group ID. The groups found in
+the given paths will be combined.
 }

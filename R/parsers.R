@@ -1,8 +1,8 @@
 #' Get parsed pipeline status data
 #'
-#' Return a [tibble::tibble()] (table) with the status messages produced by the pathogensuriveillance
-#' pipeline. The contents of all status message files found in the given paths
-#' will be combined.
+#' Return a [tibble::tibble()] (table) with the status messages produced by the
+#' pathogensuriveillance pipeline. The contents of all status message files
+#' found in the given paths will be combined.
 #'
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
@@ -14,13 +14,13 @@ status_message_parsed <- function(paths) {
   path_data <- status_message_path_data(paths)
   if (nrow(path_data) > 0) {
     output <- do.call(rbind, lapply(1:nrow(path_data), function(index) {
-      table <- read.table(path_data$path[index], sep = '\t', check.names = FALSE)
+      table <- utils::read.table(path_data$path[index], sep = '\t', check.names = FALSE, header = TRUE)
       table$report_group_id <- path_data$report_group_id[index]
       return(table)
     }))
     output <- output[, c("sample_id", "reference_id", "report_group_id", "workflow", "level", "message")]
   } else {
-    output <- tibble(
+    output <- tibble::tibble(
       sample_id = character(0),
       reference_id = character(0),
       report_group_id = character(0),
@@ -63,8 +63,8 @@ status_message_parsed_summary <- function(paths) {
 
 #' Get parsed sample metadata
 #'
-#' Return a [tibble::tibble()] (table) with sample metadata. The contents of all sample
-#' metadata files found in the given paths will be combined.
+#' Return a [tibble::tibble()] (table) with sample metadata. The contents of all
+#' sample metadata files found in the given paths will be combined.
 #'
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
@@ -73,7 +73,7 @@ status_message_parsed_summary <- function(paths) {
 #'
 #' @export
 sample_meta_parsed <- function(paths) {
-  output <- dplyr::bind_rows(lapply(sample_meta_path(paths), read.csv, check.names = FALSE, sep = '\t'))
+  output <- dplyr::bind_rows(lapply(sample_meta_path(paths), utils::read.csv, check.names = FALSE, sep = '\t'))
   output[] <- lapply(output, function(col_data) ifelse(col_data == 'null', NA_character_, col_data))
   output <- tibble::as_tibble(output)
   output <- unique(output)
@@ -93,7 +93,7 @@ sample_meta_parsed <- function(paths) {
 #'
 #' @export
 ref_meta_parsed <- function(paths) {
-  output <- dplyr::bind_rows(lapply(ref_meta_path(paths), read.csv, check.names = FALSE, sep = '\t'))
+  output <- dplyr::bind_rows(lapply(ref_meta_path(paths), utils::read.csv, check.names = FALSE, sep = '\t'))
   output[] <- lapply(output, function(col_data) ifelse(col_data == 'null', NA_character_, col_data))
   output <- tibble::as_tibble(output)
   output <- unique(output)
@@ -114,7 +114,7 @@ ref_meta_parsed <- function(paths) {
 estimated_ani_matrix_parsed <- function(paths) {
   ani_matrix_paths <- estimated_ani_matrix_path(paths)
   output <- lapply(ani_matrix_paths, function(path) {
-    ani_matrix <- read.csv(path, check.names = FALSE)
+    ani_matrix <- utils::read.csv(path, check.names = FALSE)
     rownames(ani_matrix) <- colnames(ani_matrix)
     return(ani_matrix)
   })
@@ -135,7 +135,7 @@ estimated_ani_matrix_parsed <- function(paths) {
 pocp_matrix_parsed <- function(paths) {
   matrix_paths <- pocp_matrix_path(paths)
   output <- lapply(matrix_paths, function(path) {
-    pocp_matrix <- read.csv(path, check.names = FALSE, sep = '\t')
+    pocp_matrix <- utils::read.csv(path, check.names = FALSE, sep = '\t')
     rownames(pocp_matrix) <- colnames(pocp_matrix)
     return(pocp_matrix)
   })
@@ -146,8 +146,8 @@ pocp_matrix_parsed <- function(paths) {
 
 #' Get parsed report groups
 #'
-#' Return a [tibble::tibble()] (table) with report group ID. The groups found in the given
-#' paths will be combined.
+#' Return a [tibble::tibble()] (table) with report group ID. The groups found in
+#' the given paths will be combined.
 #'
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
@@ -195,8 +195,7 @@ sendsketch_parsed <- function(paths, only_best = FALSE) {
 
   # Internal function to parse a single file
   parse_one_file <- function(path, report_group_id, sample_id) {
-    data <- read.table(path, sep = '\t', skip = 2,
-                       show_col_types = FALSE, check.names = FALSE)
+    data <- utils::read.table(path, sep = '\t', skip = 2, check.names = FALSE, header = TRUE)
     numeric_cols <- c(5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
                       27, 28, 29, 30, 31, 32, 33)
     data[numeric_cols] <- lapply(data[numeric_cols], as.numeric)
@@ -261,12 +260,11 @@ sendsketch_taxonomy_parsed <- function(paths, remove_ranks = FALSE, only_best = 
 #'
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
-#' @param remove_ranks If `TRUE`, remove the rank information from the taxonomy.
 #' @param only_best Only return the best hit for each combination of report
 #'   group and sample. For more control/details on how the top hit is selected,
 #'   see [sendsketch_best_hits()].
-#' @param only_shared If `TRUE`, only return the data for that are present in all of the
-#'   inputs.
+#' @param only_shared If `TRUE`, only return the data for that are present in
+#'   all of the inputs.
 #'
 #' @return A [tibble::tibble()] with taxonomy data, with columns corresponding
 #'   to ranks.
@@ -292,37 +290,29 @@ sendsketch_taxonomy_data_parsed <- function(paths, only_best = FALSE, only_share
 
 #' Parse Software Version Metadata from YAML File
 #'
-#' Reads a YAML file containing software version information and transforms it into a tibble.
-#' Each software module and program, along with its version, is extracted and organized.
+#' Reads a YAML file containing software version information and transforms it
+#' into a tibble. Each software module and program, along with its version, is
+#' extracted and organized.
 #'
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
-#' @return A [tibble::tibble()] with columns `module`, `program`, and `version` detailing the software versions.
+#' @return A [tibble::tibble()] with columns `module`, `program`, and `version`
+#'   detailing the software versions.
 #' @family parsers
 #' @export
 #' @examples
 #' version_path <- file.path(params$inputs, "inputs", "versions.yml")
 #' version_data <- software_version_parsed(version_path)
 software_version_parsed <- function(paths) {
-
   parse_one <- function(version_path) {
-    # Reading the YAML file
-    raw_version_data <- tryCatch({
-      unlist(yaml::read_yaml(version_path))
-    },
-    error = function(e) {
-      stop("Failed to read YAML file: ", e$message)
-    })
-    # Transforming the data into a tibble
-    split_version_data <- stringr::str_split(names(raw_version_data), pattern = '\\.', n = 2)
+    raw_version_data <- yaml::read_yaml(version_path)
     version_data <- tibble::tibble(
-      module = vapply(split_version_data, FUN.VALUE = character(1), `[`, 1),
-      program = vapply(split_version_data, FUN.VALUE = character(1), `[`, 2),
-      version = unname(raw_version_data),
+      module = rep(names(raw_version_data), vapply(raw_version_data, FUN.VALUE = numeric(1), length)),
+      program = unname(unlist(lapply(raw_version_data, names))),
+      version = unname(unlist(raw_version_data))
     )
     return(version_data)
   }
-
   unique(dplyr::bind_rows(lapply(software_version_path(paths), parse_one)))
 }
 
@@ -358,7 +348,7 @@ core_tree_parsed <- function(paths) {
 #' @export
 variant_tree_parsed <- function(paths, rename = TRUE) {
   path_data <- variant_tree_path_data(paths)
-  trees <- psminer:::tree_parsed(path_data$path)
+  trees <- tree_parsed(path_data$path)
 
   # Rename tree tips to sample/reference IDs
   if (rename) {
@@ -389,7 +379,7 @@ variant_tree_parsed <- function(paths, rename = TRUE) {
 #' @export
 busco_tree_parsed <- function(paths) {
   path_data <- busco_tree_path_data(paths)
-  trees <- psminer:::tree_parsed(path_data$path)
+  trees <- tree_parsed(path_data$path)
   return(trees)
 }
 
@@ -442,7 +432,7 @@ tree_parsed <- function(paths) {
 #' Returns parsed SNP alignments for each reference used in the
 #' variant analysis for a given pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain pathogensurveillance output.
+#' @param path The path to one or more folders that contain pathogensurveillance output.
 #' @param rename If `TRUE`, rename the sequence labels as sample IDs and reference IDs.
 #' @return list of [ape::DNAbin()], named by alignment file
 #' @family parsers

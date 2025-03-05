@@ -14,6 +14,6 @@ pathogensurveillance output.}
 A \code{\link[tibble:tibble]{tibble::tibble()}} with the sample metadata
 }
 \description{
-Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with sample metadata. The contents of all sample
-metadata files found in the given paths will be combined.
+Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with sample metadata. The contents of all
+sample metadata files found in the given paths will be combined.
 }

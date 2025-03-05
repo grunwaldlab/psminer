@@ -52,7 +52,7 @@ print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_
   }
   plot_data$base64_plot <- unlist(lapply(seq_len(nrow(plot_data)), function(i) {
     temp_path <- tempfile(fileext = '.png')
-    png(temp_path, ...)
+    grDevices::png(temp_path, ...)
     args <- unname(lapply(plot_data, function(column) {
       if (is.list(column)) {
         return(column[[i]])
@@ -61,14 +61,14 @@ print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_
       }
     }))
     quiet(do.call(plot_func, args))
-    dev.off()
+    grDevices::dev.off()
     if (! file.exists(temp_path)) {
-      png(temp_path, ...)
+      grDevices::png(temp_path, ...)
       text_plot <- ggplot2::ggplot() +
         ggplot2::annotate("text", x = 4, y = 25, size=8, label = "No Plot.") +
         ggplot2::theme_void()
       print(text_plot)
-      dev.off()
+      grDevices::dev.off()
     }
     output <- base64enc::base64encode(temp_path)
     file.remove(temp_path)

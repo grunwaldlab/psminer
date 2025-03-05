@@ -26,14 +26,4 @@ A \code{list} of \code{tibble}.
 When a spreadsheet format such as .ods or .xlsx is supplied, each sheet is
 returned as its own table.
 }
-\examples{
-input_paths <- system.file(package = 'psminer',
-                           file.path('extdata', c(
-                             'feature_test.tsv',
-                             'feature_test_refs.csv',
-                             'ods_example.ods'
-                           )))
-psminer:::read_input_tables(input_paths)
-
-}
 \keyword{internal}

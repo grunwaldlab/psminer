@@ -11,8 +11,12 @@ sendsketch_taxonomy_plot(input, interactive = knitr::is_html_output(), ...)
 pathogensurveillance output or a table in the format of the
 \code{\link[=sendsketch_parsed]{sendsketch_parsed()}} output.}
 
-\item{interactive}{Whether or not to produce an interactive HTML/javascript-based plot or a static one.}
+\item{interactive}{Whether or not to produce an interactive
+HTML/javascript-based plot or a static one.}
+
+\item{...}{Passed to \code{sendsketch_best_hits}}
 }
 \description{
-Converts classifications of top hits in sendsketch output into an interactive sunburst plot.
+Converts classifications of top hits in sendsketch output into an interactive
+sunburst plot.
 }

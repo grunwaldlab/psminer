@@ -6,6 +6,7 @@
 #' @description This function retrieves BibTeX citation from a given DOI using the rcrossref package.
 #'
 #' @param doi The DOI (Digital Object Identifier) for the publication.
+#' @param ... Passed to `rcrossref::cr_cn`
 #' @return A character string containing the BibTeX citation.
 #'
 #' @examples

@@ -20,17 +20,16 @@
 make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = knitr::is_html_output(), height = 1000, width = 1000, dpi = 100) {
   # Rename rows/columns for plotting
   name_key <- c(
-    setNames(ref_data$ref_name, ref_data$ref_id),
-    setNames(sample_data$name, sample_data$sample_id)
+    stats::setNames(ref_data$ref_name, ref_data$ref_id),
+    stats::setNames(sample_data$name, sample_data$sample_id)
   )
   name_key <- stats::setNames(make.unique(name_key, sep = ' '), names(name_key))
   colnames(ani_matrix) <- name_key[colnames(ani_matrix)]
   rownames(ani_matrix) <- name_key[rownames(ani_matrix)]
   if (interactive) {
-    heatmap_ani <- heatmaply(ani_matrix,
-                             fontsize_row = 8, fontsize_col = 8, width = width, height = height)
+    heatmap_ani <- heatmaply::heatmaply(ani_matrix, fontsize_row = 8, fontsize_col = 8, width = width, height = height)
   } else {
-    heatmap_ani <- pheatmap(ani_matrix, show_rownames = TRUE, labels_row = colnames(ani_matrix), width = width / dpi, height = height / dpi)
+    heatmap_ani <- pheatmap::pheatmap(ani_matrix, show_rownames = TRUE, labels_row = colnames(ani_matrix), width = width / dpi, height = height / dpi)
   }
   return(heatmap_ani)
 }

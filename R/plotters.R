@@ -13,7 +13,7 @@
 #' @param interactive Whether to use an HTML-based interactive format or not
 #'   (default: TRUE)
 #'
-#' @return  A list of plots, unless `collapse_by_tax` is useded, in which case a single plot is returned.
+#' @return  A list of plots, unless `collapse_by_tax` is used, in which case a single plot is returned.
 #'
 #' @export
 core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
@@ -57,7 +57,7 @@ busco_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::
 #' @param interactive Whether to use an HTML-based interactive format or not
 #'   (default: TRUE)
 #'
-#' @return  A list of plots, unless `collapse_by_tax` is useded, in which case a single plot is returned.
+#' @return  A list of plots, unless `collapse_by_tax` is used, in which case a single plot is returned.
 #'
 #' @export
 multigene_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
@@ -81,7 +81,7 @@ multigene_tree_plot <- function(input, collapse_by_tax = NULL, interactive = kni
 #' @param interactive Whether to use an HTML-based interactive format or not
 #'   (default: TRUE)
 #'
-#' @return  A list of plots, unless `collapse_by_tax` is useded, in which case a
+#' @return  A list of plots, unless `collapse_by_tax` is used, in which case a
 #'   single plot is returned.
 #'
 #' @keywords internal
@@ -134,7 +134,7 @@ generalized_tree_plot <- function(input, parser, collapse_by_tax = NULL, interac
 #' @param interactive Whether to use an HTML-based interactive format or not
 #'   (default: TRUE)
 #'
-#' @return  A list of plots, unless `collapse_by_tax` is useded, in which case a single plot is returned.
+#' @return  A list of plots, unless `collapse_by_tax` is used, in which case a single plot is returned.
 #'
 #' @export
 variant_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
@@ -187,10 +187,16 @@ variant_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr
 #' @param interactive Whether to use an HTML-based interactive format or not
 #'   (default: TRUE)
 #'
+#' @import ggtree
+#'
 #' @keywords internal
-plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collapse_by_tax = NULL, interactive = knitr::is_html_output(), ...) {
+plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collapse_by_tax = NULL, interactive = FALSE, ...) {
+  if (interactive) {
+    stop('Interactive tree plotting is not yet supported.')
+  }
+
   # If a single tree is provided, convert it to a list of a single tree to simplify code below
-  if (class(trees) == "phylo") {
+  if (inherits(trees, "phylo")) {
     trees <- list(trees)
   }
 
@@ -227,7 +233,7 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
       as.factor(col)
     })
     # Combine trees
-    base_tree <- ape::as.phylo(as.formula(paste0('~', paste0(colnames(tree_tax), collapse = '/'))), data = tree_tax)
+    base_tree <- ape::as.phylo(stats::as.formula(paste0('~', paste0(colnames(tree_tax), collapse = '/'))), data = tree_tax)
     mean_edge_len <- mean(unlist(lapply(trees, function(x) x$edge.length)))
     base_tree$edge.length <- rep(mean_edge_len, nrow(base_tree$edge))
     combined_tree <- base_tree
@@ -243,7 +249,7 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
     stats::setNames(ref_meta$ref_description, ref_meta$ref_id)
   )
   tip_labels <- label_key[combined_tree$tip.label]
-  tip_labels <- stats::setNames(make.unique(tip_labels, sep = ' '), names(tip_labels)) # phylocanvas does not plot anything if tip labels are not unique.
+  tip_labels <- stats::setNames(make.unique(tip_labels, sep = ' '), names(tip_labels))
 
   # Prepare colors
   if (is.null(color_by)) {
@@ -261,88 +267,49 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
   }
   tip_colors <- color_key[combined_tree$tip.label]
 
-  # Plot tree
-  if (interactive) {
-    is_color <- function(x) {
-      unlist(lapply(x, function(y) {
-        tryCatch(is.matrix(col2rgb(y)), error = function(e) FALSE)
-      }))
-    }
-    if (! all(is_color(tip_colors))) {
-      factors <- unique(tip_colors)
-      factors <- factors[! is.na(factors)]
-      factor_key <- stats::setNames(viridis::viridis(length(factors), end = 0.8), factors)
-      tip_colors <- stats::setNames(factor_key[tip_colors], names(tip_colors))
-    }
-    # Convert characters that are not allowed in the format used by phylocanvas
-    tip_labels <- gsub(tip_labels, pattern = ',', replacement = '.', fixed = TRUE)
-    tip_labels <- gsub(tip_labels, pattern = '[():; ]+', replacement = '_')
-    tip_labels <- trimws(tip_labels, whitespace = '_')
-    combined_tree$tip.label <- tip_labels
-    names(tip_colors) <- tip_labels
-    phycanv <- phylocanvas(combined_tree, treetype = "rectangular", alignlabels = TRUE, showscalebar = TRUE, width = "100%", height = "10in")
-    # Add label colors
-    phycanv$x$nodestyles <- lapply(tip_labels, function(x) {
-      list(
-        highlighted = FALSE,
-        colour = "black",
-        shape = "circle",
-        size = 0.8,
-        leafStyle = list(strokeStyle = unname(tip_colors[x]), fillStyle = unname(tip_colors[x]), lineWidth = 1),
-        labelStyle = list(colour = unname(tip_colors[x]), textSize = 25, font = "Arial", format = "bold")
-      )
-    })
-    names(phycanv$x$nodestyles) <- unname(tip_labels)
-    # Remove underscores from tip labels (phylocanvas converts spaces to underscores)
-    phycanv$x$tree <- gsub(phycanv$x$tree, pattern = '_', replacement = ' ', fixed = TRUE)
-    names(phycanv$x$nodestyles) <- gsub(names(phycanv$x$nodestyles), pattern = '_', replacement = ' ', fixed = TRUE)
-    return(phycanv)
+  # Make data associated with tree tips
+  tip_data <- tibble::tibble(
+    newick_label = combined_tree$tip.label,
+    tip_color = unname(tip_colors),
+    tip_label = tip_labels[combined_tree$tip.label]
+  )
+
+  if (is.null(color_by) || length(trees) <= 1) {
+    base_tree_node_labels <- character(0)
   } else {
-    # Make data associated with tree tips
-    tip_data <- tibble::tibble(
-      newick_label = combined_tree$tip.label,
-      tip_color = unname(tip_colors),
-      tip_label = tip_labels[combined_tree$tip.label]
-    )
-
-    if (is.null(color_by) || length(trees) <= 1) {
-      base_tree_node_labels <- character(0)
-    } else {
-      base_tree_node_labels <- base_tree$node.label
-    }
-
-    if (is.null(combined_tree$node.label)) {
-      all_labels = c(rep(NA, combined_tree$Nnode), combined_tree$tip.label)
-    } else {
-      all_labels = c(combined_tree$node.label, combined_tree$tip.label)
-    }
-
-    node_data <- tibble::tibble(
-      newick_label = all_labels,
-      node_label = ifelse(newick_label %in% c(base_tree_node_labels, "Root"), "", newick_label),
-      branch_color = ifelse(newick_label %in% c(base_tree_node_labels, "Root"), "grey", "black"),
-      branch_type = ifelse(newick_label %in% c(base_tree_node_labels, "Root"), "dashed", "solid")
-    )
-
-    legend_title <- tools::toTitleCase(trimws(gsub(color_by, pattern = '_', replacement = ' ')))
-
-    plotted_tree <- ggtree(combined_tree, aes(color = branch_color, linetype = branch_type)) %<+% node_data +
-      geom_nodelab(aes(label = node_label), hjust = 1.3, nudge_y = 0.3, size = 3) +
-      scale_color_identity() +
-      scale_linetype_identity()
-
-    plotted_tree <- plotted_tree %<+% tip_data +
-      scale_x_continuous(expand = expansion(add = c(0.1, 0.1 + max(nchar(tip_data$tip_label)) * 0.15 / sqrt(nrow(tip_data))))) +
-      ggnewscale::new_scale_color() +
-      geom_tiplab(aes(label = tip_label, color = tip_color)) +
-      geom_tippoint(aes(color = tip_color), alpha = 0) + # Invisible tips just there to make override.aes below change the legend color shapes
-      scale_color_viridis_d(end = 0.8, na.value = "black") +
-      guides(color = guide_legend(title = legend_title, override.aes = list(label = "", size = 3, alpha = 1, shape = 15))) +
-      theme(legend.position = "bottom")
-    plotted_tree
-
-    return(plotted_tree)
+    base_tree_node_labels <- base_tree$node.label
   }
+
+  if (is.null(combined_tree$node.label)) {
+    all_labels = c(rep(NA, combined_tree$Nnode), combined_tree$tip.label)
+  } else {
+    all_labels = c(combined_tree$node.label, combined_tree$tip.label)
+  }
+
+  node_data <- tibble::tibble(
+    newick_label = all_labels,
+    node_label = ifelse(all_labels %in% c(base_tree_node_labels, "Root"), "", newick_label),
+    branch_color = ifelse(all_labels %in% c(base_tree_node_labels, "Root"), "grey", "black"),
+    branch_type = ifelse(all_labels %in% c(base_tree_node_labels, "Root"), "dashed", "solid")
+  )
+
+  legend_title <- tools::toTitleCase(trimws(gsub(color_by, pattern = '_', replacement = ' ')))
+
+  plotted_tree <- ggtree(combined_tree, ggplot2::aes_string(color = 'branch_color', linetype = 'branch_type')) %<+% node_data +
+    geom_nodelab(ggplot2::aes_string(label = 'node_label'), hjust = 1.3, nudge_y = 0.3, size = 3) +
+    ggplot2::scale_color_identity() +
+    ggplot2::scale_linetype_identity()
+
+  plotted_tree <- plotted_tree %<+% tip_data +
+    scale_x_continuous(expand = ggplot2::expansion(add = c(0.1, 0.1 + max(nchar(tip_data$tip_label)) * 0.1 / sqrt(nrow(tip_data))))) +
+    ggnewscale::new_scale_color() +
+    geom_tiplab(ggplot2::aes_string(label = 'tip_label', color = 'tip_color')) +
+    geom_tippoint(ggplot2::aes_string(color = 'tip_color'), alpha = 0) + # Invisible tips just there to make override.aes below change the legend color shapes
+    ggplot2::scale_color_viridis_d(end = 0.8, na.value = "black") +
+    ggplot2::guides(color = guide_legend(title = legend_title, override.aes = list(label = "", size = 3, alpha = 1, shape = 15))) +
+    theme(legend.position = "bottom")
+
+  return(plotted_tree)
 }
 
 
@@ -351,7 +318,7 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
 #' Plot a minimum spanning network for each group of samples aligned to a
 #' reference found in `pathogensurveillance` output.
 #'
-#' @param input The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @param combine If `TRUE` combine multiple MSNs into a single figure and
 #'   return a single figure. If `FALSE`, return a list of figures.
@@ -377,18 +344,18 @@ variant_msn_plot <- function(path, combine = TRUE) {
   color_by_cols <- c(as.list(color_by_cols), list(NULL))  # NULL ensures that the default color scheme is also used
 
   # Plot MSNs
-  plot.new()
+  graphics::plot.new()
   output <- lapply(seq_len(nrow(align_data)), function(i) {
     align_without_ref <- alignments[[i]][rownames(alignments[[i]]) != align_data$ref_id[i], ]
     if (is.null(align_without_ref)) {
       return(NULL)
     }
-    plot_data <- psminer:::make_MSN(align_without_ref, sample_data, user_seed = 1, snp_diff_prop = 0.1, population = NULL)
+    plot_data <- make_MSN(align_without_ref, sample_data, user_seed = 1, snp_diff_prop = 0.1, population = NULL)
     if (is.null(plot_data)) {
       return(NULL)
     }
-    out <- recordPlot()
-    plot.new()
+    out <- grDevices::recordPlot()
+    graphics::plot.new()
     return(out)
   })
 

@@ -31,7 +31,7 @@ print_static_table <- function(data, compressed_cols = NULL, max_nchar = 20) {
         column <- data[[col_name]]
         start <- starts[[col_name]]
         if (start != "") {
-          column <- sub(column, pattern = paste0("^", start), replacement = "…")
+          column <- sub(column, pattern = paste0("^", start), replacement = '\u2026')
         }
         return(column)
       })
@@ -41,7 +41,7 @@ print_static_table <- function(data, compressed_cols = NULL, max_nchar = 20) {
         column <- data[[col_name]]
         end <- ends[[col_name]]
         if (end != "") {
-          column <- sub(column, pattern = paste0(end, "$"), replacement = "…")
+          column <- sub(column, pattern = paste0(end, "$"), replacement = '\u2026')
         }
         return(column)
       })
@@ -75,7 +75,7 @@ print_static_table <- function(data, compressed_cols = NULL, max_nchar = 20) {
   table <- kableExtra::kbl(data, booktabs = TRUE, longtable = is_multi_page_table) %>%
     kableExtra::kable_styling(full_width = FALSE, latex_options = c("hold_position", "repeat_header", "scale_down"))
   if (length(footnotes) > 0) {
-    table <- footnote(table, number = footnotes)
+    table <- kableExtra::footnote(table, number = footnotes)
   }
   return(table)
 }

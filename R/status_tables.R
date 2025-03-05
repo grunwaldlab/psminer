@@ -77,9 +77,9 @@ status_message_tables <- function(input, interactive = knitr::is_html_output()) 
 
   # Mapping message level to emojis for detailed tables
   messages$emoji <- dplyr::case_when(
-    messages$level == "WARNING" ~ "⚠️ WARNING",
-    messages$level == "ERROR" ~ "❌ ERROR",
-    TRUE ~ "✅" # Default to a success symbol, adjust as necessary
+    messages$level == "WARNING" ~ "\u26A0 WARNING",
+    messages$level == "ERROR" ~ "\u274C ERROR",
+    TRUE ~ "\u2705" # Default to a success symbol, adjust as necessary
   )
 
   # Detailed table for samples

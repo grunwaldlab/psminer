@@ -10,11 +10,11 @@
 #'
 #' @export
 parse_sample_meta <- function(sample_data_path, assigned_refs_path, group) {
-  sample_data <- read.csv(sample_data_path, check.names = FALSE, sep = '\t')
-  assigned_refs <- read.csv(assigned_refs_path, col.names = c('sample_id', 'reference_id'), header = FALSE, sep = '\t')
+  sample_data <- utils::read.csv(sample_data_path, check.names = FALSE, sep = '\t')
+  assigned_refs <- utils::read.csv(assigned_refs_path, col.names = c('sample_id', 'reference_id'), header = FALSE, sep = '\t')
   # Subset to samples in the report group
   group_data <- strsplit(sample_data$report_group, split = ";")
-  sample_data <- sample_data[map_lgl(group_data, function(x) group %in% x), ]
+  sample_data <- sample_data[vapply(group_data, FUN.VALUE = logical(1), function(x) group %in% x), ]
   # Add in which reference was used in variant calling
   sample_data[match(assigned_refs$sample_id, sample_data$sample_id), 'reference_id'] <- assigned_refs$reference_id
   return(sample_data)
@@ -35,16 +35,16 @@ parse_sample_meta <- function(sample_data_path, assigned_refs_path, group) {
 #'
 #' @export
 parse_ref_meta <- function(ref_data_path, assigned_refs_path, sample_data_path, group) {
-  sample_data <- read.csv(sample_data_path, check.names = FALSE, sep = '\t')
+  sample_data <- utils::read.csv(sample_data_path, check.names = FALSE, sep = '\t')
   group_data <- strsplit(sample_data$report_group, split = ";")
-  sample_data <- sample_data[map_lgl(group_data, function(x) group %in% x), ] # Subset to samples in the report group
-  assigned_refs <- read.csv(assigned_refs_path, col.names = c('sample_id', 'reference_id'), header = FALSE, sep = '\t')
+  sample_data <- sample_data[vapply(group_data, FUN.VALUE = logical(1), function(x) group %in% x), ] # Subset to samples in the report group
+  assigned_refs <- utils::read.csv(assigned_refs_path, col.names = c('sample_id', 'reference_id'), header = FALSE, sep = '\t')
 
   # Get data for the references selected by the pipeline
   ref_file_names <- list.files(ref_data_path)
   ref_data_per_sample <- lapply(ref_file_names, function(path) {
     sample_id <- gsub(path, pattern = '\\.tsv$', replacement = '')
-    output <- read.csv(file.path(ref_data_path, path), sep = '\t')
+    output <- utils::read.csv(file.path(ref_data_path, path), sep = '\t')
     return(cbind(
       used_in_phylo_by = sample_id,
       source = 'pipeline',

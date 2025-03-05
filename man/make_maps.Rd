@@ -7,7 +7,7 @@
 make_maps(sample_data)
 }
 \arguments{
-\item{sample_data}{}
+\item{sample_data}{sample_data}
 }
 \value{
 Maps

@@ -24,7 +24,7 @@ a single one. (Default: return a list of plots instead of a single plot)}
 (default: TRUE)}
 }
 \value{
-A list of plots, unless \code{collapse_by_tax} is useded, in which case a single plot is returned.
+A list of plots, unless \code{collapse_by_tax} is used, in which case a single plot is returned.
 }
 \description{
 Plot the core gene phylogenies present in the output of a pathogensurveillance

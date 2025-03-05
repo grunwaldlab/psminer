@@ -66,9 +66,9 @@ status_message_table <- function(paths, interactive = knitr::is_html_output(), .
 
   # Make step status column and sort table by it
   symbol_key <- c(
-    NOTE = '✅' ,
-    WARNING = '🟡',
-    ERROR = '❌'
+    NOTE = '\u2705',
+    WARNING = '\uD83D\uDFE1',
+    ERROR = '\u274C'
   )
   message_data <- message_data[order(match(message_data$level, names(symbol_key))), ]
   message_data$status <- symbol_key[message_data$level]
@@ -139,9 +139,9 @@ status_message_table_summary <- function(paths, interactive = knitr::is_html_out
     message_data$status <- ifelse(message_data$errors > 0, 3, message_data$status)
     message_data <- message_data[order(message_data$status), ]
     symbol_key <- c(
-      '✅' ,
-      '🟡',
-      '❌'
+      '\u2705',
+      '\uD83D\uDFE1',
+      '\u274C'
     )
     message_data$status <- symbol_key[message_data$status]
 

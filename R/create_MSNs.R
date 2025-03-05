@@ -23,8 +23,8 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
   snp_genclone <- poppr::as.genclone(snp_aln.gi)
 
   if (use_cutoff_predictor) {
-    snpdist_stats <- filter_stats(snp_genclone)
-    average_thresh <- cutoff_predictor(snpdist_stats$average$THRESHOLDS)
+    snpdist_stats <- poppr::filter_stats(snp_genclone)
+    average_thresh <- poppr::cutoff_predictor(snpdist_stats$average$THRESHOLDS)
     poppr::mlg.filter(snp_genclone, distance = poppr::bitwise.dist, percent = TRUE) <- average_thresh
   } else if (!is.null(snp_threshold)) {
     poppr::mlg.filter(snp_genclone, distance = poppr::bitwise.dist, percent = FALSE) <- snp_threshold
@@ -40,23 +40,23 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
   sample_data <- sample_data[sample_data$sample_id %in% rownames(snp_fasta_alignment), , drop = FALSE]
   user_factor <- sample_data[[population]]
   node_color <- as.factor(ifelse(is.na(user_factor) | user_factor == "", "Unknown", user_factor))
-  myColors <- rainbow(length(unique(node_color)))
+  myColors <- grDevices::rainbow(length(unique(node_color)))
   names(myColors) <- levels(node_color)
   num_columns <- ncol(sample_data)
-  strata(snp_genclone) <- cbind(sample_data[, c(1:num_columns)], color_node_by = node_color)
-  setPop(snp_genclone) <- ~color_node_by
+  adegenet::strata(snp_genclone) <- cbind(sample_data[, c(1:num_columns)], color_node_by = node_color)
+  adegenet::setPop(snp_genclone) <- ~color_node_by
 
   if (!is.null(snp_threshold)) {
     ms.loc <- poppr::poppr.msn(snp_genclone,
-                        distmat = poppr::bitwise.dist(snp_genclone, percent = FALSE),
-                        include.ties = TRUE,
-                        showplot = FALSE)
+                               distmat = poppr::bitwise.dist(snp_genclone, percent = FALSE),
+                               include.ties = TRUE,
+                               showplot = FALSE)
   }
   else {
     ms.loc <- poppr::poppr.msn(snp_genclone,
-                        distmat = poppr::bitwise.dist(snp_genclone, percent = TRUE),
-                        include.ties = TRUE,
-                        showplot = FALSE)
+                               distmat = poppr::bitwise.dist(snp_genclone, percent = TRUE),
+                               include.ties = TRUE,
+                               showplot = FALSE)
   }
 
   the_edges <- igraph::E(ms.loc$graph)$weight
@@ -74,9 +74,9 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
       ...
     )
   } else {
-    output <- ggplot() +
-      annotate("text", x = 4, y = 25, size=8, label = "All samples are in the same multilocus genotype.") +
-      theme_void()
+    output <- ggplot2::ggplot() +
+      ggplot2::annotate("text", x = 4, y = 25, size=8, label = "All samples are in the same multilocus genotype.") +
+      ggplot2::theme_void()
   }
 
 

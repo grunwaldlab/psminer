@@ -22,6 +22,9 @@ get_ncbi_assemblies(
 \item{prefer_unique}{Give preference to diverse taxa, but still return
 duplicates if not enough unique taxa are found to satisfy \code{max_count}.}
 
+\item{prefer_binomial}{Prefer genomes with a standard looking genus/species
+name (no numbers)}
+
 \item{prefer_complete}{Prefer genomes with "Complete Genome" or "Chromosome"
 assembly status}
 
@@ -29,9 +32,6 @@ assembly status}
 
 \item{only_latest}{Only include the most recent version of a genome assembly
 if there are multiple versions in the result.}
-
-\item{prefer_bionomial}{Prefer genomes with a standard looking genus/species
-name (no numbers)}
 }
 \value{
 A \code{data.frame}

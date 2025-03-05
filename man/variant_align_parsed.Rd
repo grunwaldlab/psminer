@@ -7,9 +7,9 @@
 variant_align_parsed(path, rename = TRUE)
 }
 \arguments{
-\item{rename}{If \code{TRUE}, rename the sequence labels as sample IDs and reference IDs.}
+\item{path}{The path to one or more folders that contain pathogensurveillance output.}
 
-\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
+\item{rename}{If \code{TRUE}, rename the sequence labels as sample IDs and reference IDs.}
 }
 \value{
 list of \code{\link[ape:DNAbin]{ape::DNAbin()}}, named by alignment file

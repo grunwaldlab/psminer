@@ -14,7 +14,7 @@ pathogensurveillance output.}
 A \code{\link[tibble:tibble]{tibble::tibble()}} with the messages from all input paths
 }
 \description{
-Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with the status messages produced by the pathogensuriveillance
-pipeline. The contents of all status message files found in the given paths
-will be combined.
+Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with the status messages produced by the
+pathogensuriveillance pipeline. The contents of all status message files
+found in the given paths will be combined.
 }

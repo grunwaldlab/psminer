@@ -14,10 +14,8 @@ pathogensurveillance output.}
 group and sample. For more control/details on how the top hit is selected,
 see \code{\link[=sendsketch_best_hits]{sendsketch_best_hits()}}.}
 
-\item{only_shared}{If \code{TRUE}, only return the data for that are present in all of the
-inputs.}
-
-\item{remove_ranks}{If \code{TRUE}, remove the rank information from the taxonomy.}
+\item{only_shared}{If \code{TRUE}, only return the data for that are present in
+all of the inputs.}
 }
 \value{
 A \code{\link[tibble:tibble]{tibble::tibble()}} with taxonomy data, with columns corresponding
