@@ -8,7 +8,7 @@ make_ani_heatmap(
   ani_matrix,
   ref_data,
   sample_data,
-  interactive = knitr::is_html_output(),
+  interactive = FALSE,
   height = 1000,
   width = 1000,
   dpi = 100

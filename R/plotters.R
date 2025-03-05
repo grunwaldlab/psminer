@@ -16,7 +16,7 @@
 #' @return  A list of plots, unless `collapse_by_tax` is used, in which case a single plot is returned.
 #'
 #' @export
-core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
+core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
   generalized_tree_plot(input, core_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
 }
 
@@ -38,7 +38,7 @@ core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::i
 #' @return  A list of plots, unless `collapse_by_tax` is useded, in which case a single plot is returned.
 #'
 #' @export
-busco_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
+busco_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
   generalized_tree_plot(input, busco_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
 }
 
@@ -60,7 +60,7 @@ busco_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::
 #' @return  A list of plots, unless `collapse_by_tax` is used, in which case a single plot is returned.
 #'
 #' @export
-multigene_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
+multigene_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
   generalized_tree_plot(input, multigene_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
 }
 
@@ -85,7 +85,7 @@ multigene_tree_plot <- function(input, collapse_by_tax = NULL, interactive = kni
 #'   single plot is returned.
 #'
 #' @keywords internal
-generalized_tree_plot <- function(input, parser, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
+generalized_tree_plot <- function(input, parser, collapse_by_tax = NULL, interactive = FALSE) {
   # If no trees are found, return an empty list
   trees <-  parser(input)
   if (length(trees) == 0) {
@@ -137,7 +137,7 @@ generalized_tree_plot <- function(input, parser, collapse_by_tax = NULL, interac
 #' @return  A list of plots, unless `collapse_by_tax` is used, in which case a single plot is returned.
 #'
 #' @export
-variant_tree_plot <- function(input, collapse_by_tax = NULL, interactive = knitr::is_html_output()) {
+variant_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
   # If no trees are found, return an empty list
   trees <-  variant_tree_parsed(input)
   if (length(trees) == 0) {

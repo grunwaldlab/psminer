@@ -29,7 +29,7 @@
 #'
 #' # If you want to sort by Completeness and then WKID, keeping the top 2 entries for each sample_id:
 #' sketch_idtb(sketch_data, sort_columns = c("sample_id", "Complt", "WKID"), top_n = 2)
-sendsketch_table <- function(input, interactive = knitr::is_html_output()) {
+sendsketch_table <- function(input, interactive = FALSE) {
   # Parse the input if it is a file/folder path
   if (is.data.frame(input)) {
     sketch_data <- input

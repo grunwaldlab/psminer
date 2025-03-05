@@ -8,7 +8,7 @@ generalized_tree_plot(
   input,
   parser,
   collapse_by_tax = NULL,
-  interactive = knitr::is_html_output()
+  interactive = FALSE
 )
 }
 \arguments{

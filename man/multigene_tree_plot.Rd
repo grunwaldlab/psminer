@@ -4,11 +4,7 @@
 \alias{multigene_tree_plot}
 \title{Plot multigene phylogeny}
 \usage{
-multigene_tree_plot(
-  input,
-  collapse_by_tax = NULL,
-  interactive = knitr::is_html_output()
-)
+multigene_tree_plot(input, collapse_by_tax = NULL, interactive = FALSE)
 }
 \arguments{
 \item{input}{The path to one or more folders that contain

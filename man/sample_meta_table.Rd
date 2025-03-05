@@ -4,7 +4,7 @@
 \alias{sample_meta_table}
 \title{Print a table of sample metadata}
 \usage{
-sample_meta_table(input, interactive = knitr::is_html_output(), ...)
+sample_meta_table(input, interactive = FALSE, ...)
 }
 \arguments{
 \item{input}{The path to one or more folders that contain

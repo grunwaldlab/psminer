@@ -11,7 +11,7 @@
 #' @return Returns the table to print
 #'
 #' @export
-print_ani_table <- function(pairwise_matrix, sample_data, ref_data, interactive = knitr::is_html_output(), ...) {
+print_ani_table <- function(pairwise_matrix, sample_data, ref_data, interactive = FALSE, ...) {
   # Create table to print
   output <- do.call(rbind, lapply(sample_data$sample_id, function(id) { # loop over sample IDs and combine results into a table
     ref_samp_comp <- pairwise_matrix[id, colnames(pairwise_matrix) %in% ref_data$ref_id, drop = FALSE]
@@ -59,7 +59,7 @@ print_ani_table <- function(pairwise_matrix, sample_data, ref_data, interactive 
 #' @return Returns the table to print
 #'
 #' @export
-print_pocp_table <- function(pairwise_matrix, sample_data, ref_data, interactive = knitr::is_html_output(), ...) {
+print_pocp_table <- function(pairwise_matrix, sample_data, ref_data, interactive = FALSE, ...) {
   # Create table to print
   sample_ids_in_matrix <- sample_data$sample_id[sample_data$sample_id %in% row.names(pairwise_matrix)]
   output <- do.call(rbind, lapply(sample_ids_in_matrix, function(id) { # loop over sample IDs and combine results into a table

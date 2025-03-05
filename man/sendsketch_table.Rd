@@ -4,7 +4,7 @@
 \alias{sendsketch_table}
 \title{Create an summary table from sendsketch output table}
 \usage{
-sendsketch_table(input, interactive = knitr::is_html_output())
+sendsketch_table(input, interactive = FALSE)
 }
 \arguments{
 \item{input}{The path to one or more folders that contain

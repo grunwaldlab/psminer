@@ -10,7 +10,7 @@
 #' @param ... Passed to `DT::datatable`.
 #'
 #' @export
-sample_meta_table <- function(input, interactive = knitr::is_html_output(), ...) {
+sample_meta_table <- function(input, interactive = FALSE, ...) {
 
   # Parse the input if it is a file/folder path
   if (is.data.frame(input)) {

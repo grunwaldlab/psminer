@@ -4,11 +4,7 @@
 \alias{core_tree_plot}
 \title{Plot core gene phylogeny}
 \usage{
-core_tree_plot(
-  input,
-  collapse_by_tax = NULL,
-  interactive = knitr::is_html_output()
-)
+core_tree_plot(input, collapse_by_tax = NULL, interactive = FALSE)
 }
 \arguments{
 \item{input}{The path to one or more folders that contain

@@ -3,7 +3,7 @@
 #' @param snp_fasta_alignment A DNA alignment in fasta format.
 #' @param sample_data A data frame containing information about samples.
 #' @param population A character string specifying the column name in sample_data to be used for stratification.
-#' @param interactive A logical value indicating whether Whether or not to produce an interactive HTML/javascript-based figures or tables or a static ones (default is determined by knitr::is_html_output()).
+#' @param interactive A logical value indicating whether Whether or not to produce an interactive HTML/javascript-based figures or tables or a static ones.
 #' @param snp_threshold An integer specifying the number of SNPs to be used as the threshold for filtering. User can specify whole numbers or alternatively, a relative proportion using 'snp_diff_prop', but not both. Default is NULL.
 #' @param snp_diff_prop A numeric value specifying the proportion of SNPs to be used as the threshold for filtering. If user prefers to specify whole numbers, use 'snp_threshold' instead. Default is NULL.
 #' @param use_cutoff_predictor A logical value indicating whether to use cutoff predictor for determining SNP threshold.
@@ -13,7 +13,7 @@
 #' @return Minimum spanning network
 #'
 #' @keywords internal
-make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, interactive = knitr::is_html_output(), snp_threshold = NULL, snp_diff_prop = NULL, use_cutoff_predictor = FALSE, show_MLG_table = FALSE, user_seed = NULL, ...) {
+make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, interactive = FALSE, snp_threshold = NULL, snp_diff_prop = NULL, use_cutoff_predictor = FALSE, show_MLG_table = FALSE, user_seed = NULL, ...) {
 
   set.seed(user_seed)
   snp_aln.gi <- adegenet::DNAbin2genind(snp_fasta_alignment)

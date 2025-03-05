@@ -8,7 +8,7 @@ make_MSN(
   snp_fasta_alignment,
   sample_data,
   population = NULL,
-  interactive = knitr::is_html_output(),
+  interactive = FALSE,
   snp_threshold = NULL,
   snp_diff_prop = NULL,
   use_cutoff_predictor = FALSE,
@@ -24,7 +24,7 @@ make_MSN(
 
 \item{population}{A character string specifying the column name in sample_data to be used for stratification.}
 
-\item{interactive}{A logical value indicating whether Whether or not to produce an interactive HTML/javascript-based figures or tables or a static ones (default is determined by knitr::is_html_output()).}
+\item{interactive}{A logical value indicating whether Whether or not to produce an interactive HTML/javascript-based figures or tables or a static ones.}
 
 \item{snp_threshold}{An integer specifying the number of SNPs to be used as the threshold for filtering. User can specify whole numbers or alternatively, a relative proportion using 'snp_diff_prop', but not both. Default is NULL.}
 

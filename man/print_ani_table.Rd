@@ -8,7 +8,7 @@ print_ani_table(
   pairwise_matrix,
   sample_data,
   ref_data,
-  interactive = knitr::is_html_output(),
+  interactive = FALSE,
   ...
 )
 }
