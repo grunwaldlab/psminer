@@ -207,19 +207,18 @@ estimated_ani_match_table <- function(path, interactive = FALSE, ...) {
   )
 
   # Print table
-  printed_output <- output
-  printed_output$best_ref_value <- format_number(printed_output$best_ref_value)
-  printed_output$best_sample_value <- format_number(printed_output$best_sample_value)
-  colnames(printed_output) <- c('Sample', 'Closest reference', 'Reference ANI (%)', 'Closest sample', 'Sample ANI (%)')
+  output$best_ref_value <- ifelse(is.na(output$best_ref_value),
+                                          "NA (Too few samples)", format_number(output$best_ref_value))
+  output$best_sample_value <- ifelse(is.na(output$best_sample_value),
+                                             "NA (Too few samples)", format_number(output$best_sample_value))
+  colnames(output) <- c('Sample', 'Closest reference', 'Reference ANI (%)', 'Closest sample', 'Sample ANI (%)')
   if (interactive) {
-    printed_output <- DT::datatable(printed_output, class = "display nowrap", ...)
-    printed_output <- DT::formatStyle(printed_output, colnames(printed_output), "white-space" = "nowrap")
+    output <- DT::datatable(output, class = "display nowrap", ...)
+    output <- DT::formatStyle(output, colnames(output), "white-space" = "nowrap")
   } else {
-    printed_output <- print_static_table(printed_output)
+    output <- print_static_table(output)
   }
-  print(printed_output)
-
-  return(invisible(tibble::as_tibble(output)))
+  return(output)
 }
 
 
@@ -236,8 +235,6 @@ estimated_ani_match_table <- function(path, interactive = FALSE, ...) {
 #'   while static tables are best for printed pdf reports.
 #' @param ... Passed to `DT::datatable` for interactive output.
 #'
-#' @return Returns the table to print
-#'
 #' @examples
 #' path <- system.file('extdata/ps_output', package = 'psminer')
 #' pocp_match_table(path)
@@ -253,19 +250,18 @@ pocp_match_table <- function(path, interactive = FALSE, ...) {
   )
 
   # Print table
-  printed_output <- output
-  printed_output$best_ref_value <- format_number(printed_output$best_ref_value)
-  printed_output$best_sample_value <- format_number(printed_output$best_sample_value)
-  colnames(printed_output) <- c('Sample', 'Closest reference', 'Reference POCP (%)', 'Closest sample', 'Sample POCP (%)')
+  output$best_ref_value <- ifelse(is.na(output$best_ref_value),
+                                          "NA (Too few samples)", format_number(output$best_ref_value))
+  output$best_sample_value <- ifelse(is.na(output$best_sample_value),
+                                             "NA (Too few samples)", format_number(output$best_sample_value))
+  colnames(output) <- c('Sample', 'Closest reference', 'Reference POCP (%)', 'Closest sample', 'Sample POCP (%)')
   if (interactive) {
-    printed_output <- DT::datatable(printed_output, class = "display nowrap", ...)
-    printed_output <- DT::formatStyle(printed_output, colnames(printed_output), "white-space" = "nowrap")
+    output <- DT::datatable(output, class = "display nowrap", ...)
+    output <- DT::formatStyle(output, colnames(output), "white-space" = "nowrap")
   } else {
-    printed_output <- print_static_table(printed_output)
+    output <- print_static_table(output)
   }
-  print(printed_output)
-
-  return(invisible(tibble::as_tibble(output)))
+  return(output)
 }
 
 #' Print best match table
@@ -288,24 +284,26 @@ make_best_match_table <- function(pairwise_matrices, sample_data, ref_data) {
         ref_samp_comp <- pairwise_matrix[id, colnames(pairwise_matrix) %in% ref_data$ref_id, drop = FALSE]
         best_ref_match_id <- names(which.max(ref_samp_comp))
         best_ref_match_value <- unname(unlist(ref_samp_comp[best_ref_match_id]))
+        best_ref_match_name <- ref_data$ref_name[ref_data$ref_id == best_ref_match_id]
       } else {
-        best_ref_match_id <- "NA (No reference used)"
-        best_ref_match_value <- "NA (No reference used)"
+        best_ref_match_name <- NA
+        best_ref_match_value <- NA
       }
       if (length(sample_ids) > 1) {
         samp_samp_comp <- pairwise_matrix[id, colnames(pairwise_matrix) %in% sample_ids & colnames(pairwise_matrix) != id, drop = FALSE]
         best_samp_match_id <- names(which.max(samp_samp_comp))
         best_samp_match_value <- unname(unlist(samp_samp_comp[best_samp_match_id]))
+        best_samp_match_name <- sample_data$name[sample_data$sample_id == best_samp_match_id]
       } else {
-        best_samp_match_id <- "NA (Too few samples)"
-        best_samp_match_value <- "NA (Too few samples)"
+        best_samp_match_name <- NA
+        best_samp_match_value <- NA
       }
       data.frame(
         check.names = FALSE,
         sample_name = sample_data$name[sample_data$sample_id == id],
-        best_ref =  ref_data$ref_name[ref_data$ref_id == best_ref_match_id],
+        best_ref = best_ref_match_name,
         best_ref_value = best_ref_match_value,
-        best_sample = sample_data$name[sample_data$sample_id == best_samp_match_id],
+        best_sample = best_samp_match_name,
         best_sample_value = best_samp_match_value
       )
     }))

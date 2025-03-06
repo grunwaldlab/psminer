@@ -17,9 +17,6 @@ while static tables are best for printed pdf reports.}
 \item{paths}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
-\value{
-Returns the table to print
-}
 \description{
 Prints a table with the highest POCP for each sample given a pairwise
 distance matrix.
