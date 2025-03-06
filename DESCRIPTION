@@ -1,7 +1,7 @@
 Package: psminer
 Type: Package
 Title: Utilities for the pathogensurveillance pipeline
-Version: 0.1.0
+Version: 0.2.0
 Authors@R:
     c(person(given = "Zachary", 
              family = "Foster",
@@ -25,7 +25,7 @@ Description: Utilities for interacting with the pathogensurveillance pipeline.
   outside of the pipleine before running it. Pathogensurveillance also uses this
   package to generate most of the figures and tables in the output reports, allowing
   users to generate more customized versions of these when needed.
-License: GPL-2 | GPL-3
+License: MIT
 Imports:
   ape,
   ggtree,
