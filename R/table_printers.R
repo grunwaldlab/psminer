@@ -181,62 +181,41 @@ status_message_table <- function(paths, summarize_by = NULL, interactive = FALSE
 
 #' Print best ANI match table
 #'
-#' Prints a table with the best matches for each sample given a pairwise distance matrix.
+#' Prints a table with the highest ANI matches for each sample given a pairwise
+#' distance matrix.
 #'
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
-#' @param interactive Whether to produce interactive tables
-#'   (TRUE) or static tables (FALSE). Defaults to TRUE if the environment
-#'   supports HTML output, otherwise FALSE. Interactive tables offer enhanced
-#'   browsing capabilities, while static tables are best for printed pdf
-#'   reports.
+#' @param interactive Whether to produce interactive tables (TRUE) or static
+#'   tables (FALSE). Defaults to TRUE if the environment supports HTML output,
+#'   otherwise FALSE. Interactive tables offer enhanced browsing capabilities,
+#'   while static tables are best for printed pdf reports.
 #' @param ... Passed to `DT::datatable` for interactive output.
 #'
 #' @examples
 #' path <- system.file('extdata/ps_output', package = 'psminer')
-#' estimated_ani_matrix_table(path)
-#' estimated_ani_matrix_table(path, interactive = TRUE)
+#' estimated_ani_match_table(path)
+#' estimated_ani_match_table(path, interactive = TRUE)
 #'
 #' @export
-estimated_ani_matrix_table <- function(path, interactive = TRUE, ...) {
-  pairwise_matrices <- estimated_ani_matrix_parsed(path)
-  sample_data <- sample_meta_parsed(path)
-  ref_data <- ref_meta_parsed(path)
-
-  output <- do.call(rbind, lapply(pairwise_matrices, function(pairwise_matrix) {
-    sample_ids <- sample_data$sample_id[sample_data$sample_id %in% colnames(pairwise_matrix)]
-    ref_ids <- ref_data$ref_id[ref_data$ref_id %in% colnames(pairwise_matrix)]
-    do.call(rbind, lapply(sample_ids, function(id) { # loop over sample IDs and combine results into a table
-      ref_samp_comp <- pairwise_matrix[id, ref_ids, drop = FALSE]
-      best_match <- names(which.max(ref_samp_comp))
-      if (ncol(ref_samp_comp) >= 2) {
-        next_best_match <- names(which.max(ref_samp_comp[, colnames(ref_samp_comp) != best_match]))
-        next_best_match_name <- ref_data$ref_name[ref_data$ref_id == next_best_match]
-        next_best_match_ani <- format_number(unname(unlist(ref_samp_comp[next_best_match])))
-      } else {
-        next_best_match_name <- "NA (Too few references)"
-        next_best_match_ani <- "NA (Too few references)"
-      }
-      data.frame(
-        check.names = FALSE,
-        sample_name = sample_data$name[sample_data$sample_id == id],
-        best_match =  ref_data$ref_name[ref_data$ref_id == best_match],
-        best_ani = format_number(unname(unlist(ref_samp_comp[best_match]))),
-        next_best_match = next_best_match_name,
-        next_best_ani = next_best_match_ani
-      )
-    }))
-  }))
-  rownames(output) <- NULL
+estimated_ani_match_table <- function(path, interactive = FALSE, ...) {
+  # Get best match table
+  output <- make_best_match_table(
+    pairwise_matrices = estimated_ani_matrix_parsed(path),
+    sample_data = sample_meta_parsed(path),
+    ref_data = ref_meta_parsed(path)
+  )
 
   # Print table
   printed_output <- output
-  colnames(printed_output) <- c('Sample', 'Best match', 'ANI (%)', '2nd Best match', '2nd ANI (%)')
+  printed_output$best_ref_value <- format_number(printed_output$best_ref_value)
+  printed_output$best_sample_value <- format_number(printed_output$best_sample_value)
+  colnames(printed_output) <- c('Sample', 'Closest reference', 'Reference ANI (%)', 'Closest sample', 'Sample ANI (%)')
   if (interactive) {
     printed_output <- DT::datatable(printed_output, class = "display nowrap", ...)
     printed_output <- DT::formatStyle(printed_output, colnames(printed_output), "white-space" = "nowrap")
   } else {
-    print_static_table(printed_output)
+    printed_output <- print_static_table(printed_output)
   }
   print(printed_output)
 
@@ -246,57 +225,93 @@ estimated_ani_matrix_table <- function(path, interactive = TRUE, ...) {
 
 #' Print best POCP table
 #'
-#' Prints a table with the highest  for each sample given a pairwise distance matrix.
+#' Prints a table with the highest POCP for each sample given a pairwise
+#' distance matrix.
 #'
-#' @param pairwise_matrix A `matrix` with all pairwise comparisons between samples and references
-#' @param sample_data The sample metadata
-#' @param ref_data The reference metadata
-#' @param interactive Whether to print an interactive HTML-based table or one for use with PDF
-#' @param ... Passed to `DT::datatable`.
+#' @param paths The path to one or more folders that contain
+#'   pathogensurveillance output.
+#' @param interactive Whether to produce interactive tables (TRUE) or static
+#'   tables (FALSE). Defaults to TRUE if the environment supports HTML output,
+#'   otherwise FALSE. Interactive tables offer enhanced browsing capabilities,
+#'   while static tables are best for printed pdf reports.
+#' @param ... Passed to `DT::datatable` for interactive output.
 #'
 #' @return Returns the table to print
 #'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' pocp_match_table(path)
+#' pocp_match_table(path, interactive = TRUE)
+#'
 #' @export
-print_pocp_table <- function(pairwise_matrix, sample_data, ref_data, interactive = FALSE, ...) {
-  # Create table to print
-  sample_ids_in_matrix <- sample_data$sample_id[sample_data$sample_id %in% row.names(pairwise_matrix)]
-  output <- do.call(rbind, lapply(sample_ids_in_matrix, function(id) { # loop over sample IDs and combine results into a table
-    if (any(colnames(pairwise_matrix) %in% ref_data$ref_id)) {
-      ref_samp_comp <- pairwise_matrix[id, colnames(pairwise_matrix) %in% ref_data$ref_id, drop = FALSE]
-      best_match <- which.max(ref_samp_comp)
-      best_ref_match_name <- ref_data$ref_name[ref_data$ref_id == names(best_match)]
-      best_ref_match_pocp <- format_number(unname(unlist(ref_samp_comp[best_match])))
-    } else {
-      best_ref_match_name <- "NA (No reference used)"
-      best_ref_match_pocp <- "NA (No reference used)"
-    }
-    if (nrow(sample_data) > 1) {
-      samp_samp_comp <- pairwise_matrix[id, ! colnames(pairwise_matrix) %in% ref_data$ref_id & colnames(pairwise_matrix) != id, drop = FALSE]
-      best_match <- which.max(samp_samp_comp)
-      best_samp_match_name <- sample_data$name[sample_data$sample_id == names(best_match)]
-      best_samp_match_pocp <- format_number(unname(unlist(samp_samp_comp[best_match])))
-    } else {
-      best_samp_match_name <- "NA (Too few samples)"
-      best_samp_match_pocp <- "NA (Too few samples)"
-    }
-    data.frame(
-      check.names = FALSE,
-      'Sample' = sample_data$name[sample_data$sample_id == id],
-      'Best reference match' =  best_ref_match_name,
-      'Reference POCP (%)' = best_ref_match_pocp,
-      'Best sample match' =  best_samp_match_name,
-      'Sample POCP (%)' = best_samp_match_pocp
-    )
-  }))
-  row.names(output) <- NULL
+pocp_match_table <- function(path, interactive = FALSE, ...) {
+  # Get best match table
+  output <- make_best_match_table(
+    pairwise_matrices = pocp_matrix_parsed(path),
+    sample_data = sample_meta_parsed(path),
+    ref_data = ref_meta_parsed(path)
+  )
 
   # Print table
+  printed_output <- output
+  printed_output$best_ref_value <- format_number(printed_output$best_ref_value)
+  printed_output$best_sample_value <- format_number(printed_output$best_sample_value)
+  colnames(printed_output) <- c('Sample', 'Closest reference', 'Reference POCP (%)', 'Closest sample', 'Sample POCP (%)')
   if (interactive) {
-    DT::datatable(output, class = "display nowrap", ...) %>%
-      formatStyle(colnames(output), "white-space" = "nowrap")
+    printed_output <- DT::datatable(printed_output, class = "display nowrap", ...)
+    printed_output <- DT::formatStyle(printed_output, colnames(printed_output), "white-space" = "nowrap")
   } else {
-    print_static_table(output)
+    printed_output <- print_static_table(printed_output)
   }
+  print(printed_output)
+
+  return(invisible(tibble::as_tibble(output)))
+}
+
+#' Print best match table
+#'
+#' Prints a table with the highest value for each sample given a pairwise
+#' distance matrix.
+#'
+#' @param pairwise_matrices A `list` of `matrix` with all pairwise comparisons
+#'   between samples and references
+#' @param sample_data The sample metadata
+#' @param ref_data The reference metadata
+#'
+#' @keywords internal
+make_best_match_table <- function(pairwise_matrices, sample_data, ref_data) {
+  output <- do.call(rbind, lapply(pairwise_matrices, function(pairwise_matrix) {
+    sample_ids <- sample_data$sample_id[sample_data$sample_id %in% colnames(pairwise_matrix)]
+    ref_ids <- ref_data$ref_id[ref_data$ref_id %in% colnames(pairwise_matrix)]
+    do.call(rbind, lapply(sample_ids, function(id) { # loop over sample IDs and combine results into a table
+      if (length(ref_ids) >= 1) {
+        ref_samp_comp <- pairwise_matrix[id, colnames(pairwise_matrix) %in% ref_data$ref_id, drop = FALSE]
+        best_ref_match_id <- names(which.max(ref_samp_comp))
+        best_ref_match_value <- unname(unlist(ref_samp_comp[best_ref_match_id]))
+      } else {
+        best_ref_match_id <- "NA (No reference used)"
+        best_ref_match_value <- "NA (No reference used)"
+      }
+      if (length(sample_ids) > 1) {
+        samp_samp_comp <- pairwise_matrix[id, colnames(pairwise_matrix) %in% sample_ids & colnames(pairwise_matrix) != id, drop = FALSE]
+        best_samp_match_id <- names(which.max(samp_samp_comp))
+        best_samp_match_value <- unname(unlist(samp_samp_comp[best_samp_match_id]))
+      } else {
+        best_samp_match_id <- "NA (Too few samples)"
+        best_samp_match_value <- "NA (Too few samples)"
+      }
+      data.frame(
+        check.names = FALSE,
+        sample_name = sample_data$name[sample_data$sample_id == id],
+        best_ref =  ref_data$ref_name[ref_data$ref_id == best_ref_match_id],
+        best_ref_value = best_ref_match_value,
+        best_sample = sample_data$name[sample_data$sample_id == best_samp_match_id],
+        best_sample_value = best_samp_match_value
+      )
+    }))
+  }))
+  rownames(output) <- NULL
+  return(output)
 }
 
 
