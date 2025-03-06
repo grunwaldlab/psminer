@@ -19,6 +19,11 @@ folders containing pathogensurveillance output. This includes all types of
 multigene trees produced by pathogensurveillance, such as the core gene
 phylogeny and the busco gene phylogeny.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+multigene_tree_parsed(path)
+
+}
 \seealso{
 Other parsers: 
 \code{\link{busco_tree_parsed}()},

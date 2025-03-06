@@ -6,6 +6,11 @@
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' sample_meta_path(path)
+#'
 #' @export
 sample_meta_path <- function(paths) {
   find_static_file_path(paths, 'sample_data.tsv', 'sample metadata file')
@@ -19,6 +24,11 @@ sample_meta_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' ref_meta_path(path)
+#'
 #' @export
 ref_meta_path <- function(paths) {
   find_static_file_path(paths, 'reference_data.tsv', 'reference metadata file')
@@ -33,9 +43,14 @@ ref_meta_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' busco_tree_path(path)
+#'
 #' @export
 busco_tree_path <- function(paths) {
-  find_static_file_path(paths, 'busco_tree.nwk', 'busco tree file', file_required = FALSE)
+  find_static_dir_path(paths, 'busco_trees', 'busco gene tree', file_required = FALSE, dir_required = FALSE)
 }
 
 #' Find the BUSCO analysis reference data file path
@@ -46,6 +61,11 @@ busco_tree_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' busco_ref_path(path)
+#'
 #' @export
 busco_ref_path <- function(paths) {
   find_static_file_path(paths, 'busco_tree_references.tsv', 'busco anaylsis reference file', file_required = FALSE)
@@ -59,6 +79,11 @@ busco_ref_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' core_ref_path(path)
+#'
 #' @export
 core_ref_path <- function(paths) {
   find_static_file_path(paths, 'core_gene_tree_references.tsv', 'core gene analysis reference file', file_required = FALSE)
@@ -72,6 +97,11 @@ core_ref_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' run_info_path(path)
+#'
 #' @export
 run_info_path <- function(paths) {
   find_static_file_path(paths, 'pathogensurveillance_run_info.yml', 'report group name file')
@@ -85,6 +115,11 @@ run_info_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' variant_ref_path(path)
+#'
 #' @export
 variant_ref_path <- function(paths) {
   find_static_file_path(paths, 'mapping_references.tsv', 'variant analysis reference file')
@@ -98,6 +133,11 @@ variant_ref_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' status_message_path(path)
+#'
 #' @export
 status_message_path <- function(paths) {
   find_static_file_path(paths, 'messages.tsv', 'status message data file', file_required = FALSE)
@@ -111,6 +151,11 @@ status_message_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' pocp_matrix_path(path)
+#'
 #' @export
 pocp_matrix_path <- function(paths) {
   find_static_file_path(paths, 'pocp.tsv', 'pocp matrix file', file_required = FALSE)
@@ -124,6 +169,11 @@ pocp_matrix_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' estimated_ani_matrix_path(path)
+#'
 #' @export
 estimated_ani_matrix_path <- function(paths) {
   find_static_file_path(paths, 'sourmash_ani_matrix.csv', 'estimated ANI matrix file')
@@ -137,6 +187,11 @@ estimated_ani_matrix_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' software_version_path(path)
+#'
 #' @export
 software_version_path <- function(paths) {
   find_static_file_path(paths, 'versions.yml', 'software version file')
@@ -150,6 +205,11 @@ software_version_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' core_tree_path(path)
+#'
 #' @export
 core_tree_path <- function(paths) {
   find_static_dir_path(paths, 'core_gene_trees', 'core gene tree', file_required = FALSE, dir_required = FALSE)
@@ -163,6 +223,11 @@ core_tree_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' considered_ref_meta_path(path)
+#'
 #' @export
 considered_ref_meta_path <- function(paths) {
   find_static_dir_path(paths, 'ncbi_reference_data', 'considered NCBI reference metadata')
@@ -176,6 +241,11 @@ considered_ref_meta_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' selected_ref_meta_path(path)
+#'
 #' @export
 selected_ref_meta_path <- function(paths) {
   find_static_dir_path(paths, 'selected_references', 'selected NCBI reference metadata')
@@ -189,6 +259,11 @@ selected_ref_meta_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' sendsketch_path(path)
+#'
 #' @export
 sendsketch_path <- function(paths) {
   find_static_dir_path(paths, 'sendsketch', 'sendsketch result')
@@ -202,6 +277,11 @@ sendsketch_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' variant_align_path(path)
+#'
 #' @export
 variant_align_path <- function(paths) {
   find_static_dir_path(paths, 'snp_alignments', 'SNP alignment', dir_required = FALSE, file_required = FALSE)
@@ -215,6 +295,11 @@ variant_align_path <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return character vector of length 1
 #' @family path finders
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' variant_tree_path(path)
+#'
 #' @export
 variant_tree_path <- function(paths) {
   find_static_dir_path(paths, 'snp_trees', 'SNP tree', dir_required = FALSE, file_required = FALSE)

@@ -17,3 +17,8 @@ a \code{list} of POCP matrices
 Return a list of \code{\link[base:data.frame]{base::data.frame()}}s with the POCP values based on a core
 gene analysis using pirate.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+pocp_matrix_parsed(path)
+
+}

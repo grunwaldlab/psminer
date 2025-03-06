@@ -26,3 +26,8 @@ A list of plots, unless \code{collapse_by_tax} is used, in which case a single p
 Plot the core gene phylogenies present in the output of a pathogensurveillance
 run.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+core_tree_plot(path)
+
+}

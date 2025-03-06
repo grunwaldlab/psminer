@@ -26,3 +26,8 @@ A list of plots, unless \code{collapse_by_tax} is used, in which case a single p
 Plot the SNP trees from the variant analysis present in the output of a pathogensurveillance
 run.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+variant_tree_plot(path)
+
+}

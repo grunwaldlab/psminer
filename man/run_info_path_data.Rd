@@ -17,6 +17,11 @@ pathogensurveillance output.}
 Return a table with the file containing the information about a run in a
 pathogensurveillance output folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+run_info_path_data(path)
+
+}
 \seealso{
 Other path tables: 
 \code{\link{busco_ref_path_data}()},

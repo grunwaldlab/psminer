@@ -37,4 +37,5 @@ The ANI heatmap is based on approximate ANI similarity matrix output by Sourmash
 }
 \examples{
 make_ani_heatmap(ani_matrix, ref_data, samp_data, interactive=FALSE)
+
 }

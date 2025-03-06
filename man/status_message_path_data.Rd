@@ -17,6 +17,11 @@ pathogensurveillance output.}
 Return a table with the file path to the TSV with the status reports,
 warnings, and errors for a given pathogensurveillance output folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+status_message_path_data(path)
+
+}
 \seealso{
 Other path tables: 
 \code{\link{busco_ref_path_data}()},

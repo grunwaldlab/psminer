@@ -9,6 +9,10 @@
 #'
 #' @return A [tibble::tibble()] with the messages from all input paths
 #'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' status_message_parsed(path)
+#'
 #' @export
 status_message_parsed <- function(paths) {
   path_data <- status_message_path_data(paths)
@@ -32,6 +36,7 @@ status_message_parsed <- function(paths) {
   return(output)
 }
 
+
 #' Get summary of pipeline status data
 #'
 #' Return a [tibble::tibble()] (table) with the numbers of issues encountered by the
@@ -42,6 +47,10 @@ status_message_parsed <- function(paths) {
 #'   pathogensurveillance output.
 #'
 #' @return A [tibble::tibble()] with counts of messages attributes
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' status_message_parsed_summary(path)
 #'
 #' @export
 status_message_parsed_summary <- function(paths) {
@@ -61,6 +70,7 @@ status_message_parsed_summary <- function(paths) {
   return(output)
 }
 
+
 #' Get parsed sample metadata
 #'
 #' Return a [tibble::tibble()] (table) with sample metadata. The contents of all
@@ -71,6 +81,10 @@ status_message_parsed_summary <- function(paths) {
 #'
 #' @return A [tibble::tibble()] with the sample metadata
 #'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' sample_meta_parsed(path)
+#'
 #' @export
 sample_meta_parsed <- function(paths) {
   output <- do.call(rbind, lapply(sample_meta_path(paths), utils::read.csv, check.names = FALSE, sep = '\t'))
@@ -79,6 +93,7 @@ sample_meta_parsed <- function(paths) {
   output <- unique(output)
   return(output)
 }
+
 
 #' Get parsed reference metadata
 #'
@@ -90,6 +105,10 @@ sample_meta_parsed <- function(paths) {
 #'   pathogensurveillance output.
 #'
 #' @return A [tibble::tibble()] with reference metadata
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' ref_meta_parsed(path)
 #'
 #' @export
 ref_meta_parsed <- function(paths) {
@@ -109,6 +128,10 @@ ref_meta_parsed <- function(paths) {
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return a `list` of ANI matrices
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' estimated_ani_matrix_parsed(path)
 #'
 #' @export
 estimated_ani_matrix_parsed <- function(paths) {
@@ -130,6 +153,10 @@ estimated_ani_matrix_parsed <- function(paths) {
 #' @param paths The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return a `list` of POCP matrices
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' pocp_matrix_parsed(path)
 #'
 #' @export
 pocp_matrix_parsed <- function(paths) {
@@ -154,6 +181,10 @@ pocp_matrix_parsed <- function(paths) {
 #'
 #' @return A [base::character()] vector with the groups from all input paths
 #'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' run_info_parsed(path)
+#'
 #' @export
 run_info_parsed <- function(paths) {
   path_data <- run_info_path_data(paths)
@@ -170,6 +201,7 @@ run_info_parsed <- function(paths) {
   }))
 }
 
+
 #' Get parsed sendsketch results
 #'
 #' Return a [tibble::tibble()] (table) with the results from sendsketch. The
@@ -183,6 +215,10 @@ run_info_parsed <- function(paths) {
 #'
 #' @return A [tibble::tibble()] with the sendsketch output combined
 #' @family parsers
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' sendsketch_parsed(path)
 #'
 #' @export
 sendsketch_parsed <- function(paths, only_best = FALSE) {
@@ -221,8 +257,9 @@ sendsketch_parsed <- function(paths, only_best = FALSE) {
     sketch_data <- sendsketch_best_hits(sketch_data)
   }
 
-  return(sketch_data)
+  return(tibble::as_tibble(sketch_data))
 }
+
 
 #' Get parsed sendsketch taxonomy
 #'
@@ -240,6 +277,10 @@ sendsketch_parsed <- function(paths, only_best = FALSE) {
 #'   delimited with `;`, named by sample IDs.
 #' @family parsers
 #'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' sendsketch_taxonomy_parsed(path)
+#'
 #' @export
 sendsketch_taxonomy_parsed <- function(paths, remove_ranks = FALSE, only_best = FALSE) {
   sendsketch_data <- sendsketch_parsed(paths, only_best = TRUE)
@@ -252,6 +293,7 @@ sendsketch_taxonomy_parsed <- function(paths, remove_ranks = FALSE, only_best = 
   classifications <- classifications[! duplicated(paste0(classifications, names(classifications)))]
   return(classifications)
 }
+
 
 #' Get parsed sendsketch taxonomy data
 #'
@@ -270,21 +312,44 @@ sendsketch_taxonomy_parsed <- function(paths, remove_ranks = FALSE, only_best = 
 #'   to ranks.
 #' @family parsers
 #'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' sendsketch_taxonomy_data_parsed(path)
+#' sendsketch_taxonomy_data_parsed(path, only_best = TRUE)
+#' sendsketch_taxonomy_data_parsed(path, only_shared = TRUE)
+#'
 #' @export
 sendsketch_taxonomy_data_parsed <- function(paths, only_best = FALSE, only_shared = FALSE) {
+  # Find and parse sendsketch data
   sendsketch_data <- sendsketch_parsed(paths, only_best = only_best)
-  output <- do.call(rbind, lapply(1:nrow(sendsketch_data), function(index) {
+
+  # Reformat with ranks as columns
+  parts <- lapply(1:nrow(sendsketch_data), function(index) {
     split_tax <- strsplit(sendsketch_data$taxonomy[index], split = ';', fixed = TRUE)[[1]]
     taxon_names <- gsub(split_tax, pattern = '^[a-z]+:', replacement = '')
     ranks <- gsub(split_tax, pattern = '^([a-z]*):?.+$', replacement = '\\1')
     names(taxon_names) <- ifelse(ranks == '', 'tip', ranks)
     tibble::as_tibble(as.list(c(sample_id = sendsketch_data$sample_id[index], taxon_names)))
+  })
+
+  # Fill in ranks that dont exist in all classifications
+  all_cols <- unlist(lapply(parts, colnames))
+  col_index <- unlist(lapply(parts, function(x) rev(seq_along(x))))
+  unique_cols <- unique(all_cols[order(col_index, decreasing = TRUE)])
+  output <- do.call(rbind, lapply(parts, function(part) {
+    out <- do.call(data.frame, as.list(rep(NA_character_, length(unique_cols))))
+    colnames(out) <- unique_cols
+    out[colnames(part)] <- part
+    return(out)
   }))
+
+  # Remove columns not shared by all samples
   if (only_shared) {
     col_has_na <- apply(output, MARGIN = 2, function(col) any(is.na(col)))
     output <- output[, ! col_has_na]
   }
-  return(output)
+
+  return(tibble::as_tibble(output))
 }
 
 
@@ -299,10 +364,12 @@ sendsketch_taxonomy_data_parsed <- function(paths, only_best = FALSE, only_share
 #' @return A [tibble::tibble()] with columns `module`, `program`, and `version`
 #'   detailing the software versions.
 #' @family parsers
-#' @export
+#'
 #' @examples
-#' version_path <- file.path(params$inputs, "inputs", "versions.yml")
-#' version_data <- software_version_parsed(version_path)
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' software_version_parsed(path)
+#'
+#' @export
 software_version_parsed <- function(paths) {
   parse_one <- function(version_path) {
     raw_version_data <- yaml::read_yaml(version_path)
@@ -328,10 +395,15 @@ software_version_parsed <- function(paths) {
 #' @return List of [ape::phylo()] objects named by file path
 #' @family parsers
 #'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' core_tree_parsed(path)
+#'
 #' @export
 core_tree_parsed <- function(paths) {
   tree_parsed(core_tree_path(paths))
 }
+
 
 #' Get SNP phylogeny
 #'
@@ -344,6 +416,10 @@ core_tree_parsed <- function(paths) {
 #'
 #' @return List of [ape::phylo()] objects named by file path
 #' @family parsers
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' variant_tree_parsed(path)
 #'
 #' @export
 variant_tree_parsed <- function(paths, rename = TRUE) {
@@ -365,6 +441,7 @@ variant_tree_parsed <- function(paths, rename = TRUE) {
   return(trees)
 }
 
+
 #' Get BUSCO phylogeny
 #'
 #' Return a list of [ape::phylo()] objects named by file path by searching for
@@ -376,12 +453,17 @@ variant_tree_parsed <- function(paths, rename = TRUE) {
 #' @return List of [ape::phylo()] objects named by file path
 #' @family parsers
 #'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' busco_tree_parsed(path)
+#'
 #' @export
 busco_tree_parsed <- function(paths) {
   path_data <- busco_tree_path_data(paths)
   trees <- tree_parsed(path_data$path)
   return(trees)
 }
+
 
 #' Get mulitgene phylogenies
 #'
@@ -395,6 +477,10 @@ busco_tree_parsed <- function(paths) {
 #'
 #' @return List of [ape::phylo()] objects named by file path
 #' @family parsers
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' multigene_tree_parsed(path)
 #'
 #' @export
 multigene_tree_parsed <- function(paths) {
@@ -427,6 +513,7 @@ tree_parsed <- function(paths) {
   return(output)
 }
 
+
 #' Find and parse SNP alignments
 #'
 #' Returns parsed SNP alignments for each reference used in the
@@ -436,6 +523,10 @@ tree_parsed <- function(paths) {
 #' @param rename If `TRUE`, rename the sequence labels as sample IDs and reference IDs.
 #' @return list of [ape::DNAbin()], named by alignment file
 #' @family parsers
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' variant_align_parsed(path)
 #'
 #' @export
 variant_align_parsed <- function(path, rename = TRUE) {

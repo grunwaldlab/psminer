@@ -26,3 +26,8 @@ A list of plots, unless \code{collapse_by_tax} is used, in which case a single p
 Plot the any multigene phylogenies present in the output of a pathogensurveillance
 run. This includes core gene phylogenies and busco gene phylogenes.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+multigene_tree_plot(path)
+
+}

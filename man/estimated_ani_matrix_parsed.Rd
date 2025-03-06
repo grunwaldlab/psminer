@@ -17,3 +17,8 @@ a \code{list} of ANI matrices
 Return a list of \code{\link[base:data.frame]{base::data.frame()}}s with the estimated pairwise ANI values
 calculated by sourmash.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+estimated_ani_matrix_parsed(path)
+
+}

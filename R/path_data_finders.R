@@ -6,6 +6,11 @@
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' sample_meta_path_data(path)
+#'
 #' @export
 sample_meta_path_data <- function(paths) {
   make_path_data_with_group(paths, sample_meta_path)
@@ -19,6 +24,11 @@ sample_meta_path_data <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' ref_meta_path_data(path)
+#'
 #' @export
 ref_meta_path_data <- function(paths) {
   make_path_data_with_group(paths, ref_meta_path)
@@ -34,6 +44,11 @@ ref_meta_path_data <- function(paths) {
 #'   output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' busco_tree_path_data(path)
+#'
 #' @export
 busco_tree_path_data <- function(paths) {
   make_path_data_with_group(paths, busco_tree_path)
@@ -48,6 +63,11 @@ busco_tree_path_data <- function(paths) {
 #'   output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' busco_ref_path_data(path)
+#'
 #' @export
 busco_ref_path_data <- function(paths) {
   make_path_data_with_group(paths, busco_ref_path)
@@ -62,6 +82,11 @@ busco_ref_path_data <- function(paths) {
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' core_ref_path_data(path)
+#'
 #' @export
 core_ref_path_data <- function(paths) {
   make_path_data_with_group(paths, core_ref_path)
@@ -76,6 +101,11 @@ core_ref_path_data <- function(paths) {
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' run_info_path_data(path)
+#'
 #' @export
 run_info_path_data <- function(paths) {
   make_path_data_with_group(paths, run_info_path)
@@ -90,6 +120,11 @@ run_info_path_data <- function(paths) {
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' variant_ref_path_data(path)
+#'
 #' @export
 variant_ref_path_data <- function(paths) {
   make_path_data_with_group(paths, variant_ref_path)
@@ -104,6 +139,11 @@ variant_ref_path_data <- function(paths) {
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' status_message_path_data(path)
+#'
 #' @export
 status_message_path_data <- function(paths) {
   make_path_data_with_group(paths, status_message_path)
@@ -118,6 +158,11 @@ status_message_path_data <- function(paths) {
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' pocp_matrix_path_data(path)
+#'
 #' @export
 pocp_matrix_path_data <- function(paths) {
   make_path_data_with_group(paths, pocp_matrix_path)
@@ -133,6 +178,11 @@ pocp_matrix_path_data <- function(paths) {
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' estimated_ani_matrix_path_data(path)
+#'
 #' @export
 estimated_ani_matrix_path_data <- function(paths) {
   make_path_data_with_group(paths, estimated_ani_matrix_path)
@@ -147,6 +197,11 @@ estimated_ani_matrix_path_data <- function(paths) {
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' software_version_path_data(path)
+#'
 #' @export
 software_version_path_data <- function(paths) {
   make_path_data_with_group(paths, software_version_path)
@@ -160,6 +215,11 @@ software_version_path_data <- function(paths) {
 #' @param paths The path to one or more folders that contain pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' core_tree_path_data(path)
+#'
 #' @export
 core_tree_path_data <- function(paths) {
   output <- make_path_data_with_group(paths, core_tree_path)
@@ -180,6 +240,11 @@ core_tree_path_data <- function(paths) {
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' considered_ref_meta_path_data(path)
+#'
 #' @export
 considered_ref_meta_path_data <- function(paths) {
   output <- make_path_data_with_group(paths, considered_ref_meta_path)
@@ -199,6 +264,11 @@ considered_ref_meta_path_data <- function(paths) {
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' selected_ref_meta_path_data(path)
+#'
 #' @export
 selected_ref_meta_path_data <- function(paths) {
   output <- make_path_data_with_group(paths, selected_ref_meta_path)
@@ -217,6 +287,11 @@ selected_ref_meta_path_data <- function(paths) {
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' sendsketch_path_data(path)
+#'
 #' @export
 sendsketch_path_data <- function(paths) {
   output <- make_path_data_with_group(paths, sendsketch_path)
@@ -235,6 +310,11 @@ sendsketch_path_data <- function(paths) {
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' variant_align_path_data(path)
+#'
 #' @export
 variant_align_path_data <- function(paths) {
   output <- make_path_data_with_group(paths, variant_align_path)
@@ -255,6 +335,11 @@ variant_align_path_data <- function(paths) {
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' variant_tree_path_data(path)
+#'
 #' @export
 variant_tree_path_data <- function(paths) {
   output <- make_path_data_with_group(paths, variant_tree_path)

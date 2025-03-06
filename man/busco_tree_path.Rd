@@ -17,6 +17,11 @@ Return the file path to the Newick formatted tree produced by comparing BUSCO
 genes of samples and references for a given pathogensurveillance output
 folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+busco_tree_path(path)
+
+}
 \seealso{
 Other path finders: 
 \code{\link{busco_ref_path}()},

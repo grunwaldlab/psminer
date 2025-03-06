@@ -16,6 +16,11 @@ character vector of length 1
 Return the file paths of the SNP tree for each reference used in the
 variant analysis for a given pathogensurveillance output folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+variant_tree_path(path)
+
+}
 \seealso{
 Other path finders: 
 \code{\link{busco_ref_path}()},

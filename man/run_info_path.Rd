@@ -16,6 +16,11 @@ character vector of length 1
 Return the file containing the name of the report group for a given
 pathogensurveillance output folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+run_info_path(path)
+
+}
 \seealso{
 Other path finders: 
 \code{\link{busco_ref_path}()},

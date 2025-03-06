@@ -26,3 +26,8 @@ A list of plots, unless \code{collapse_by_tax} is useded, in which case a single
 Plot the busco gene phylogenies present in the output of a pathogensurveillance
 run.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+busco_tree_plot(path)
+
+}

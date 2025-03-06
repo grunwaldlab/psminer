@@ -15,6 +15,10 @@
 #'
 #' @return  A list of plots, unless `collapse_by_tax` is used, in which case a single plot is returned.
 #'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' core_tree_plot(path)
+#'
 #' @export
 core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
   generalized_tree_plot(input, core_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
@@ -37,6 +41,10 @@ core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
 #'
 #' @return  A list of plots, unless `collapse_by_tax` is useded, in which case a single plot is returned.
 #'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' busco_tree_plot(path)
+#'
 #' @export
 busco_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
   generalized_tree_plot(input, busco_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
@@ -58,6 +66,10 @@ busco_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) 
 #'   (default: TRUE)
 #'
 #' @return  A list of plots, unless `collapse_by_tax` is used, in which case a single plot is returned.
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' multigene_tree_plot(path)
 #'
 #' @export
 multigene_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
@@ -135,6 +147,10 @@ generalized_tree_plot <- function(input, parser, collapse_by_tax = NULL, interac
 #'   (default: TRUE)
 #'
 #' @return  A list of plots, unless `collapse_by_tax` is used, in which case a single plot is returned.
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' variant_tree_plot(path)
 #'
 #' @export
 variant_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
@@ -217,12 +233,18 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
     }
     # Subset taxonomy data to just the part used by each tree
     collapse_by_tax[ranks] <- lapply(collapse_by_tax[ranks], as.factor)
-    tree_tax <- do.call(rbind, lapply(trees, function(tree) {
+    tree_tax_data <- lapply(trees, function(tree) {
       sample_ids <- tree$tip.label[tree$tip.label %in% sample_meta$sample_id]
       tax_subset <- collapse_by_tax[collapse_by_tax$sample_id %in% sample_ids, colnames(collapse_by_tax) != 'sample_id']
       tax_subset <- tax_subset[, apply(tax_subset, MARGIN = 2, function(col) length(unique(col)) == 1)]
       unique(tax_subset)
+    })
+    shared_cols <- table(unlist(lapply(tree_tax_data, colnames)))
+    shared_cols <- names(shared_cols[as.numeric(shared_cols) == max(as.numeric(shared_cols))])
+    tree_tax <- do.call(rbind, lapply(tree_tax_data, function(x) {
+      x[colnames(x) %in% shared_cols]
     }))
+    rownames(tree_tax) <- NULL
     # tree_tax <- tree_tax[, 1:ncol(tree_tax) < which(colnames(tree_tax) == 'g')]
     keep_rank <- apply(tree_tax, MARGIN = 2, function(col) length(unique(col)) != 1)
     keep_rank[1] <- TRUE # Always include the first rank
@@ -322,6 +344,10 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
 #'   pathogensurveillance output.
 #' @param combine If `TRUE` combine multiple MSNs into a single figure and
 #'   return a single figure. If `FALSE`, return a list of figures.
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' variant_msn_plot(path)
 #'
 #' @export
 variant_msn_plot <- function(path, combine = TRUE) {
@@ -486,10 +512,10 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
 #'
 #' @return A heatmap and dendrogram
 #'
-#' @export
-#'
 #' @examples
 #' make_ani_heatmap(ani_matrix, ref_data, samp_data, interactive=FALSE)
+#'
+#' @export
 make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = FALSE, height = 1000, width = 1000, dpi = 100) {
   # Rename rows/columns for plotting
   name_key <- c(

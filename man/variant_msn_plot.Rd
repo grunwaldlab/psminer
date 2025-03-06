@@ -17,3 +17,8 @@ return a single figure. If \code{FALSE}, return a list of figures.}
 Plot a minimum spanning network for each group of samples aligned to a
 reference found in \code{pathogensurveillance} output.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+variant_msn_plot(path)
+
+}

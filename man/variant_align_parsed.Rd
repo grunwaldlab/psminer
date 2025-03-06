@@ -18,6 +18,11 @@ list of \code{\link[ape:DNAbin]{ape::DNAbin()}}, named by alignment file
 Returns parsed SNP alignments for each reference used in the
 variant analysis for a given pathogensurveillance output folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+variant_align_parsed(path)
+
+}
 \seealso{
 Other parsers: 
 \code{\link{busco_tree_parsed}()},

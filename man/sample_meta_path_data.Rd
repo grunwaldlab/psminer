@@ -16,6 +16,11 @@ sample_meta_path_data(paths)
 Return the file path data to the TSV containing the sample metadata for a given
 pathogensurveillance output folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+sample_meta_path_data(path)
+
+}
 \seealso{
 Other path tables: 
 \code{\link{busco_ref_path_data}()},

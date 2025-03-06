@@ -17,6 +17,11 @@ output.}
 Return a table with the file path to the TSV with a list of references used
 in the BUSCO analysis for a given pathogensurveillance output folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+busco_ref_path_data(path)
+
+}
 \seealso{
 Other path tables: 
 \code{\link{busco_tree_path_data}()},

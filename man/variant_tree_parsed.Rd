@@ -19,6 +19,11 @@ List of \code{\link[ape:read.tree]{ape::phylo()}} objects named by file path
 Return a list of \code{\link[ape:read.tree]{ape::phylo()}} objects named by file path by searching for
 folders containing pathogensurveillance output.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+variant_tree_parsed(path)
+
+}
 \seealso{
 Other parsers: 
 \code{\link{busco_tree_parsed}()},

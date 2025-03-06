@@ -9,6 +9,11 @@
 #' @param interactive Whether to use an HTML-based interactive format or not (default: TRUE)
 #' @param ... Passed to `DT::datatable`.
 #'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' sample_meta_table(path)
+#' sample_meta_table(path, interactive = TRUE)
+#'
 #' @export
 sample_meta_table <- function(input, interactive = FALSE, ...) {
 
@@ -34,7 +39,7 @@ sample_meta_table <- function(input, interactive = FALSE, ...) {
   # Print table
   if (interactive) {
     DT::datatable(formatted_data, class = "display nowrap", ...) %>%
-      formatStyle(colnames(formatted_data), "white-space" = "nowrap")
+      DT::formatStyle(colnames(formatted_data), "white-space" = "nowrap")
 
   } else {
     print_static_table(formatted_data, compressed_cols = c('Forward Reads', 'Reverse Reads', 'Reference'))

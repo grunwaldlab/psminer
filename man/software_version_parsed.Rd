@@ -20,8 +20,9 @@ into a tibble. Each software module and program, along with its version, is
 extracted and organized.
 }
 \examples{
-version_path <- file.path(params$inputs, "inputs", "versions.yml")
-version_data <- software_version_parsed(version_path)
+path <- system.file('extdata/ps_output', package = 'psminer')
+software_version_parsed(path)
+
 }
 \seealso{
 Other parsers: 

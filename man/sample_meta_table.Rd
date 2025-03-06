@@ -19,3 +19,9 @@ pathogensurveillance output or a table in the format of the
 Selects columns in the sample metadata to print and format the result for
 use as a static table in PDF or an interactive table in HTML.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+sample_meta_table(path)
+sample_meta_table(path, interactive = TRUE)
+
+}

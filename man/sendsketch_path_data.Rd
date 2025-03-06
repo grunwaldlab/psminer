@@ -17,6 +17,11 @@ pathogensurveillance output.}
 Return a table with the file paths of the sendsketch results for each sample
 for a given pathogensurveillance output folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+sendsketch_path_data(path)
+
+}
 \seealso{
 Other path tables: 
 \code{\link{busco_ref_path_data}()},

@@ -16,6 +16,11 @@ character vector of length 1
 Return the file path to the YAML file with the versions of software used for
 a given pathogensurveillance output folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+software_version_path(path)
+
+}
 \seealso{
 Other path finders: 
 \code{\link{busco_ref_path}()},

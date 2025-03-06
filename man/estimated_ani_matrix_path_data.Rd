@@ -18,6 +18,11 @@ Return a table with the file path to the CSV with the approximate ANI
 (average nucleotide identity) matrix estimated by sourmash for a given
 pathogensurveillance output folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+estimated_ani_matrix_path_data(path)
+
+}
 \seealso{
 Other path tables: 
 \code{\link{busco_ref_path_data}()},

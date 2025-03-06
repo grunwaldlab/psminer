@@ -17,6 +17,11 @@ pathogensurveillance output.}
 Return a table with the file path to the TSV with the POCP (percent of
 conserved protein matrix for a given pathogensurveillance output folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+pocp_matrix_path_data(path)
+
+}
 \seealso{
 Other path tables: 
 \code{\link{busco_ref_path_data}()},

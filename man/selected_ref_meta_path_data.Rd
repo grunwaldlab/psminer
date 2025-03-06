@@ -18,6 +18,11 @@ Return a table with the file paths of the TSVs of metadata for references
 selected and downloaded for each sample for a given pathogensurveillance
 output folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+selected_ref_meta_path_data(path)
+
+}
 \seealso{
 Other path tables: 
 \code{\link{busco_ref_path_data}()},

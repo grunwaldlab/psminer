@@ -16,6 +16,11 @@ character vector of length 1
 Return the file path to the TSV with the list of references used in the
 variant analysis for a given pathogensurveillance output folder.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+variant_ref_path(path)
+
+}
 \seealso{
 Other path finders: 
 \code{\link{busco_ref_path}()},

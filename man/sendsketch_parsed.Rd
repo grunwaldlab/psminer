@@ -21,6 +21,11 @@ A \code{\link[tibble:tibble]{tibble::tibble()}} with the sendsketch output combi
 Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with the results from sendsketch. The
 contents of all sendsketch files found in the given paths will be combined.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+sendsketch_parsed(path)
+
+}
 \seealso{
 Other parsers: 
 \code{\link{busco_tree_parsed}()},

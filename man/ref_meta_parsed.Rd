@@ -18,3 +18,8 @@ Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with reference me
 all reference metadata files found in the given paths will be combined. This
 only contains data about references used by at least one step of the pipeline.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+ref_meta_parsed(path)
+
+}

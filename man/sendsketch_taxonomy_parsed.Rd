@@ -24,6 +24,11 @@ delimited with \verb{;}, named by sample IDs.
 Return the taxonomic classificaiton in sendsketch results associated with
 directory paths containing \code{pathogensurveillance} output.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+sendsketch_taxonomy_parsed(path)
+
+}
 \seealso{
 Other parsers: 
 \code{\link{busco_tree_parsed}()},

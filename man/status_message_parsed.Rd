@@ -18,3 +18,8 @@ Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with the status m
 pathogensuriveillance pipeline. The contents of all status message files
 found in the given paths will be combined.
 }
+\examples{
+path <- system.file('extdata/ps_output', package = 'psminer')
+status_message_parsed(path)
+
+}
