@@ -3,7 +3,7 @@
 #' Plot the core gene phylogenies present in the output of a pathogensurveillance
 #' run.
 #'
-#' @param input The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output or paths to tree files.
 #' @param collapse_by_tax A [base::character()] vector of taxonomic
 #'   classifications, each delimited by `;`, and named by sample or reference
@@ -20,8 +20,8 @@
 #' core_tree_plot(path)
 #'
 #' @export
-core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
-  generalized_tree_plot(input, core_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
+core_tree_plot <- function(path, collapse_by_tax = NULL, interactive = FALSE) {
+  generalized_tree_plot(path, core_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
 }
 
 #' Plot busco gene phylogeny
@@ -29,7 +29,7 @@ core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
 #' Plot the busco gene phylogenies present in the output of a pathogensurveillance
 #' run.
 #'
-#' @param input The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output or paths to tree files.
 #' @param collapse_by_tax A [base::character()] vector of taxonomic
 #'   classifications, each delimited by `;`, and named by sample or reference
@@ -46,8 +46,8 @@ core_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
 #' busco_tree_plot(path)
 #'
 #' @export
-busco_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
-  generalized_tree_plot(input, busco_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
+busco_tree_plot <- function(path, collapse_by_tax = NULL, interactive = FALSE) {
+  generalized_tree_plot(path, busco_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
 }
 
 #' Plot multigene phylogeny
@@ -55,7 +55,7 @@ busco_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) 
 #' Plot the any multigene phylogenies present in the output of a pathogensurveillance
 #' run. This includes core gene phylogenies and busco gene phylogenes.
 #'
-#' @param input The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output or paths to tree files.
 #' @param collapse_by_tax A [base::character()] vector of taxonomic
 #'   classifications, each delimited by `;`, and named by sample or reference
@@ -72,15 +72,15 @@ busco_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) 
 #' multigene_tree_plot(path)
 #'
 #' @export
-multigene_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
-  generalized_tree_plot(input, multigene_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
+multigene_tree_plot <- function(path, collapse_by_tax = NULL, interactive = FALSE) {
+  generalized_tree_plot(path, multigene_tree_parsed, collapse_by_tax = collapse_by_tax, interactive = interactive)
 }
 
 #' Plot generic phylogeny
 #'
 #' Plot phylogenies present in the output of a pathogensurveillance run.
 #'
-#' @param input The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output or paths to tree files.
 #' @param parser A function that takes directory paths as input and returns
 #'   parsed trees found in those directories, such as
@@ -97,17 +97,17 @@ multigene_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FAL
 #'   single plot is returned.
 #'
 #' @keywords internal
-generalized_tree_plot <- function(input, parser, collapse_by_tax = NULL, interactive = FALSE) {
+generalized_tree_plot <- function(path, parser, collapse_by_tax = NULL, interactive = FALSE) {
   # If no trees are found, return an empty list
-  trees <-  parser(input)
+  trees <- parser(path)
   if (length(trees) == 0) {
     return(list())
   }
 
   # Find and parse needed data
-  sample_meta <- sample_meta_parsed(input)
-  ref_meta <- ref_meta_parsed(input)
-  sendsketch <- sendsketch_taxonomy_data_parsed(input, only_best = TRUE, only_shared = TRUE)
+  sample_meta <- sample_meta_parsed(path)
+  ref_meta <- ref_meta_parsed(path)
+  sendsketch <- sendsketch_taxonomy_data_parsed(path, only_best = TRUE, only_shared = TRUE)
 
   # Find which columns are used to provide colors to the trees, if any
   ids_in_trees <- unique(unlist(lapply(trees, function(t) t$tip.label)))
@@ -136,7 +136,7 @@ generalized_tree_plot <- function(input, parser, collapse_by_tax = NULL, interac
 #' Plot the SNP trees from the variant analysis present in the output of a pathogensurveillance
 #' run.
 #'
-#' @param input The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output or paths to tree files.
 #' @param collapse_by_tax A [base::character()] vector of taxonomic
 #'   classifications, each delimited by `;`, and named by sample or reference
@@ -153,17 +153,17 @@ generalized_tree_plot <- function(input, parser, collapse_by_tax = NULL, interac
 #' variant_tree_plot(path)
 #'
 #' @export
-variant_tree_plot <- function(input, collapse_by_tax = NULL, interactive = FALSE) {
+variant_tree_plot <- function(path, collapse_by_tax = NULL, interactive = FALSE) {
   # If no trees are found, return an empty list
-  trees <-  variant_tree_parsed(input)
+  trees <-  variant_tree_parsed(path)
   if (length(trees) == 0) {
     return(list())
   }
 
   # Find and parse needed data
-  sample_meta <- sample_meta_parsed(input)
-  ref_meta <- ref_meta_parsed(input)
-  sendsketch <- sendsketch_taxonomy_data_parsed(input, only_best = TRUE, only_shared = TRUE)
+  sample_meta <- sample_meta_parsed(path)
+  ref_meta <- ref_meta_parsed(path)
+  sendsketch <- sendsketch_taxonomy_data_parsed(path, only_best = TRUE, only_shared = TRUE)
 
   # Find which columns are used to provide colors to the trees, if any
   ids_in_trees <- unique(unlist(lapply(trees, function(t) t$tip.label)))
@@ -539,7 +539,7 @@ make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = FA
 #' Converts classifications of top hits in sendsketch output into an interactive
 #' sunburst plot.
 #'
-#' @param input The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output or a table in the format of the
 #'   [sendsketch_parsed()] output.
 #' @param interactive Whether or not to produce an interactive
@@ -552,13 +552,13 @@ make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = FA
 #' sendsketch_taxonomy_plot(path, interactive = TRUE)
 #'
 #' @export
-sendsketch_taxonomy_plot <- function(input, interactive = TRUE, ...) {
+sendsketch_taxonomy_plot <- function(path, interactive = TRUE, ...) {
 
   # Parse the input if it is a file/folder path
-  if (is.data.frame(input)) {
-    sketch_data <- input
+  if (is.data.frame(path)) {
+    sketch_data <- path
   } else {
-    sketch_data <- sendsketch_parsed(input, only_best = TRUE)
+    sketch_data <- sendsketch_parsed(path, only_best = TRUE)
   }
 
   # Sort and filter data

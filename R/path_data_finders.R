@@ -3,7 +3,7 @@
 #' Return the file path data to the TSV containing the sample metadata for a given
 #' pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain pathogensurveillance output.
+#' @param path The path to one or more folders that contain pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
 #'
@@ -12,8 +12,8 @@
 #' sample_meta_path_data(path)
 #'
 #' @export
-sample_meta_path_data <- function(paths) {
-  make_path_data_with_group(paths, sample_meta_path)
+sample_meta_path_data <- function(path) {
+  make_path_data_with_group(path, sample_meta_path)
 }
 
 #' Find reference metadata path data
@@ -21,7 +21,7 @@ sample_meta_path_data <- function(paths) {
 #' Return the file path data to the TSV containing the reference metadata for a given
 #' pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain pathogensurveillance output.
+#' @param path The path to one or more folders that contain pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
 #'
@@ -30,8 +30,8 @@ sample_meta_path_data <- function(paths) {
 #' ref_meta_path_data(path)
 #'
 #' @export
-ref_meta_path_data <- function(paths) {
-  make_path_data_with_group(paths, ref_meta_path)
+ref_meta_path_data <- function(path) {
+  make_path_data_with_group(path, ref_meta_path)
 }
 
 #' Find the BUSCO tree path data
@@ -40,7 +40,7 @@ ref_meta_path_data <- function(paths) {
 #' comparing BUSCO genes of samples and references for a given
 #' pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain pathogensurveillance
+#' @param path The path to one or more folders that contain pathogensurveillance
 #'   output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -50,8 +50,8 @@ ref_meta_path_data <- function(paths) {
 #' busco_tree_path_data(path)
 #'
 #' @export
-busco_tree_path_data <- function(paths) {
-  make_path_data_with_group(paths, busco_tree_path)
+busco_tree_path_data <- function(path) {
+  make_path_data_with_group(path, busco_tree_path)
 }
 
 #' Find the BUSCO analysis reference path data
@@ -59,7 +59,7 @@ busco_tree_path_data <- function(paths) {
 #' Return a table with the file path to the TSV with a list of references used
 #' in the BUSCO analysis for a given pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain pathogensurveillance
+#' @param path The path to one or more folders that contain pathogensurveillance
 #'   output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -69,8 +69,8 @@ busco_tree_path_data <- function(paths) {
 #' busco_ref_path_data(path)
 #'
 #' @export
-busco_ref_path_data <- function(paths) {
-  make_path_data_with_group(paths, busco_ref_path)
+busco_ref_path_data <- function(path) {
+  make_path_data_with_group(path, busco_ref_path)
 }
 
 #' Find the core gene analysis reference path data
@@ -78,7 +78,7 @@ busco_ref_path_data <- function(paths) {
 #' Return a table with the file path to the TSV with the list of references used
 #' in the core gene analysis for a given pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -88,8 +88,8 @@ busco_ref_path_data <- function(paths) {
 #' core_ref_path_data(path)
 #'
 #' @export
-core_ref_path_data <- function(paths) {
-  make_path_data_with_group(paths, core_ref_path)
+core_ref_path_data <- function(path) {
+  make_path_data_with_group(path, core_ref_path)
 }
 
 #' Find the run info file path data
@@ -97,7 +97,7 @@ core_ref_path_data <- function(paths) {
 #' Return a table with the file containing the information about a run in a
 #' pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -107,8 +107,8 @@ core_ref_path_data <- function(paths) {
 #' run_info_path_data(path)
 #'
 #' @export
-run_info_path_data <- function(paths) {
-  make_path_data_with_group(paths, run_info_path)
+run_info_path_data <- function(path) {
+  make_path_data_with_group(path, run_info_path)
 }
 
 #' Find the variant analysis reference path data
@@ -116,7 +116,7 @@ run_info_path_data <- function(paths) {
 #' Return a table with the file path to the TSV with the list of references used
 #' in the variant analysis for a given pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -126,8 +126,8 @@ run_info_path_data <- function(paths) {
 #' variant_ref_path_data(path)
 #'
 #' @export
-variant_ref_path_data <- function(paths) {
-  make_path_data_with_group(paths, variant_ref_path)
+variant_ref_path_data <- function(path) {
+  make_path_data_with_group(path, variant_ref_path)
 }
 
 #' Find the status message TSV path data
@@ -135,7 +135,7 @@ variant_ref_path_data <- function(paths) {
 #' Return a table with the file path to the TSV with the status reports,
 #' warnings, and errors for a given pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -145,8 +145,8 @@ variant_ref_path_data <- function(paths) {
 #' status_message_path_data(path)
 #'
 #' @export
-status_message_path_data <- function(paths) {
-  make_path_data_with_group(paths, status_message_path)
+status_message_path_data <- function(path) {
+  make_path_data_with_group(path, status_message_path)
 }
 
 #' Find the POCP matrix path data
@@ -154,7 +154,7 @@ status_message_path_data <- function(paths) {
 #' Return a table with the file path to the TSV with the POCP (percent of
 #' conserved protein matrix for a given pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -164,8 +164,8 @@ status_message_path_data <- function(paths) {
 #' pocp_matrix_path_data(path)
 #'
 #' @export
-pocp_matrix_path_data <- function(paths) {
-  make_path_data_with_group(paths, pocp_matrix_path)
+pocp_matrix_path_data <- function(path) {
+  make_path_data_with_group(path, pocp_matrix_path)
 }
 
 #' Find the estimated ANI matrix path data
@@ -174,7 +174,7 @@ pocp_matrix_path_data <- function(paths) {
 #' (average nucleotide identity) matrix estimated by sourmash for a given
 #' pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -184,8 +184,8 @@ pocp_matrix_path_data <- function(paths) {
 #' estimated_ani_matrix_path_data(path)
 #'
 #' @export
-estimated_ani_matrix_path_data <- function(paths) {
-  make_path_data_with_group(paths, estimated_ani_matrix_path)
+estimated_ani_matrix_path_data <- function(path) {
+  make_path_data_with_group(path, estimated_ani_matrix_path)
 }
 
 #' Find the software version path data
@@ -193,7 +193,7 @@ estimated_ani_matrix_path_data <- function(paths) {
 #' Return a table with the file path to the YAML file with the versions of
 #' software used for a given pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -203,8 +203,8 @@ estimated_ani_matrix_path_data <- function(paths) {
 #' software_version_path_data(path)
 #'
 #' @export
-software_version_path_data <- function(paths) {
-  make_path_data_with_group(paths, software_version_path)
+software_version_path_data <- function(path) {
+  make_path_data_with_group(path, software_version_path)
 }
 
 #' Find the core gene analysis path data
@@ -212,7 +212,7 @@ software_version_path_data <- function(paths) {
 #' Return a table with file paths to the Newick formatted trees produced by the core
 #' gene analysis for a given pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain pathogensurveillance output.
+#' @param path The path to one or more folders that contain pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
 #'
@@ -221,8 +221,8 @@ software_version_path_data <- function(paths) {
 #' core_tree_path_data(path)
 #'
 #' @export
-core_tree_path_data <- function(paths) {
-  output <- make_path_data_with_group(paths, core_tree_path)
+core_tree_path_data <- function(path) {
+  output <- make_path_data_with_group(path, core_tree_path)
   output$cluster_id <- unlist(lapply(1:nrow(output), function(index) {
     id <- sub(basename(output$path[index]), pattern = paste0('^', output$report_group_id[index], '_cluster_'), replacement = '')
     sub(id, pattern = '\\.treefile$', replacement = '')
@@ -236,7 +236,7 @@ core_tree_path_data <- function(paths) {
 #' considered by the pipeline for download for a given pathogensurveillance
 #' output folder.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -246,8 +246,8 @@ core_tree_path_data <- function(paths) {
 #' considered_ref_meta_path_data(path)
 #'
 #' @export
-considered_ref_meta_path_data <- function(paths) {
-  output <- make_path_data_with_group(paths, considered_ref_meta_path)
+considered_ref_meta_path_data <- function(path) {
+  output <- make_path_data_with_group(path, considered_ref_meta_path)
   output$family <- unlist(lapply(basename(output$path), function(file_name) {
     sub(file_name, pattern = '\\.tsv$', replacement = '')
   }))
@@ -260,7 +260,7 @@ considered_ref_meta_path_data <- function(paths) {
 #' selected and downloaded for each sample for a given pathogensurveillance
 #' output folder.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -270,8 +270,8 @@ considered_ref_meta_path_data <- function(paths) {
 #' selected_ref_meta_path_data(path)
 #'
 #' @export
-selected_ref_meta_path_data <- function(paths) {
-  output <- make_path_data_with_group(paths, selected_ref_meta_path)
+selected_ref_meta_path_data <- function(path) {
+  output <- make_path_data_with_group(path, selected_ref_meta_path)
   output$sample_id <- unlist(lapply(basename(output$path), function(file_name) {
     sub(file_name, pattern = '\\.tsv$', replacement = '')
   }))
@@ -283,7 +283,7 @@ selected_ref_meta_path_data <- function(paths) {
 #' Return a table with the file paths of the sendsketch results for each sample
 #' for a given pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -293,8 +293,8 @@ selected_ref_meta_path_data <- function(paths) {
 #' sendsketch_path_data(path)
 #'
 #' @export
-sendsketch_path_data <- function(paths) {
-  output <- make_path_data_with_group(paths, sendsketch_path)
+sendsketch_path_data <- function(path) {
+  output <- make_path_data_with_group(path, sendsketch_path)
   output$sample_id <- unlist(lapply(basename(output$path), function(file_name) {
     sub(file_name, pattern = '\\.txt$', replacement = '')
   }))
@@ -306,7 +306,7 @@ sendsketch_path_data <- function(paths) {
 #' Return a table with the file paths of the SNP alignments for each reference
 #' used in the variant analysis for a given pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -316,8 +316,8 @@ sendsketch_path_data <- function(paths) {
 #' variant_align_path_data(path)
 #'
 #' @export
-variant_align_path_data <- function(paths) {
-  output <- make_path_data_with_group(paths, variant_align_path)
+variant_align_path_data <- function(path) {
+  output <- make_path_data_with_group(path, variant_align_path)
   file_names <- basename(output$path)
   output$ref_id <- unlist(lapply(1:nrow(output), function(index) {
     id <- sub(file_names[index], pattern = paste0('^', output$report_group_id[index], '_'), replacement = '')
@@ -331,7 +331,7 @@ variant_align_path_data <- function(paths) {
 #' Return a table with the file paths of the SNP tree for each reference used in
 #' the variant analysis for a given pathogensurveillance output folder.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
@@ -341,8 +341,8 @@ variant_align_path_data <- function(paths) {
 #' variant_tree_path_data(path)
 #'
 #' @export
-variant_tree_path_data <- function(paths) {
-  output <- make_path_data_with_group(paths, variant_tree_path)
+variant_tree_path_data <- function(path) {
+  output <- make_path_data_with_group(path, variant_tree_path)
   file_names <- basename(output$path)
   output$ref_id <- unlist(lapply(1:nrow(output), function(index) {
     id <- sub(file_names[index], pattern = paste0('^', output$report_group_id[index], '_'), replacement = '')
@@ -358,8 +358,8 @@ variant_tree_path_data <- function(paths) {
 #' Make a table with paths and report group
 #'
 #' @keywords internal
-make_path_data_with_group <- function(paths, path_func) {
-  out_paths <- path_func(paths)
+make_path_data_with_group <- function(path, path_func) {
+  out_paths <- path_func(path)
 
   tibble::tibble(
     report_group_id = find_path_report_group(out_paths),
@@ -370,19 +370,19 @@ make_path_data_with_group <- function(paths, path_func) {
 #' Determine the report group for files
 #'
 #' @keywords internal
-find_path_report_group <- function(paths) {
-  find_one <- function(path) {
-    while (path != dirname(path)) {
-      if ("pathogensurveillance_run_info.yml" %in% list.files(path)) {
-        return(yaml::read_yaml(file.path(path, "pathogensurveillance_run_info.yml"))$group_id)
+find_path_report_group <- function(path) {
+  find_one <- function(p) {
+    while (p != dirname(p)) {
+      if ("pathogensurveillance_run_info.yml" %in% list.files(p)) {
+        return(yaml::read_yaml(file.path(p, "pathogensurveillance_run_info.yml"))$group_id)
       }
-      path <- dirname(path)
+      p <- dirname(p)
     }
     return(NA_character_)
   }
-  if (length(paths) == 0) {
+  if (length(path) == 0) {
     return(character(0))
   } else {
-    return(unlist(lapply(paths, find_one)))
+    return(unlist(lapply(path, find_one)))
   }
 }

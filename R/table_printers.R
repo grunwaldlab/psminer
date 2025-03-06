@@ -3,7 +3,7 @@
 #' Selects columns in the sample metadata to print and format the result for
 #' use as a static table in PDF or an interactive table in HTML.
 #'
-#' @param input The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output or a table in the format of the
 #'   [sample_meta_parsed()] output.
 #' @param interactive Whether to use an HTML-based interactive format or not (default: TRUE)
@@ -15,13 +15,13 @@
 #' sample_meta_table(path, interactive = TRUE)
 #'
 #' @export
-sample_meta_table <- function(input, interactive = FALSE, ...) {
+sample_meta_table <- function(path, interactive = FALSE, ...) {
 
   # Parse the input if it is a file/folder path
-  if (is.data.frame(input)) {
-    sample_data <- input
+  if (is.data.frame(path)) {
+    sample_data <- path
   } else {
-    sample_data <- sample_meta_parsed(input)
+    sample_data <- sample_meta_parsed(path)
   }
 
   # Subset and reformat data for printing
@@ -326,7 +326,7 @@ make_best_match_table <- function(pairwise_matrices, sample_data, ref_data) {
 #' encodes the percentage values using horizontal bars for an intuitive and
 #' accessible presentation.
 #'
-#' @param input The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output or a table in the format of the
 #'   [sendsketch_parsed()] output. Only the best hits are returned, based on the
 #'   default behavior of [sendsketch_best_hits()]. To change this behavior, pass
@@ -346,12 +346,12 @@ make_best_match_table <- function(pairwise_matrices, sample_data, ref_data) {
 #'
 #' # If you want to sort by Completeness and then WKID, keeping the top 2 entries for each sample_id:
 #' sketch_idtb(sketch_data, sort_columns = c("sample_id", "Complt", "WKID"), top_n = 2)
-sendsketch_table <- function(input, interactive = FALSE) {
+sendsketch_table <- function(path, interactive = FALSE) {
   # Parse the input if it is a file/folder path
-  if (is.data.frame(input)) {
-    sketch_data <- input
+  if (is.data.frame(path)) {
+    sketch_data <- path
   } else {
-    sketch_data <- sendsketch_parsed(input, only_best = TRUE)
+    sketch_data <- sendsketch_parsed(path, only_best = TRUE)
   }
 
   # Sort and filter data
