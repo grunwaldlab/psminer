@@ -183,48 +183,65 @@ status_message_table <- function(paths, summarize_by = NULL, interactive = FALSE
 #'
 #' Prints a table with the best matches for each sample given a pairwise distance matrix.
 #'
-#' @param pairwise_matrix A triangular `matrix` with all pairwise comparisons between samples and references
-#' @param sample_data The sample metadata
-#' @param ref_data The reference metadata
-#' @param interactive Whether to print an interactive HTML-based table or one for use with PDF
-#' @param ... Passed to `DT::datatable`.
+#' @param paths The path to one or more folders that contain
+#'   pathogensurveillance output.
+#' @param interactive Whether to produce interactive tables
+#'   (TRUE) or static tables (FALSE). Defaults to TRUE if the environment
+#'   supports HTML output, otherwise FALSE. Interactive tables offer enhanced
+#'   browsing capabilities, while static tables are best for printed pdf
+#'   reports.
+#' @param ... Passed to `DT::datatable` for interactive output.
 #'
-#' @return Returns the table to print
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' estimated_ani_matrix_table(path)
+#' estimated_ani_matrix_table(path, interactive = TRUE)
 #'
 #' @export
-print_ani_table <- function(pairwise_matrix, sample_data, ref_data, interactive = FALSE, ...) {
-  # Create table to print
-  output <- do.call(rbind, lapply(sample_data$sample_id, function(id) { # loop over sample IDs and combine results into a table
-    ref_samp_comp <- pairwise_matrix[id, colnames(pairwise_matrix) %in% ref_data$ref_id, drop = FALSE]
-    best_match <- which.max(ref_samp_comp)
-    if (ncol(ref_samp_comp) >= 2) {
-      next_best_match <- which.max(ref_samp_comp[, -best_match])
-      next_best_match_name <- ref_data$ref_name[ref_data$ref_id == names(next_best_match)]
-      next_best_match_ani <- format_number(unname(unlist(ref_samp_comp[next_best_match])))
-    } else {
-      next_best_match_name <- "NA (Too few references)"
-      next_best_match_ani <- "NA (Too few references)"
-    }
-    data.frame(
-      check.names = FALSE,
-      'Sample' = sample_data$name[sample_data$sample_id == id],
-      'Best match' =  ref_data$ref_name[ref_data$ref_id == names(best_match)],
-      'ANI (%)' = format_number(unname(unlist(ref_samp_comp[best_match]))),
-      '2nd Best match' = next_best_match_name,
-      '2nd ANI (%)' = next_best_match_ani
-    )
+estimated_ani_matrix_table <- function(path, interactive = TRUE, ...) {
+  pairwise_matrices <- estimated_ani_matrix_parsed(path)
+  sample_data <- sample_meta_parsed(path)
+  ref_data <- ref_meta_parsed(path)
+
+  output <- do.call(rbind, lapply(pairwise_matrices, function(pairwise_matrix) {
+    sample_ids <- sample_data$sample_id[sample_data$sample_id %in% colnames(pairwise_matrix)]
+    ref_ids <- ref_data$ref_id[ref_data$ref_id %in% colnames(pairwise_matrix)]
+    do.call(rbind, lapply(sample_ids, function(id) { # loop over sample IDs and combine results into a table
+      ref_samp_comp <- pairwise_matrix[id, ref_ids, drop = FALSE]
+      best_match <- names(which.max(ref_samp_comp))
+      if (ncol(ref_samp_comp) >= 2) {
+        next_best_match <- names(which.max(ref_samp_comp[, colnames(ref_samp_comp) != best_match]))
+        next_best_match_name <- ref_data$ref_name[ref_data$ref_id == next_best_match]
+        next_best_match_ani <- format_number(unname(unlist(ref_samp_comp[next_best_match])))
+      } else {
+        next_best_match_name <- "NA (Too few references)"
+        next_best_match_ani <- "NA (Too few references)"
+      }
+      data.frame(
+        check.names = FALSE,
+        sample_name = sample_data$name[sample_data$sample_id == id],
+        best_match =  ref_data$ref_name[ref_data$ref_id == best_match],
+        best_ani = format_number(unname(unlist(ref_samp_comp[best_match]))),
+        next_best_match = next_best_match_name,
+        next_best_ani = next_best_match_ani
+      )
+    }))
   }))
-  row.names(output) <- NULL
+  rownames(output) <- NULL
 
   # Print table
+  printed_output <- output
+  colnames(printed_output) <- c('Sample', 'Best match', 'ANI (%)', '2nd Best match', '2nd ANI (%)')
   if (interactive) {
-    DT::datatable(output, class = "display nowrap", ...) %>%
-      formatStyle(colnames(output), "white-space" = "nowrap")
+    printed_output <- DT::datatable(printed_output, class = "display nowrap", ...)
+    printed_output <- DT::formatStyle(printed_output, colnames(printed_output), "white-space" = "nowrap")
   } else {
-    print_static_table(output)
+    print_static_table(printed_output)
   }
-}
+  print(printed_output)
 
+  return(invisible(tibble::as_tibble(output)))
+}
 
 
 #' Print best POCP table
