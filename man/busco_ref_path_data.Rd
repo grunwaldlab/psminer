@@ -4,10 +4,10 @@
 \alias{busco_ref_path_data}
 \title{Find the BUSCO analysis reference path data}
 \usage{
-busco_ref_path_data(paths)
+busco_ref_path_data(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain pathogensurveillance
+\item{path}{The path to one or more folders that contain pathogensurveillance
 output.}
 }
 \value{

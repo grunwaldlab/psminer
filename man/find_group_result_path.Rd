@@ -4,7 +4,7 @@
 \alias{find_group_result_path}
 \title{Find subfolders with report group results}
 \usage{
-find_group_result_path(paths)
+find_group_result_path(path)
 }
 \description{
 For one or more paths, return the paths of subfolders (or the given folders)

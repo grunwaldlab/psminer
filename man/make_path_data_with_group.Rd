@@ -4,7 +4,7 @@
 \alias{make_path_data_with_group}
 \title{Make a table with paths and report group}
 \usage{
-make_path_data_with_group(paths, path_func)
+make_path_data_with_group(path, path_func)
 }
 \description{
 Make a table with paths and report group

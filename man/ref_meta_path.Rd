@@ -4,10 +4,10 @@
 \alias{ref_meta_path}
 \title{Find reference metadata file path}
 \usage{
-ref_meta_path(paths)
+ref_meta_path(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
+\item{path}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 character vector of length 1

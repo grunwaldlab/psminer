@@ -4,10 +4,10 @@
 \alias{ref_meta_path_data}
 \title{Find reference metadata path data}
 \usage{
-ref_meta_path_data(paths)
+ref_meta_path_data(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
+\item{path}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 \code{tibble} with \code{report_group_id} and \code{path} columns

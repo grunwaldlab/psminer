@@ -4,10 +4,10 @@
 \alias{run_info_path_data}
 \title{Find the run info file path data}
 \usage{
-run_info_path_data(paths)
+run_info_path_data(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

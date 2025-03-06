@@ -4,10 +4,10 @@
 \alias{multigene_tree_parsed}
 \title{Get mulitgene phylogenies}
 \usage{
-multigene_tree_parsed(paths)
+multigene_tree_parsed(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

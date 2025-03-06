@@ -4,10 +4,10 @@
 \alias{considered_ref_meta_path}
 \title{Find the considered NCBI reference metadata paths}
 \usage{
-considered_ref_meta_path(paths)
+considered_ref_meta_path(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
+\item{path}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 character vector of length 1

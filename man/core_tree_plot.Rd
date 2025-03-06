@@ -4,10 +4,10 @@
 \alias{core_tree_plot}
 \title{Plot core gene phylogeny}
 \usage{
-core_tree_plot(input, collapse_by_tax = NULL, interactive = FALSE)
+core_tree_plot(path, collapse_by_tax = NULL, interactive = FALSE)
 }
 \arguments{
-\item{input}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output or paths to tree files.}
 
 \item{collapse_by_tax}{A \code{\link[base:character]{base::character()}} vector of taxonomic

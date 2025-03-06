@@ -4,10 +4,10 @@
 \alias{variant_tree_parsed}
 \title{Get SNP phylogeny}
 \usage{
-variant_tree_parsed(paths, rename = TRUE)
+variant_tree_parsed(path, rename = TRUE)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 
 \item{rename}{If \code{TRUE}, rename the tip labels to sample IDs and reference IDs.}

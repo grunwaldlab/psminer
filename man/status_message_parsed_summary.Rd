@@ -4,10 +4,10 @@
 \alias{status_message_parsed_summary}
 \title{Get summary of pipeline status data}
 \usage{
-status_message_parsed_summary(paths)
+status_message_parsed_summary(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

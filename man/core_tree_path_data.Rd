@@ -4,10 +4,10 @@
 \alias{core_tree_path_data}
 \title{Find the core gene analysis path data}
 \usage{
-core_tree_path_data(paths)
+core_tree_path_data(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
+\item{path}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 \code{tibble} with \code{report_group_id} and \code{path} columns

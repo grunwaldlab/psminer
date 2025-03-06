@@ -4,10 +4,10 @@
 \alias{variant_align_path_data}
 \title{Find the SNP alignment path data}
 \usage{
-variant_align_path_data(paths)
+variant_align_path_data(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

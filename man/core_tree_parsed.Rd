@@ -4,10 +4,10 @@
 \alias{core_tree_parsed}
 \title{Get core gene phylogeny}
 \usage{
-core_tree_parsed(paths)
+core_tree_parsed(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

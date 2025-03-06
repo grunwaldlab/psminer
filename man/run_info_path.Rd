@@ -4,10 +4,10 @@
 \alias{run_info_path}
 \title{Find the report group file path}
 \usage{
-run_info_path(paths)
+run_info_path(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
+\item{path}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 character vector of length 1

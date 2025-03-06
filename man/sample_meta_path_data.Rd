@@ -4,10 +4,10 @@
 \alias{sample_meta_path_data}
 \title{Find sample metadata path data}
 \usage{
-sample_meta_path_data(paths)
+sample_meta_path_data(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
+\item{path}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 \code{tibble} with \code{report_group_id} and \code{path} columns

@@ -4,10 +4,10 @@
 \alias{sendsketch_taxonomy_plot}
 \title{Make sunburst plot of sendsketch taxonomy}
 \usage{
-sendsketch_taxonomy_plot(input, interactive = TRUE, ...)
+sendsketch_taxonomy_plot(path, interactive = FALSE, ...)
 }
 \arguments{
-\item{input}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output or a table in the format of the
 \code{\link[=sendsketch_parsed]{sendsketch_parsed()}} output.}
 

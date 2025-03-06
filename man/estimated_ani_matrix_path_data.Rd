@@ -4,10 +4,10 @@
 \alias{estimated_ani_matrix_path_data}
 \title{Find the estimated ANI matrix path data}
 \usage{
-estimated_ani_matrix_path_data(paths)
+estimated_ani_matrix_path_data(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

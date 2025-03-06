@@ -5,14 +5,14 @@
 \title{Plot generic phylogeny}
 \usage{
 generalized_tree_plot(
-  input,
+  path,
   parser,
   collapse_by_tax = NULL,
   interactive = FALSE
 )
 }
 \arguments{
-\item{input}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output or paths to tree files.}
 
 \item{parser}{A function that takes directory paths as input and returns

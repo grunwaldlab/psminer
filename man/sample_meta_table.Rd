@@ -4,10 +4,10 @@
 \alias{sample_meta_table}
 \title{Print a table of sample metadata}
 \usage{
-sample_meta_table(input, interactive = FALSE, ...)
+sample_meta_table(path, interactive = FALSE, ...)
 }
 \arguments{
-\item{input}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output or a table in the format of the
 \code{\link[=sample_meta_parsed]{sample_meta_parsed()}} output.}
 

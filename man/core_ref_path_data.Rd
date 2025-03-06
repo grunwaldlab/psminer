@@ -4,10 +4,10 @@
 \alias{core_ref_path_data}
 \title{Find the core gene analysis reference path data}
 \usage{
-core_ref_path_data(paths)
+core_ref_path_data(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

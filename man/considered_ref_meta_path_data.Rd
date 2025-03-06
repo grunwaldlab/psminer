@@ -4,10 +4,10 @@
 \alias{considered_ref_meta_path_data}
 \title{Find the considered NCBI reference metadata path data}
 \usage{
-considered_ref_meta_path_data(paths)
+considered_ref_meta_path_data(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

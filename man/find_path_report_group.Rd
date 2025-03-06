@@ -4,7 +4,7 @@
 \alias{find_path_report_group}
 \title{Determine the report group for files}
 \usage{
-find_path_report_group(paths)
+find_path_report_group(path)
 }
 \description{
 Determine the report group for files

@@ -385,7 +385,7 @@ variant_msn_plot <- function(path, combine = TRUE) {
     return(out)
   })
 
-
+  return(output)
 }
 
 
@@ -497,40 +497,147 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
 }
 
 
+#' Plot ANI matrix
+#'
+#' Plot ANI matrix with dendrogram from data present in the output of a
+#' pathogensurveillance run.
+#'
+#' @param path The path to one or more folders that contain pathogensurveillance
+#'   output or paths to tree files.
+#' @param combine If `TRUE`, combine data from all ANI matrices found into a
+#'   single plot.
+#' @param interactive Whether to use an HTML-based interactive format or not
+#'   (default: TRUE)
+#' @param height The height in pixels. If not `interactive`, this is divided by
+#'   `dpi` to convert it to inches.
+#' @param width The width in pixels. If not `interactive`, this is divided by
+#'   `dpi` to convert it to inches.
+#' @param dpi How pixels are converted to inches
+#' @param font_size Size of text used for labels
+#'
+#' @return  A list of plots, unless `combine` is used, in which case a single
+#'   plot is returned.
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' estimated_ani_heatmap(path)
+#' estimated_ani_heatmap(path, interactive = TRUE)
+#'
+#' @export
+estimated_ani_heatmap <- function(path, combine = FALSE, interactive = FALSE,
+                                  height = NULL, width = NULL, dpi = 100, font_size = 8) {
+  if (combine) {
+    stop('The `combine` option is not yet supported.')
+  }
 
-#' Make an ANI heatmap and dendrogram.
+  # Find and parse data
+  matrices <- estimated_ani_matrix_parsed(path)
+  sample_meta <- sample_meta_parsed(path)
+  ref_meta <- ref_meta_parsed(path)
+
+  output <- lapply(matrices, function(m) {
+    make_heatmap(input_matrix = m, sample_data = sample_meta, ref_data = ref_meta,
+                 interactive = interactive, height = height, width = width, dpi = dpi)
+  })
+
+  return(output)
+}
+
+
+#' Plot POCP matrix
 #'
-#' The ANI heatmap is based on approximate ANI similarity matrix output by Sourmash
+#' Plot POCP matrix with dendrogram from data present in the output of a
+#' pathogensurveillance run.
 #'
-#' @param ani_matrix Approximate ANI matrix output from Sourmash analysis
+#' @param path The path to one or more folders that contain pathogensurveillance
+#'   output or paths to tree files.
+#' @param combine If `TRUE`, combine data from all POCP matrices found into a
+#'   single plot.
+#' @param interactive Whether to use an HTML-based interactive format or not
+#'   (default: TRUE)
+#' @param height The height in pixels. If not `interactive`, this is divided by
+#'   `dpi` to convert it to inches.
+#' @param width The width in pixels. If not `interactive`, this is divided by
+#'   `dpi` to convert it to inches.
+#' @param dpi How pixels are converted to inches
+#' @param font_size Size of text used for labels
+#'
+#' @return  A list of plots, unless `combine` is used, in which case a single
+#'   plot is returned.
+#'
+#' @examples
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' pocp_heatmap(path)
+#' pocp_heatmap(path, interactive = TRUE)
+#'
+#' @export
+pocp_heatmap <- function(path, combine = FALSE, interactive = FALSE,
+                         height = NULL, width = NULL, dpi = 100, font_size = 8) {
+  if (combine) {
+    stop('The `combine` option is not yet supported.')
+  }
+
+  # Find and parse data
+  matrices <- pocp_matrix_parsed(path)
+  sample_meta <- sample_meta_parsed(path)
+  ref_meta <- ref_meta_parsed(path)
+
+  output <- lapply(matrices, function(m) {
+    make_heatmap(input_matrix = m, sample_data = sample_meta, ref_data = ref_meta,
+                 interactive = interactive, height = height, width = width, dpi = dpi)
+  })
+
+  return(output)
+}
+
+
+
+#' Make an heatmap with dendrogram.
+#'
+#' The heatmap is based on a distance matrix
+#'
+#' @param input_matrix Approximate ANI matrix output from Sourmash analysis
 #' @param sample_data A tibble/data.frame with the sample metadata
 #' @param ref_data A tibble/data.frame with information on references used in analysis
 #' @param interactive Whether to use an HTML-based interactive format or not (default: TRUE)
 #' @param height The height in pixels. If not `interactive`, this is divided by `dpi` to convert it to inches.
 #' @param width The width in pixels. If not `interactive`, this is divided by `dpi` to convert it to inches.
 #' @param dpi How pixels are converted to inches
+#' @param font_size Size of text used for labels
 #'
-#' @return A heatmap and dendrogram
+#' @return A heatmap with dendrogram
 #'
-#' @examples
-#' make_ani_heatmap(ani_matrix, ref_data, samp_data, interactive=FALSE)
-#'
-#' @export
-make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = FALSE, height = 1000, width = 1000, dpi = 100) {
+#' @keywords internal
+make_heatmap <- function(input_matrix, ref_data, sample_data, interactive = FALSE,
+                         height = NULL, width = NULL, dpi = 100, font_size = 10) {
   # Rename rows/columns for plotting
   name_key <- c(
     stats::setNames(ref_data$ref_name, ref_data$ref_id),
     stats::setNames(sample_data$name, sample_data$sample_id)
   )
   name_key <- stats::setNames(make.unique(name_key, sep = ' '), names(name_key))
-  colnames(ani_matrix) <- name_key[colnames(ani_matrix)]
-  rownames(ani_matrix) <- name_key[rownames(ani_matrix)]
+  colnames(input_matrix) <- name_key[colnames(input_matrix)]
+  rownames(input_matrix) <- name_key[rownames(input_matrix)]
   if (interactive) {
-    heatmap_ani <- heatmaply::heatmaply(ani_matrix, fontsize_row = 8, fontsize_col = 8, width = width, height = height)
+    output <- heatmaply::heatmaply(input_matrix,
+                                   fontsize_row = font_size, fontsize_col = font_size,
+                                   width = width, height = height)
   } else {
-    heatmap_ani <- pheatmap::pheatmap(ani_matrix, show_rownames = TRUE, labels_row = colnames(ani_matrix), width = width / dpi, height = height / dpi)
+    if (is.null(width)) {
+      width <- NA
+    } else {
+      width <- width / dpi
+    }
+    if (is.null(height)) {
+      height <- NA
+    } else {
+      height <- height / dpi
+    }
+    output <- pheatmap::pheatmap(input_matrix, show_rownames = TRUE, labels_row = colnames(input_matrix),
+                                 fontsize_row = font_size, fontsize_col = font_size,
+                                 width = width, height = height)
   }
-  return(heatmap_ani)
+  return(output)
 }
 
 
@@ -552,7 +659,7 @@ make_ani_heatmap <- function(ani_matrix, ref_data, sample_data, interactive = FA
 #' sendsketch_taxonomy_plot(path, interactive = TRUE)
 #'
 #' @export
-sendsketch_taxonomy_plot <- function(path, interactive = TRUE, ...) {
+sendsketch_taxonomy_plot <- function(path, interactive = FALSE, ...) {
 
   # Parse the input if it is a file/folder path
   if (is.data.frame(path)) {

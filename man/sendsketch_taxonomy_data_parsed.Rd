@@ -4,10 +4,10 @@
 \alias{sendsketch_taxonomy_data_parsed}
 \title{Get parsed sendsketch taxonomy data}
 \usage{
-sendsketch_taxonomy_data_parsed(paths, only_best = FALSE, only_shared = FALSE)
+sendsketch_taxonomy_data_parsed(path, only_best = FALSE, only_shared = FALSE)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 
 \item{only_best}{Only return the best hit for each combination of report

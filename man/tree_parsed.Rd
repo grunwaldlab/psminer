@@ -4,10 +4,10 @@
 \alias{tree_parsed}
 \title{Get phylogenies using a function}
 \usage{
-tree_parsed(paths)
+tree_parsed(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

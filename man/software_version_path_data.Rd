@@ -4,10 +4,10 @@
 \alias{software_version_path_data}
 \title{Find the software version path data}
 \usage{
-software_version_path_data(paths)
+software_version_path_data(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

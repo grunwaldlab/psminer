@@ -4,10 +4,10 @@
 \alias{variant_tree_path}
 \title{Find the SNP tree paths}
 \usage{
-variant_tree_path(paths)
+variant_tree_path(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
+\item{path}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 character vector of length 1

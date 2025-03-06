@@ -4,10 +4,10 @@
 \alias{sample_meta_parsed}
 \title{Get parsed sample metadata}
 \usage{
-sample_meta_parsed(paths)
+sample_meta_parsed(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

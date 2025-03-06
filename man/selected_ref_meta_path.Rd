@@ -4,10 +4,10 @@
 \alias{selected_ref_meta_path}
 \title{Find the downloaded reference metadata paths}
 \usage{
-selected_ref_meta_path(paths)
+selected_ref_meta_path(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
+\item{path}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 character vector of length 1

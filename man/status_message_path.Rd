@@ -4,10 +4,10 @@
 \alias{status_message_path}
 \title{Find the status message TSV file path}
 \usage{
-status_message_path(paths)
+status_message_path(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain pathogensurveillance output.}
+\item{path}{The path to one or more folders that contain pathogensurveillance output.}
 }
 \value{
 character vector of length 1

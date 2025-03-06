@@ -4,10 +4,10 @@
 \alias{busco_tree_parsed}
 \title{Get BUSCO phylogeny}
 \usage{
-busco_tree_parsed(paths)
+busco_tree_parsed(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

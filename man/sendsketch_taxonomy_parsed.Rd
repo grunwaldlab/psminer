@@ -4,10 +4,10 @@
 \alias{sendsketch_taxonomy_parsed}
 \title{Get parsed sendsketch taxonomy}
 \usage{
-sendsketch_taxonomy_parsed(paths, remove_ranks = FALSE, only_best = FALSE)
+sendsketch_taxonomy_parsed(path, remove_ranks = FALSE, only_best = FALSE)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 
 \item{remove_ranks}{If \code{TRUE}, remove the rank information from the taxonomy.}

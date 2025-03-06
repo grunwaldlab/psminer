@@ -4,10 +4,10 @@
 \alias{ref_meta_parsed}
 \title{Get parsed reference metadata}
 \usage{
-ref_meta_parsed(paths)
+ref_meta_parsed(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

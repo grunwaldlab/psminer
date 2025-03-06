@@ -4,10 +4,10 @@
 \alias{sendsketch_table}
 \title{Create an summary table from sendsketch output table}
 \usage{
-sendsketch_table(input, interactive = FALSE)
+sendsketch_table(path, interactive = FALSE)
 }
 \arguments{
-\item{input}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output or a table in the format of the
 \code{\link[=sendsketch_parsed]{sendsketch_parsed()}} output. Only the best hits are returned, based on the
 default behavior of \code{\link[=sendsketch_best_hits]{sendsketch_best_hits()}}. To change this behavior, pass

@@ -4,10 +4,10 @@
 \alias{pocp_matrix_parsed}
 \title{Get POCP matrix}
 \usage{
-pocp_matrix_parsed(paths)
+pocp_matrix_parsed(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

@@ -4,10 +4,10 @@
 \alias{run_info_parsed}
 \title{Get parsed report groups}
 \usage{
-run_info_parsed(paths)
+run_info_parsed(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

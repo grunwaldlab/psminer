@@ -4,10 +4,10 @@
 \alias{status_message_path_data}
 \title{Find the status message TSV path data}
 \usage{
-status_message_path_data(paths)
+status_message_path_data(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{

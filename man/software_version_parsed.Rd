@@ -4,10 +4,10 @@
 \alias{software_version_parsed}
 \title{Parse Software Version Metadata from YAML File}
 \usage{
-software_version_parsed(paths)
+software_version_parsed(path)
 }
 \arguments{
-\item{paths}{The path to one or more folders that contain
+\item{path}{The path to one or more folders that contain
 pathogensurveillance output.}
 }
 \value{
