@@ -16,7 +16,6 @@
 #'
 #' @export
 sample_meta_table <- function(path, interactive = FALSE, ...) {
-
   # Parse the input if it is a file/folder path
   if (is.data.frame(path)) {
     sample_data <- path
@@ -24,27 +23,15 @@ sample_meta_table <- function(path, interactive = FALSE, ...) {
     sample_data <- sample_meta_parsed(path)
   }
 
-  # Subset and reformat data for printing
-  # column_key <- c(
-  #   sample_id = 'Sample ID',
-  #   path = 'Read paths',
-  #   path_2 = 'Reverse Reads',
-  #   reference_id = 'Reference ID',
-  #   reference_name =  'Reference'
-  # )
-  # formatted_data <- sample_data[, names(column_key)]
-  # colnames(formatted_data) <- column_key
-  formatted_data <- sample_data
-
   # Print table
   if (interactive) {
-    DT::datatable(formatted_data, class = "display nowrap", ...) %>%
-      DT::formatStyle(colnames(formatted_data), "white-space" = "nowrap")
-
+    output <- DT::datatable(sample_data, class = "display nowrap", ...)
+    output <- DT::formatStyle(output, colnames(sample_data), "white-space" = "nowrap")
   } else {
-    print_static_table(formatted_data, compressed_cols = c('Forward Reads', 'Reverse Reads', 'Reference'))
+    output <- print_static_table(sample_data, compressed_cols = c('Forward Reads', 'Reverse Reads', 'Reference'))
   }
 
+  return(output)
 }
 
 
@@ -172,10 +159,8 @@ status_message_table <- function(paths, summarize_by = NULL, interactive = FALSE
     colnames(print_data)[colnames(print_data) == 'Status'] <- ''
     output <- print_static_table(print_data)
   }
-  print(output)
 
-  # Return an invisible less pretty table for downstream analysis
-  return(invisible(tibble::as_tibble(message_data)))
+  return(output)
 }
 
 
@@ -336,14 +321,12 @@ make_best_match_table <- function(pairwise_matrices, sample_data, ref_data) {
 #'   when used in an R Markdown document or Shiny application. The table will
 #'   have interactive features such as sorting and search enabled.
 #'
-#' @export
-#'
 #' @examples
-#' # Assuming `sketch_data` is your dataframe with the appropriate structure:
-#' sketch_idtb(sketch_data, sort_columns = c("sample_id", "WKID", "ANI", "Complt"), top_n = 1)
+#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' sendsketch_table(path)
+#' sendsketch_table(path, interactive = TRUE)
 #'
-#' # If you want to sort by Completeness and then WKID, keeping the top 2 entries for each sample_id:
-#' sketch_idtb(sketch_data, sort_columns = c("sample_id", "Complt", "WKID"), top_n = 2)
+#' @export
 sendsketch_table <- function(path, interactive = FALSE) {
   # Parse the input if it is a file/folder path
   if (is.data.frame(path)) {

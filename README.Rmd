@@ -1,0 +1,79 @@
+---
+output: github_document
+always_allow_html: true
+---
+
+# `psminer`: an R package for analysis of the `pathogensurveillance` pipeline
+
+`psminer` is an R package with functions that can read, summarize, plot, and manipulate data produced by the pipeline [`pathogensurveillance`](https://github.com/nf-core/pathogensurveillance). 
+
+
+```{r include=FALSE}
+options(tibble.print_min = 5, tibble.print_max = 5)
+```
+
+
+## Installation
+
+Although `psminer` is not on CRAN yet, you can install the development version from the source code on Github:
+
+```{r, eval = FALSE}
+install.packages("devtools")
+devtools::install_github("grunwaldlab/psminer")
+```
+
+
+## Introduction
+
+Most functions in the `psminer` package have the same way of accepting input.
+Given one or more directory paths, functions will find their needed input in any `pathogensurveillance` output directories that are in the given directories.
+For example, an output directory of `pathogensurveillance` is included in the package and its path on your computer can be found like so:
+
+```{r}
+library(psminer)
+path <- system.file('extdata/ps_output', package = 'psminer')
+print(path)
+```
+
+This path can then be used as the only required input for nearly every function in `psminer`.
+For example, here is how to get the multigene phylogeny plot, which contains core gene phylogenies for prokaryotes and busco phylogenies for eukaryotes:
+
+```{r, message=FALSE}
+multigene_tree_plot(path)[[2]]  # This function returns a list of plots, so [[2]] selects the second plot
+```
+
+And here is how to get the best matches for each sample using an estimate of ANI:
+
+```{r}
+estimated_ani_match_table(path)
+```
+
+Many functions also have an option for interactive output for use in HTML documents.
+Since this is a markdown document (`README.md`), interactive plots will not work but here is a screenshot of an interactive plot showing the taxonomic distribution of sendsketch hits:
+
+```{r, fig.width=10, fig.height=10, message=FALSE}
+sendsketch_taxonomy_plot(path, interactive = TRUE)
+```
+
+You can also get more low level information from the pipeline results to do custom analyses.
+For example, functions ending with `_path` or `_path_data` give you the paths of various types of `pathogensuriveillance` outputs, returning `vector`s or `tibble`s of paths respectively:
+
+```{r}
+estimated_ani_matrix_path(path)
+core_tree_path_data(path)
+sendsketch_path_data(path)
+```
+
+You can also get parsed versions of all of these `pathogensuriveillance` outputs using functions ending in `parsed`:
+
+```{r}
+sendsketch_parsed(path)
+core_tree_parsed(path)
+```
+
+
+
+## License
+
+This work is subject to the [MIT
+License](https://github.com/grunwaldlab/metacoder/blob/master/LICENSE).

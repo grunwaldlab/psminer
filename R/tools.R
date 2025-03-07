@@ -303,7 +303,7 @@ print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_
 sendsketch_best_hits <- function(sketch_data, sort_columns = c("WKID", "ANI", "Complt"), top_n = 1) {
   order_data <- c(list(decreasing = TRUE), unname(sketch_data[sort_columns]))
   sketch_data <- sketch_data[do.call(order, order_data), , drop = FALSE]
-  split_data <- split(sketch_data, sketch_data[c('sample_id', 'report_group_id')])
+  split_data <- split(sketch_data, sketch_data[c('sample_id', 'report_group_id')], drop = TRUE)
   final_table <- do.call(rbind, lapply(split_data, function(x) {
     x[seq_len(top_n), , drop = FALSE]
   }))

@@ -202,11 +202,14 @@ variant_tree_plot <- function(path, collapse_by_tax = NULL, interactive = FALSE)
 #' @param color_by The name of the column in the metadata used to color samples.
 #' @param interactive Whether to use an HTML-based interactive format or not
 #'   (default: TRUE)
+#' @param tip_label_size The size of tree tip labels. 1-5 might be reasonable values.
+#' @param node_label_size The size of tree node (bootstrap) labels. 1-5 might be reasonable values.
 #'
 #' @import ggtree
 #'
 #' @keywords internal
-plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collapse_by_tax = NULL, interactive = FALSE, ...) {
+plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collapse_by_tax = NULL,
+                           interactive = FALSE, tip_label_size = NULL, node_label_size = NULL, ...) {
   if (interactive) {
     stop('Interactive tree plotting is not yet supported.')
   }
@@ -224,6 +227,7 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
       stop(call. = FALSE, 'If "collapse_by_tax" is not provided, then only a single tree can be plotted at a time. Multiple trees were given.')
     }
   } else {
+
     # If taxonomy does not have at least one conserved rank, then add one
     ranks <- colnames(collapse_by_tax)[colnames(collapse_by_tax) != 'sample_id']
     n_unique_taxa <- unlist(lapply(collapse_by_tax[ranks], function(x) length(unique(x))))
@@ -231,35 +235,27 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
       collapse_by_tax <- cbind(sample_id = collapse_by_tax$sample_id, root = 'Life', collapse_by_tax[ranks])
       ranks <- c('root', ranks)
     }
+
     # Subset taxonomy data to just the part used by each tree
-    collapse_by_tax[ranks] <- lapply(collapse_by_tax[ranks], as.factor)
-    tree_tax_data <- lapply(trees, function(tree) {
-      sample_ids <- tree$tip.label[tree$tip.label %in% sample_meta$sample_id]
-      tax_subset <- collapse_by_tax[collapse_by_tax$sample_id %in% sample_ids, colnames(collapse_by_tax) != 'sample_id']
-      tax_subset <- tax_subset[, apply(tax_subset, MARGIN = 2, function(col) length(unique(col)) == 1)]
-      unique(tax_subset)
-    })
-    shared_cols <- table(unlist(lapply(tree_tax_data, colnames)))
-    shared_cols <- names(shared_cols[as.numeric(shared_cols) == max(as.numeric(shared_cols))])
-    tree_tax <- do.call(rbind, lapply(tree_tax_data, function(x) {
-      x[colnames(x) %in% shared_cols]
+    tree_tax_data <- do.call(rbind, lapply(seq_along(trees), function(i) {
+      tree_ids <- trees[[i]]$tip.label
+      tree_samp_ids <- tree_ids[tree_ids %in% collapse_by_tax$sample_id]
+      out <- cbind(tree = i, collapse_by_tax[match(tree_samp_ids, collapse_by_tax$sample_id), ranks])
+      is_variable_col <- vapply(out[ranks], FUN.VALUE = logical(1), function(y) length(unique(y)) > 1)
+      variable_cols <- ranks[is_variable_col]
+      last_uniform_taxon <- ranks[max(which(! is_variable_col))]
+      out[, variable_cols] <- unique(out[, last_uniform_taxon])
+      unique(out)
     }))
-    rownames(tree_tax) <- NULL
-    # tree_tax <- tree_tax[, 1:ncol(tree_tax) < which(colnames(tree_tax) == 'g')]
-    keep_rank <- apply(tree_tax, MARGIN = 2, function(col) length(unique(col)) != 1)
-    keep_rank[1] <- TRUE # Always include the first rank
-    tree_tax <- tree_tax[, keep_rank]
-    tree_tax[] <- lapply(tree_tax, function(col) {
-      col <- as.character(col)
-      col[is.na(col)] <- 'test'
-      as.factor(col)
-    })
+    tree_tax_data[ranks] <- lapply(tree_tax_data[ranks], as.factor)
+
     # Combine trees
-    base_tree <- ape::as.phylo(stats::as.formula(paste0('~', paste0(colnames(tree_tax), collapse = '/'))), data = tree_tax)
+    base_tree <- ape::as.phylo(stats::as.formula(paste0('~', paste0(ranks, collapse = '/'))), data = tree_tax_data)
     mean_edge_len <- mean(unlist(lapply(trees, function(x) x$edge.length)))
     base_tree$edge.length <- rep(mean_edge_len, nrow(base_tree$edge))
     combined_tree <- base_tree
-    index_key <- match(base_tree$tip.label, tree_tax[[ncol(tree_tax)]])
+    tip_rank <- as.character(tree_tax_data[, ranks[length(ranks)]])
+    index_key <- match(base_tree$tip.label, tip_rank)
     for (index in rev(seq_along(trees))) {
       combined_tree <- ape::bind.tree(combined_tree, trees[[index_key[index]]], where = index)
     }
@@ -317,15 +313,26 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
 
   legend_title <- tools::toTitleCase(trimws(gsub(color_by, pattern = '_', replacement = ' ')))
 
+  logistic_scaling_func <- function(shared_count, floor = 0.1, ceiling = 2.5, midpoint = 0, steepness = 0.02) {
+    logistic_value <- ceiling / (1 + exp(1)^(-steepness * (shared_count - midpoint)))
+    ((logistic_value - 0.5 + floor) / (0.5 - floor)) - ceiling + 1
+  }
+
+  if (is.null(node_label_size)) {
+    node_label_size = 3 - logistic_scaling_func(nrow(tip_data), steepness = 0.005, floor = 0, ceiling = 2.5)
+  }
+  if (is.null(tip_label_size)) {
+    tip_label_size = 4 - logistic_scaling_func(nrow(tip_data), steepness = 0.005, floor = 0, ceiling = 3.5)
+  }
+
   plotted_tree <- ggtree(combined_tree, ggplot2::aes_string(color = 'branch_color', linetype = 'branch_type')) %<+% node_data +
-    geom_nodelab(ggplot2::aes_string(label = 'node_label'), hjust = 1.3, nudge_y = 0.3, size = 3) +
+    geom_nodelab(ggplot2::aes_string(label = 'node_label'), hjust = 1.3, nudge_y = 0.3, size = node_label_size) +
     ggplot2::scale_color_identity() +
     ggplot2::scale_linetype_identity()
-
   plotted_tree <- plotted_tree %<+% tip_data +
     scale_x_continuous(expand = ggplot2::expansion(add = c(0.1, 0.1 + max(nchar(tip_data$tip_label)) * 0.1 / sqrt(nrow(tip_data))))) +
     ggnewscale::new_scale_color() +
-    geom_tiplab(ggplot2::aes_string(label = 'tip_label', color = 'tip_color')) +
+    geom_tiplab(ggplot2::aes_string(label = 'tip_label', color = 'tip_color'), size = tip_label_size) +
     geom_tippoint(ggplot2::aes_string(color = 'tip_color'), alpha = 0) + # Invisible tips just there to make override.aes below change the legend color shapes
     ggplot2::scale_color_viridis_d(end = 0.8, na.value = "black") +
     ggplot2::guides(color = guide_legend(title = legend_title, override.aes = list(label = "", size = 3, alpha = 1, shape = 15))) +

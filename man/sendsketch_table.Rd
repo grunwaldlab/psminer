@@ -32,9 +32,8 @@ encodes the percentage values using horizontal bars for an intuitive and
 accessible presentation.
 }
 \examples{
-# Assuming `sketch_data` is your dataframe with the appropriate structure:
-sketch_idtb(sketch_data, sort_columns = c("sample_id", "WKID", "ANI", "Complt"), top_n = 1)
+path <- system.file('extdata/ps_output', package = 'psminer')
+sendsketch_table(path)
+sendsketch_table(path, interactive = TRUE)
 
-# If you want to sort by Completeness and then WKID, keeping the top 2 entries for each sample_id:
-sketch_idtb(sketch_data, sort_columns = c("sample_id", "Complt", "WKID"), top_n = 2)
 }

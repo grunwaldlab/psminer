@@ -11,6 +11,8 @@ plot_phylogeny(
   color_by = NULL,
   collapse_by_tax = NULL,
   interactive = FALSE,
+  tip_label_size = NULL,
+  node_label_size = NULL,
   ...
 )
 }
@@ -32,6 +34,10 @@ instead of a single plot)}
 
 \item{interactive}{Whether to use an HTML-based interactive format or not
 (default: TRUE)}
+
+\item{tip_label_size}{The size of tree tip labels. 1-5 might be reasonable values.}
+
+\item{node_label_size}{The size of tree node (bootstrap) labels. 1-5 might be reasonable values.}
 }
 \description{
 Plot a phylogeny
