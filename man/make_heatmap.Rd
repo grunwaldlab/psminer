@@ -12,7 +12,8 @@ make_heatmap(
   height = NULL,
   width = NULL,
   dpi = 100,
-  font_size = 10
+  font_size = 10,
+  max_label_length = 30
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ make_heatmap(
 \item{dpi}{How pixels are converted to inches}
 
 \item{font_size}{Size of text used for labels}
+
+\item{max_label_length}{Labels longer than this length will be shortened.}
 }
 \value{
 A heatmap with dendrogram

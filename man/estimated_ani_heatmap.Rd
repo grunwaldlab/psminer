@@ -8,10 +8,11 @@ estimated_ani_heatmap(
   path,
   combine = FALSE,
   interactive = FALSE,
+  subset = TRUE,
   height = NULL,
   width = NULL,
   dpi = 100,
-  font_size = 8
+  font_size = 6
 )
 }
 \arguments{
@@ -23,6 +24,9 @@ single plot.}
 
 \item{interactive}{Whether to use an HTML-based interactive format or not
 (default: TRUE)}
+
+\item{subset}{If \code{TRUE}, subset references to those selected for phylogenetic
+analyses.}
 
 \item{height}{The height in pixels. If not \code{interactive}, this is divided by
 \code{dpi} to convert it to inches.}

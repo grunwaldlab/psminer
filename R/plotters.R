@@ -515,6 +515,8 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
 #'   single plot.
 #' @param interactive Whether to use an HTML-based interactive format or not
 #'   (default: TRUE)
+#' @param subset If `TRUE`, subset references to those selected for phylogenetic
+#'   analyses.
 #' @param height The height in pixels. If not `interactive`, this is divided by
 #'   `dpi` to convert it to inches.
 #' @param width The width in pixels. If not `interactive`, this is divided by
@@ -531,8 +533,8 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
 #' estimated_ani_heatmap(path, interactive = TRUE)
 #'
 #' @export
-estimated_ani_heatmap <- function(path, combine = FALSE, interactive = FALSE,
-                                  height = NULL, width = NULL, dpi = 100, font_size = 8) {
+estimated_ani_heatmap <- function(path, combine = FALSE, interactive = FALSE, subset = TRUE,
+                                  height = NULL, width = NULL, dpi = 100, font_size = 6) {
   if (combine) {
     stop('The `combine` option is not yet supported.')
   }
@@ -543,6 +545,14 @@ estimated_ani_heatmap <- function(path, combine = FALSE, interactive = FALSE,
   ref_meta <- ref_meta_parsed(path)
 
   output <- lapply(matrices, function(m) {
+    ref_data_paths <- c(core_ref_path(path), busco_ref_path(path))
+    if (subset & length(ref_data_paths) > 0) {
+      refs_used <- unlist(lapply(ref_data_paths, readLines))
+      refs_used <- colnames(m)[colnames(m) %in% refs_used]
+      samples_used <- colnames(m)[colnames(m) %in% sample_meta$sample_id]
+      ids_used <- c(refs_used, samples_used)
+      m <- m[ids_used, ids_used]
+    }
     make_heatmap(input_matrix = m, sample_data = sample_meta, ref_data = ref_meta,
                  interactive = interactive, height = height, width = width, dpi = dpi)
   })
@@ -568,6 +578,7 @@ estimated_ani_heatmap <- function(path, combine = FALSE, interactive = FALSE,
 #'   `dpi` to convert it to inches.
 #' @param dpi How pixels are converted to inches
 #' @param font_size Size of text used for labels
+#' @param max_label_length Labels longer than this length will be shortened.
 #'
 #' @return  A list of plots, unless `combine` is used, in which case a single
 #'   plot is returned.
@@ -579,7 +590,8 @@ estimated_ani_heatmap <- function(path, combine = FALSE, interactive = FALSE,
 #'
 #' @export
 pocp_heatmap <- function(path, combine = FALSE, interactive = FALSE,
-                         height = NULL, width = NULL, dpi = 100, font_size = 8) {
+                         height = NULL, width = NULL, dpi = 100, font_size = 8,
+                         max_label_length = 30) {
   if (combine) {
     stop('The `combine` option is not yet supported.')
   }
@@ -591,7 +603,8 @@ pocp_heatmap <- function(path, combine = FALSE, interactive = FALSE,
 
   output <- lapply(matrices, function(m) {
     make_heatmap(input_matrix = m, sample_data = sample_meta, ref_data = ref_meta,
-                 interactive = interactive, height = height, width = width, dpi = dpi)
+                 interactive = interactive, height = height, width = width, dpi = dpi,
+                 font_size = font_size, max_label_length = max_label_length)
   })
 
   return(output)
@@ -611,17 +624,22 @@ pocp_heatmap <- function(path, combine = FALSE, interactive = FALSE,
 #' @param width The width in pixels. If not `interactive`, this is divided by `dpi` to convert it to inches.
 #' @param dpi How pixels are converted to inches
 #' @param font_size Size of text used for labels
+#' @param max_label_length Labels longer than this length will be shortened.
 #'
 #' @return A heatmap with dendrogram
 #'
 #' @keywords internal
 make_heatmap <- function(input_matrix, ref_data, sample_data, interactive = FALSE,
-                         height = NULL, width = NULL, dpi = 100, font_size = 10) {
+                         height = NULL, width = NULL, dpi = 100, font_size = 10,
+                         max_label_length = 30) {
   # Rename rows/columns for plotting
   name_key <- c(
     stats::setNames(ref_data$ref_name, ref_data$ref_id),
     stats::setNames(sample_data$name, sample_data$sample_id)
   )
+  name_key <- ifelse(nchar(name_key) > max_label_length,
+                     paste0(substr(name_key, start = 1, stop = max_label_length), '\u2026'),
+                     name_key)
   name_key <- stats::setNames(make.unique(name_key, sep = ' '), names(name_key))
   colnames(input_matrix) <- name_key[colnames(input_matrix)]
   rownames(input_matrix) <- name_key[rownames(input_matrix)]

@@ -11,7 +11,8 @@ pocp_heatmap(
   height = NULL,
   width = NULL,
   dpi = 100,
-  font_size = 8
+  font_size = 8,
+  max_label_length = 30
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ single plot.}
 \item{dpi}{How pixels are converted to inches}
 
 \item{font_size}{Size of text used for labels}
+
+\item{max_label_length}{Labels longer than this length will be shortened.}
 }
 \value{
 A list of plots, unless \code{combine} is used, in which case a single
