@@ -493,7 +493,38 @@ core_tree_parsed(path)
     ## 
     ## Rooted; includes branch length(s).
 
+Functions that use the same data always start with the same words, so if
+you know what data out want to look at, you can see all the ways that
+`psminer` can interact with it by typing `psminer::` in an IDE like
+RStudio followed by the data type name and hit `<TAB>` to see
+autocomplete suggestions. For example `psminer::estimated_ani_` +
+`<TAB>` will show all of these functions:
+
+- `estimated_ani_heatmap`
+- `estimated_ani_match_table`
+- `estimated_ani_matrix_path`
+- `estimated_ani_matrix_path_data`
+- `estimated_ani_matrix_parsed`
+
 ## License
 
 This work is subject to the [MIT
 License](https://github.com/grunwaldlab/metacoder/blob/master/LICENSE).
+
+## Credits
+
+The following people contributed to `psminer`: Zachary S.L. Foster,
+Martha Sudermann, Camilo Parada-Rojas, Logan K. Blair, Fernanda I.
+Bocardo, Ricardo Alcalá-Briseño, Jeﬀ H. Chang, and Niklaus J. Grünwald.
+
+## Funding
+
+This work was supported by grants from USDA ARS (2072-22000-045-000-D)
+to Niklaus J. Grünwald, USDA NIFA (2021-67021-34433; 2023-67013-39918)
+to Jeﬀ H. Chang and Niklaus J. Grünwald, as well as USDAR ARS NPDRS and
+FNRI and USDA APHIS to Niklaus J. Grünwald
+
+## Contributions and Support
+
+We welcome suggestions, bug reports and contributions! Make and issue on
+this repository to get in contact with us.
