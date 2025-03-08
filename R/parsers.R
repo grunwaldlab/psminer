@@ -139,6 +139,7 @@ estimated_ani_matrix_parsed <- function(path) {
   output <- lapply(ani_matrix_paths, function(path) {
     ani_matrix <- utils::read.csv(path, check.names = FALSE)
     rownames(ani_matrix) <- colnames(ani_matrix)
+    ani_matrix[ani_matrix == 0] <- NA
     return(ani_matrix)
   })
   names(output) <- ani_matrix_paths

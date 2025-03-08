@@ -337,7 +337,7 @@ sendsketch_table <- function(path, interactive = FALSE) {
 
   # Sort and filter data
   final_table <- sketch_data[, c('sample_id', 'WKID', 'ANI', 'Complt', 'taxName'), drop = FALSE]
-  new_col_names <- c('Sample', 'WKID (%)', 'WKID (%)', 'Completeness (%)', 'Top Hit')
+  new_col_names <- c('Sample', 'WKID (%)', 'ANI (%)', 'Completeness (%)', 'Top Hit')
 
   if (interactive) {
     # Define a function called 'bordered_bar'

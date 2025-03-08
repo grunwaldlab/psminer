@@ -523,6 +523,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
 #'   `dpi` to convert it to inches.
 #' @param dpi How pixels are converted to inches
 #' @param font_size Size of text used for labels
+#' @param max_label_length Labels longer than this length will be shortened.
 #'
 #' @return  A list of plots, unless `combine` is used, in which case a single
 #'   plot is returned.
@@ -534,7 +535,8 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
 #'
 #' @export
 estimated_ani_heatmap <- function(path, combine = FALSE, interactive = FALSE, subset = TRUE,
-                                  height = NULL, width = NULL, dpi = 100, font_size = 6) {
+                                  height = NULL, width = NULL, dpi = 100, font_size = 8,
+                                  max_label_length = 30) {
   if (combine) {
     stop('The `combine` option is not yet supported.')
   }
@@ -554,7 +556,8 @@ estimated_ani_heatmap <- function(path, combine = FALSE, interactive = FALSE, su
       m <- m[ids_used, ids_used]
     }
     make_heatmap(input_matrix = m, sample_data = sample_meta, ref_data = ref_meta,
-                 interactive = interactive, height = height, width = width, dpi = dpi)
+                 interactive = interactive, height = height, width = width, dpi = dpi,
+                 font_size = font_size, max_label_length = max_label_length)
   })
 
   return(output)
@@ -643,10 +646,19 @@ make_heatmap <- function(input_matrix, ref_data, sample_data, interactive = FALS
   name_key <- stats::setNames(make.unique(name_key, sep = ' '), names(name_key))
   colnames(input_matrix) <- name_key[colnames(input_matrix)]
   rownames(input_matrix) <- name_key[rownames(input_matrix)]
+  na_to_zero <- input_matrix
+  na_to_zero[is.na(na_to_zero)] <- 0
+  clustered <- hclust(dist(na_to_zero), method = "complete")
   if (interactive) {
+    dist_func <- function(x) {
+      return(clustered)
+    }
     output <- heatmaply::heatmaply(input_matrix,
                                    fontsize_row = font_size, fontsize_col = font_size,
-                                   width = width, height = height)
+                                   width = width, height = height,
+                                   hclustfun = function(x) {clustered},
+                                   distfun  = function(x) {dist(na_to_zero)},
+                                   grid_color = '#EEEEEE')
   } else {
     if (is.null(width)) {
       width <- NA
@@ -658,7 +670,11 @@ make_heatmap <- function(input_matrix, ref_data, sample_data, interactive = FALS
     } else {
       height <- height / dpi
     }
-    output <- pheatmap::pheatmap(input_matrix, show_rownames = TRUE, labels_row = colnames(input_matrix),
+    output <- pheatmap::pheatmap(input_matrix,
+                                 cluster_rows = clustered,
+                                 cluster_cols = clustered,
+                                 angle_col = 45,
+                                 show_rownames = TRUE, labels_row = colnames(input_matrix),
                                  fontsize_row = font_size, fontsize_col = font_size,
                                  width = width, height = height)
   }
