@@ -13,8 +13,7 @@ pathogensurveillance output.}
 \item{remove_ranks}{If \code{TRUE}, remove the rank information from the taxonomy.}
 
 \item{only_best}{Only return the best hit for each combination of report
-group and sample. For more control/details on how the top hit is selected,
-see \code{\link[=sendsketch_best_hits]{sendsketch_best_hits()}}.}
+group and sample.}
 }
 \value{
 A \code{\link[base:character]{base::character()}} vector of taxonomic classifications, each

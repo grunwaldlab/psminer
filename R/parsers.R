@@ -211,8 +211,7 @@ run_info_parsed <- function(path) {
 #' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @param only_best Only return the best hit for each combination of report
-#'   group and sample. For more control/details on how the top hit is selected,
-#'   see [sendsketch_best_hits()].
+#'   group and sample.
 #'
 #' @return A [tibble::tibble()] with the sendsketch output combined
 #' @family parsers
@@ -271,8 +270,7 @@ sendsketch_parsed <- function(path, only_best = FALSE) {
 #'   pathogensurveillance output.
 #' @param remove_ranks If `TRUE`, remove the rank information from the taxonomy.
 #' @param only_best Only return the best hit for each combination of report
-#'   group and sample. For more control/details on how the top hit is selected,
-#'   see [sendsketch_best_hits()].
+#'   group and sample. 
 #'
 #' @return A [base::character()] vector of taxonomic classifications, each
 #'   delimited with `;`, named by sample IDs.
@@ -304,8 +302,7 @@ sendsketch_taxonomy_parsed <- function(path, remove_ranks = FALSE, only_best = F
 #' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @param only_best Only return the best hit for each combination of report
-#'   group and sample. For more control/details on how the top hit is selected,
-#'   see [sendsketch_best_hits()].
+#'   group and sample.
 #' @param only_shared If `TRUE`, only return the data for that are present in
 #'   all of the inputs.
 #'

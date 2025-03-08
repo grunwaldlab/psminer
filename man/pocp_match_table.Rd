@@ -7,15 +7,15 @@
 pocp_match_table(path, interactive = FALSE, ...)
 }
 \arguments{
+\item{path}{The path to one or more folders that contain
+pathogensurveillance output.}
+
 \item{interactive}{Whether to produce interactive tables (TRUE) or static
 tables (FALSE). Defaults to TRUE if the environment supports HTML output,
 otherwise FALSE. Interactive tables offer enhanced browsing capabilities,
 while static tables are best for printed pdf reports.}
 
 \item{...}{Passed to \code{DT::datatable} for interactive output.}
-
-\item{paths}{The path to one or more folders that contain
-pathogensurveillance output.}
 }
 \description{
 Prints a table with the highest POCP for each sample given a pairwise

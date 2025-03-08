@@ -11,8 +11,7 @@ sendsketch_taxonomy_data_parsed(path, only_best = FALSE, only_shared = FALSE)
 pathogensurveillance output.}
 
 \item{only_best}{Only return the best hit for each combination of report
-group and sample. For more control/details on how the top hit is selected,
-see \code{\link[=sendsketch_best_hits]{sendsketch_best_hits()}}.}
+group and sample.}
 
 \item{only_shared}{If \code{TRUE}, only return the data for that are present in
 all of the inputs.}

@@ -9,17 +9,7 @@
 #' @param fail_on_warning If `TRUE`, things that will normally cause a warning
 #'   will instead cause an error.
 #'
-#' @examples
-#'
-#' input_paths <- system.file(package = 'PathoSurveilR',
-#'                            file.path('extdata', c(
-#'                              'feature_test.tsv',
-#'                              'feature_test_refs.csv',
-#'                              'ods_example.ods'
-#'                            )))
-#' parse_path_surveil_input(input_paths)
-#'
-#' @export
+#' @keywords internal
 parse_path_surveil_input <- function(input_paths, fail_on_warning = FALSE) {
 
   # Read and standardize all inputs into a single table without any data interpretation

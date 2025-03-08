@@ -18,14 +18,4 @@ Parse and validate one or more input table of sample/reference metadata to
 the \code{pathogensurveillance} pipeline and puts the parsed data in a single
 table.
 }
-\examples{
-
-input_paths <- system.file(package = 'PathoSurveilR',
-                           file.path('extdata', c(
-                             'feature_test.tsv',
-                             'feature_test_refs.csv',
-                             'ods_example.ods'
-                           )))
-parse_path_surveil_input(input_paths)
-
-}
+\keyword{internal}

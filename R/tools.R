@@ -159,6 +159,7 @@ format_number <- function(nums, sig_fig = 4) {
 #' @export
 #'
 #' @examples
+#' library(ggplot2)
 #' n <- c(10, 100, 1000)
 #' base_plot_func <- function(x) {
 #'   hist(rnorm(x))
@@ -292,14 +293,7 @@ print_figures_with_selector <- function(plot_func, selector, id_prefix, imglist_
 #'
 #' @return A `data.frame`
 #'
-#' @export
-#'
-#' @examples
-#' # Assuming `sketch_data` is your dataframe with the appropriate structure:
-#' sendsketch_best_hits(sketch_data, sort_columns = c("sample_id", "WKID", "ANI", "Complt"), top_n = 1)
-#'
-#' # If you want to sort by Completeness and then WKID, keeping the top 2 entries for each sample_id:
-#' sendsketch_best_hits(sketch_data, sort_columns = c("sample_id", "Complt", "WKID"), top_n = 2)
+#' @keywords internal
 sendsketch_best_hits <- function(sketch_data, sort_columns = c("WKID", "ANI", "Complt"), top_n = 1) {
   order_data <- c(list(decreasing = TRUE), unname(sketch_data[sort_columns]))
   sketch_data <- sketch_data[do.call(order, order_data), , drop = FALSE]

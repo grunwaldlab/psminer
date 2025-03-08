@@ -169,19 +169,14 @@ status_message_table <- function(paths, summarize_by = NULL, interactive = FALSE
 #' Prints a table with the highest ANI matches for each sample given a pairwise
 #' distance matrix.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @param interactive Whether to produce interactive tables (TRUE) or static
 #'   tables (FALSE). Defaults to TRUE if the environment supports HTML output,
 #'   otherwise FALSE. Interactive tables offer enhanced browsing capabilities,
 #'   while static tables are best for printed pdf reports.
 #' @param ... Passed to `DT::datatable` for interactive output.
-#'
-#' @examples
-#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
-#' estimated_ani_match_table(path)
-#' estimated_ani_match_table(path, interactive = TRUE)
-#'
+#' 
 #' @export
 estimated_ani_match_table <- function(path, interactive = FALSE, ...) {
   # Get best match table
@@ -212,7 +207,7 @@ estimated_ani_match_table <- function(path, interactive = FALSE, ...) {
 #' Prints a table with the highest POCP for each sample given a pairwise
 #' distance matrix.
 #'
-#' @param paths The path to one or more folders that contain
+#' @param path The path to one or more folders that contain
 #'   pathogensurveillance output.
 #' @param interactive Whether to produce interactive tables (TRUE) or static
 #'   tables (FALSE). Defaults to TRUE if the environment supports HTML output,

@@ -306,7 +306,7 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
 
   node_data <- tibble::tibble(
     newick_label = all_labels,
-    node_label = ifelse(all_labels %in% c(base_tree_node_labels, "Root"), "", newick_label),
+    node_label = ifelse(all_labels %in% c(base_tree_node_labels, "Root"), "", all_labels),
     branch_color = ifelse(all_labels %in% c(base_tree_node_labels, "Root"), "grey", "black"),
     branch_type = ifelse(all_labels %in% c(base_tree_node_labels, "Root"), "dashed", "solid")
   )
@@ -648,7 +648,7 @@ make_heatmap <- function(input_matrix, ref_data, sample_data, interactive = FALS
   rownames(input_matrix) <- name_key[rownames(input_matrix)]
   na_to_zero <- input_matrix
   na_to_zero[is.na(na_to_zero)] <- 0
-  clustered <- hclust(dist(na_to_zero), method = "complete")
+  clustered <- stats::hclust(stats::dist(na_to_zero), method = "complete")
   if (interactive) {
     dist_func <- function(x) {
       return(clustered)
@@ -657,7 +657,7 @@ make_heatmap <- function(input_matrix, ref_data, sample_data, interactive = FALS
                                    fontsize_row = font_size, fontsize_col = font_size,
                                    width = width, height = height,
                                    hclustfun = function(x) {clustered},
-                                   distfun  = function(x) {dist(na_to_zero)},
+                                   distfun  = function(x) {stats::dist(na_to_zero)},
                                    grid_color = '#EEEEEE')
   } else {
     if (is.null(width)) {

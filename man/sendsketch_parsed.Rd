@@ -11,8 +11,7 @@ sendsketch_parsed(path, only_best = FALSE)
 pathogensurveillance output.}
 
 \item{only_best}{Only return the best hit for each combination of report
-group and sample. For more control/details on how the top hit is selected,
-see \code{\link[=sendsketch_best_hits]{sendsketch_best_hits()}}.}
+group and sample.}
 }
 \value{
 A \code{\link[tibble:tibble]{tibble::tibble()}} with the sendsketch output combined

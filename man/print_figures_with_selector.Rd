@@ -47,6 +47,7 @@ For use with Quarto/Rmarkdown/Knitr, put in a chunk with the option
 \code{results='asis'}.
 }
 \examples{
+library(ggplot2)
 n <- c(10, 100, 1000)
 base_plot_func <- function(x) {
   hist(rnorm(x))

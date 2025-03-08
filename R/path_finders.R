@@ -224,10 +224,6 @@ core_tree_path <- function(path) {
 #' @return character vector of length 1
 #' @family path finders
 #'
-#' @examples
-#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
-#' considered_ref_meta_path(path)
-#'
 #' @export
 considered_ref_meta_path <- function(path) {
   find_static_dir_path(path, 'ncbi_reference_data', 'considered NCBI reference metadata')

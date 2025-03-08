@@ -28,10 +28,4 @@ A \code{data.frame}
 This function processes sendsketch data from pathogen surveillance nextflow pipeline and
 filters the output so that only the best hits are present
 }
-\examples{
-# Assuming `sketch_data` is your dataframe with the appropriate structure:
-sendsketch_best_hits(sketch_data, sort_columns = c("sample_id", "WKID", "ANI", "Complt"), top_n = 1)
-
-# If you want to sort by Completeness and then WKID, keeping the top 2 entries for each sample_id:
-sendsketch_best_hits(sketch_data, sort_columns = c("sample_id", "Complt", "WKID"), top_n = 2)
-}
+\keyword{internal}

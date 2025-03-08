@@ -241,10 +241,6 @@ core_tree_path_data <- function(path) {
 #' @return `tibble` with `report_group_id` and `path` columns
 #' @family path tables
 #'
-#' @examples
-#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
-#' considered_ref_meta_path_data(path)
-#'
 #' @export
 considered_ref_meta_path_data <- function(path) {
   output <- make_path_data_with_group(path, considered_ref_meta_path)
