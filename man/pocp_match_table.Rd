@@ -22,7 +22,7 @@ Prints a table with the highest POCP for each sample given a pairwise
 distance matrix.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 pocp_match_table(path)
 pocp_match_table(path, interactive = TRUE)
 

@@ -18,7 +18,7 @@ genes of samples and references for a given pathogensurveillance output
 folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 busco_tree_path(path)
 
 }

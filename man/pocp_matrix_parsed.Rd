@@ -18,7 +18,7 @@ Return a list of \code{\link[base:data.frame]{base::data.frame()}}s with the POC
 gene analysis using pirate.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 pocp_matrix_parsed(path)
 
 }

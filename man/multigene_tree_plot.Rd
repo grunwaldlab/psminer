@@ -27,7 +27,7 @@ Plot the any multigene phylogenies present in the output of a pathogensurveillan
 run. This includes core gene phylogenies and busco gene phylogenes.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 multigene_tree_plot(path)
 
 }

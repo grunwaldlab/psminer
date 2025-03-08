@@ -19,7 +19,7 @@ Return a table with the file path to the CSV with the approximate ANI
 pathogensurveillance output folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 estimated_ani_matrix_path_data(path)
 
 }

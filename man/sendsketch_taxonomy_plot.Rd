@@ -21,7 +21,7 @@ Converts classifications of top hits in sendsketch output into an interactive
 sunburst plot.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 sendsketch_taxonomy_plot(path)
 sendsketch_taxonomy_plot(path, interactive = TRUE)
 

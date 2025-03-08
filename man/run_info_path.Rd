@@ -17,7 +17,7 @@ Return the file containing the name of the report group for a given
 pathogensurveillance output folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 run_info_path(path)
 
 }

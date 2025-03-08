@@ -31,7 +31,7 @@ by the pipeline, one row for each issue. The contents of all status message
 files found in the given paths will be combined.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 status_message_table(path)
 status_message_table(path, interactive = TRUE)
 status_message_table(path, summarize_by = 'sample')

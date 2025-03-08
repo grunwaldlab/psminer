@@ -1,4 +1,4 @@
-Package: psminer
+Package: PathoSurveilR
 Type: Package
 Title: Utilities for the pathogensurveillance pipeline
 Version: 0.2.0

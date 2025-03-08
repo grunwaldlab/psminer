@@ -17,7 +17,7 @@ Return the file paths of the TSVs of metadata for references selected and
 downloaded for each sample for a given pathogensurveillance output folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 selected_ref_meta_path(path)
 
 }

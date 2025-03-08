@@ -10,7 +10,7 @@
 #' @param ... Passed to `DT::datatable`.
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' sample_meta_table(path)
 #' sample_meta_table(path, interactive = TRUE)
 #'
@@ -56,7 +56,7 @@ sample_meta_table <- function(path, interactive = FALSE, ...) {
 #' @return A table with details for errors, warnings, notes.
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' status_message_table(path)
 #' status_message_table(path, interactive = TRUE)
 #' status_message_table(path, summarize_by = 'sample')
@@ -178,7 +178,7 @@ status_message_table <- function(paths, summarize_by = NULL, interactive = FALSE
 #' @param ... Passed to `DT::datatable` for interactive output.
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' estimated_ani_match_table(path)
 #' estimated_ani_match_table(path, interactive = TRUE)
 #'
@@ -221,7 +221,7 @@ estimated_ani_match_table <- function(path, interactive = FALSE, ...) {
 #' @param ... Passed to `DT::datatable` for interactive output.
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' pocp_match_table(path)
 #' pocp_match_table(path, interactive = TRUE)
 #'
@@ -322,7 +322,7 @@ make_best_match_table <- function(pairwise_matrices, sample_data, ref_data) {
 #'   have interactive features such as sorting and search enabled.
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' sendsketch_table(path)
 #' sendsketch_table(path, interactive = TRUE)
 #'

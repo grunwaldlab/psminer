@@ -19,7 +19,7 @@ pipeline. The contents of all status message files found in the given paths
 will be combined.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 status_message_parsed_summary(path)
 
 }

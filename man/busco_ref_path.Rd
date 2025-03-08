@@ -17,7 +17,7 @@ Return the file path to the TSV with a list of references used in the BUSCO
 analysis for a given pathogensurveillance output folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 busco_ref_path(path)
 
 }

@@ -22,7 +22,7 @@ Prints a table with the highest ANI matches for each sample given a pairwise
 distance matrix.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 estimated_ani_match_table(path)
 estimated_ani_match_table(path, interactive = TRUE)
 

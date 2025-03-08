@@ -20,7 +20,7 @@ table.
 }
 \examples{
 
-input_paths <- system.file(package = 'psminer',
+input_paths <- system.file(package = 'PathoSurveilR',
                            file.path('extdata', c(
                              'feature_test.tsv',
                              'feature_test_refs.csv',

@@ -18,7 +18,7 @@ Return a table with the file paths of the SNP tree for each reference used in
 the variant analysis for a given pathogensurveillance output folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 variant_tree_path_data(path)
 
 }

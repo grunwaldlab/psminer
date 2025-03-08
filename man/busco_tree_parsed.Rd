@@ -18,7 +18,7 @@ Return a list of \code{\link[ape:read.tree]{ape::phylo()}} objects named by file
 folders containing pathogensurveillance output.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 busco_tree_parsed(path)
 
 }

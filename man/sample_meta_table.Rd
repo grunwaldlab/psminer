@@ -20,7 +20,7 @@ Selects columns in the sample metadata to print and format the result for
 use as a static table in PDF or an interactive table in HTML.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 sample_meta_table(path)
 sample_meta_table(path, interactive = TRUE)
 

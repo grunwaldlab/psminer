@@ -19,7 +19,7 @@ Returns parsed SNP alignments for each reference used in the
 variant analysis for a given pathogensurveillance output folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 variant_align_parsed(path)
 
 }

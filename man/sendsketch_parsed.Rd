@@ -22,7 +22,7 @@ Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with the results 
 contents of all sendsketch files found in the given paths will be combined.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 sendsketch_parsed(path)
 
 }

@@ -20,7 +20,7 @@ into a tibble. Each software module and program, along with its version, is
 extracted and organized.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 software_version_parsed(path)
 
 }

@@ -46,7 +46,7 @@ Plot POCP matrix with dendrogram from data present in the output of a
 pathogensurveillance run.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 pocp_heatmap(path)
 pocp_heatmap(path, interactive = TRUE)
 

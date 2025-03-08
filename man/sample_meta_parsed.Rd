@@ -18,7 +18,7 @@ Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with sample metad
 sample metadata files found in the given paths will be combined.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 sample_meta_parsed(path)
 
 }

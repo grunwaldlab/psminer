@@ -17,7 +17,7 @@ Return the file path to the TSV containing the reference metadata for a given
 pathogensurveillance output folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 ref_meta_path(path)
 
 }

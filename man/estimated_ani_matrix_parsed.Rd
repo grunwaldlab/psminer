@@ -18,7 +18,7 @@ Return a list of \code{\link[base:data.frame]{base::data.frame()}}s with the est
 calculated by sourmash.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 estimated_ani_matrix_parsed(path)
 
 }

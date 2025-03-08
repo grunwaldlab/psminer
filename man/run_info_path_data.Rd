@@ -18,7 +18,7 @@ Return a table with the file containing the information about a run in a
 pathogensurveillance output folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 run_info_path_data(path)
 
 }

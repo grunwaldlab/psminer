@@ -17,7 +17,7 @@ Return the file path to the CSV with the approximate ANI (average nucleotide ide
 matrix estimated by sourmash for a given pathogensurveillance output folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 estimated_ani_matrix_path(path)
 
 }

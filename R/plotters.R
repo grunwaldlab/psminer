@@ -16,7 +16,7 @@
 #' @return  A list of plots, unless `collapse_by_tax` is used, in which case a single plot is returned.
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' core_tree_plot(path)
 #'
 #' @export
@@ -42,7 +42,7 @@ core_tree_plot <- function(path, collapse_by_tax = NULL, interactive = FALSE) {
 #' @return  A list of plots, unless `collapse_by_tax` is useded, in which case a single plot is returned.
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' busco_tree_plot(path)
 #'
 #' @export
@@ -68,7 +68,7 @@ busco_tree_plot <- function(path, collapse_by_tax = NULL, interactive = FALSE) {
 #' @return  A list of plots, unless `collapse_by_tax` is used, in which case a single plot is returned.
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' multigene_tree_plot(path)
 #'
 #' @export
@@ -84,7 +84,7 @@ multigene_tree_plot <- function(path, collapse_by_tax = NULL, interactive = FALS
 #'   pathogensurveillance output or paths to tree files.
 #' @param parser A function that takes directory paths as input and returns
 #'   parsed trees found in those directories, such as
-#'   [psminer::core_tree_parsed()].
+#'   [core_tree_parsed()].
 #' @param collapse_by_tax A [base::character()] vector of taxonomic
 #'   classifications, each delimited by `;`, and named by sample or reference
 #'   ids present in `sample_meta` or `ref_meta`. These are used to provide a
@@ -149,7 +149,7 @@ generalized_tree_plot <- function(path, parser, collapse_by_tax = NULL, interact
 #' @return  A list of plots, unless `collapse_by_tax` is used, in which case a single plot is returned.
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' variant_tree_plot(path)
 #'
 #' @export
@@ -353,7 +353,7 @@ plot_phylogeny <- function(trees, sample_meta, ref_meta, color_by = NULL, collap
 #'   return a single figure. If `FALSE`, return a list of figures.
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' variant_msn_plot(path)
 #'
 #' @export
@@ -529,7 +529,7 @@ make_MSN <- function(snp_fasta_alignment, sample_data, population = NULL, intera
 #'   plot is returned.
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' estimated_ani_heatmap(path)
 #' estimated_ani_heatmap(path, interactive = TRUE)
 #'
@@ -587,7 +587,7 @@ estimated_ani_heatmap <- function(path, combine = FALSE, interactive = FALSE, su
 #'   plot is returned.
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' pocp_heatmap(path)
 #' pocp_heatmap(path, interactive = TRUE)
 #'
@@ -695,7 +695,7 @@ make_heatmap <- function(input_matrix, ref_data, sample_data, interactive = FALS
 #' @param ... Passed to `sendsketch_best_hits`
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' sendsketch_taxonomy_plot(path)
 #' sendsketch_taxonomy_plot(path, interactive = TRUE)
 #'

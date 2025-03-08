@@ -17,7 +17,7 @@ Return the file path to the YAML file with the versions of software used for
 a given pathogensurveillance output folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 software_version_path(path)
 
 }

@@ -50,7 +50,7 @@ Plot ANI matrix with dendrogram from data present in the output of a
 pathogensurveillance run.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 estimated_ani_heatmap(path)
 estimated_ani_heatmap(path, interactive = TRUE)
 

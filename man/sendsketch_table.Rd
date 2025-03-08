@@ -32,7 +32,7 @@ encodes the percentage values using horizontal bars for an intuitive and
 accessible presentation.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 sendsketch_table(path)
 sendsketch_table(path, interactive = TRUE)
 

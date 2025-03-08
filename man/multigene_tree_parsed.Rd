@@ -20,7 +20,7 @@ multigene trees produced by pathogensurveillance, such as the core gene
 phylogeny and the busco gene phylogeny.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 multigene_tree_parsed(path)
 
 }

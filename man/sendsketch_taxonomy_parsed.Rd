@@ -25,7 +25,7 @@ Return the taxonomic classificaiton in sendsketch results associated with
 directory paths containing \code{pathogensurveillance} output.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 sendsketch_taxonomy_parsed(path)
 
 }

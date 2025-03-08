@@ -17,7 +17,7 @@ Return the file paths to the Newick formatted trees produced by the core
 gene analysis for a given pathogensurveillance output folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 core_tree_path(path)
 
 }

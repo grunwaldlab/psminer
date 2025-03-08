@@ -18,7 +18,7 @@ Return a table with the file path to the TSV with the status reports,
 warnings, and errors for a given pathogensurveillance output folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 status_message_path_data(path)
 
 }

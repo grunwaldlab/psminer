@@ -27,7 +27,7 @@ Plot the SNP trees from the variant analysis present in the output of a pathogen
 run.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 variant_tree_plot(path)
 
 }

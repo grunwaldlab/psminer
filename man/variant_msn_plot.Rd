@@ -18,7 +18,7 @@ Plot a minimum spanning network for each group of samples aligned to a
 reference found in \code{pathogensurveillance} output.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 variant_msn_plot(path)
 
 }

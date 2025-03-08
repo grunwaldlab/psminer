@@ -18,7 +18,7 @@ Return a \code{\link[tibble:tibble]{tibble::tibble()}} (table) with report group
 the given paths will be combined.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 run_info_parsed(path)
 
 }

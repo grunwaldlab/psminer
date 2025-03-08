@@ -10,7 +10,7 @@
 #' @return A [tibble::tibble()] with the messages from all input paths
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' status_message_parsed(path)
 #'
 #' @export
@@ -49,7 +49,7 @@ status_message_parsed <- function(path) {
 #' @return A [tibble::tibble()] with counts of messages attributes
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' status_message_parsed_summary(path)
 #'
 #' @export
@@ -82,7 +82,7 @@ status_message_parsed_summary <- function(path) {
 #' @return A [tibble::tibble()] with the sample metadata
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' sample_meta_parsed(path)
 #'
 #' @export
@@ -107,7 +107,7 @@ sample_meta_parsed <- function(path) {
 #' @return A [tibble::tibble()] with reference metadata
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' ref_meta_parsed(path)
 #'
 #' @export
@@ -130,7 +130,7 @@ ref_meta_parsed <- function(path) {
 #' @return a `list` of ANI matrices
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' estimated_ani_matrix_parsed(path)
 #'
 #' @export
@@ -156,7 +156,7 @@ estimated_ani_matrix_parsed <- function(path) {
 #' @return a `list` of POCP matrices
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' pocp_matrix_parsed(path)
 #'
 #' @export
@@ -183,7 +183,7 @@ pocp_matrix_parsed <- function(path) {
 #' @return A [base::character()] vector with the groups from all input paths
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' run_info_parsed(path)
 #'
 #' @export
@@ -218,7 +218,7 @@ run_info_parsed <- function(path) {
 #' @family parsers
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' sendsketch_parsed(path)
 #'
 #' @export
@@ -279,7 +279,7 @@ sendsketch_parsed <- function(path, only_best = FALSE) {
 #' @family parsers
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' sendsketch_taxonomy_parsed(path)
 #'
 #' @export
@@ -314,7 +314,7 @@ sendsketch_taxonomy_parsed <- function(path, remove_ranks = FALSE, only_best = F
 #' @family parsers
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' sendsketch_taxonomy_data_parsed(path)
 #' sendsketch_taxonomy_data_parsed(path, only_best = TRUE)
 #' sendsketch_taxonomy_data_parsed(path, only_shared = TRUE)
@@ -367,7 +367,7 @@ sendsketch_taxonomy_data_parsed <- function(path, only_best = FALSE, only_shared
 #' @family parsers
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' software_version_parsed(path)
 #'
 #' @export
@@ -397,7 +397,7 @@ software_version_parsed <- function(path) {
 #' @family parsers
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' core_tree_parsed(path)
 #'
 #' @export
@@ -419,7 +419,7 @@ core_tree_parsed <- function(path) {
 #' @family parsers
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' variant_tree_parsed(path)
 #'
 #' @export
@@ -455,7 +455,7 @@ variant_tree_parsed <- function(path, rename = TRUE) {
 #' @family parsers
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' busco_tree_parsed(path)
 #'
 #' @export
@@ -480,7 +480,7 @@ busco_tree_parsed <- function(path) {
 #' @family parsers
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' multigene_tree_parsed(path)
 #'
 #' @export
@@ -526,7 +526,7 @@ tree_parsed <- function(path) {
 #' @family parsers
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' variant_align_parsed(path)
 #'
 #' @export

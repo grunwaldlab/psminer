@@ -17,7 +17,7 @@ Return the file paths of the sendsketch results for each sample for a given
 pathogensurveillance output folder.
 }
 \examples{
-path <- system.file('extdata/ps_output', package = 'psminer')
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 sendsketch_path(path)
 
 }

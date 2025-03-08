@@ -8,7 +8,7 @@
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' sample_meta_path(path)
 #'
 #' @export
@@ -26,7 +26,7 @@ sample_meta_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' ref_meta_path(path)
 #'
 #' @export
@@ -45,7 +45,7 @@ ref_meta_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' busco_tree_path(path)
 #'
 #' @export
@@ -63,7 +63,7 @@ busco_tree_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' busco_ref_path(path)
 #'
 #' @export
@@ -81,7 +81,7 @@ busco_ref_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' core_ref_path(path)
 #'
 #' @export
@@ -99,7 +99,7 @@ core_ref_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' run_info_path(path)
 #'
 #' @export
@@ -117,7 +117,7 @@ run_info_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' variant_ref_path(path)
 #'
 #' @export
@@ -135,7 +135,7 @@ variant_ref_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' status_message_path(path)
 #'
 #' @export
@@ -153,7 +153,7 @@ status_message_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' pocp_matrix_path(path)
 #'
 #' @export
@@ -171,7 +171,7 @@ pocp_matrix_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' estimated_ani_matrix_path(path)
 #'
 #' @export
@@ -189,7 +189,7 @@ estimated_ani_matrix_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' software_version_path(path)
 #'
 #' @export
@@ -207,7 +207,7 @@ software_version_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' core_tree_path(path)
 #'
 #' @export
@@ -225,7 +225,7 @@ core_tree_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' considered_ref_meta_path(path)
 #'
 #' @export
@@ -243,7 +243,7 @@ considered_ref_meta_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' selected_ref_meta_path(path)
 #'
 #' @export
@@ -261,7 +261,7 @@ selected_ref_meta_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' sendsketch_path(path)
 #'
 #' @export
@@ -279,7 +279,7 @@ sendsketch_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' variant_align_path(path)
 #'
 #' @export
@@ -297,7 +297,7 @@ variant_align_path <- function(path) {
 #' @family path finders
 #'
 #' @examples
-#' path <- system.file('extdata/ps_output', package = 'psminer')
+#' path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 #' variant_tree_path(path)
 #'
 #' @export

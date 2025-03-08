@@ -1,23 +1,23 @@
 
-# `psminer`: an R package for analysis of the `pathogensurveillance` pipeline
+# `PathoSurveilR`: an R package for analysis of the `pathogensurveillance` pipeline
 
-`psminer` is an R package with functions that can read, summarize, plot,
+`PathoSurveilR` is an R package with functions that can read, summarize, plot,
 and manipulate data produced by the pipeline
 [`pathogensurveillance`](https://github.com/nf-core/pathogensurveillance).
 
 ## Installation
 
-Although `psminer` is not on CRAN yet, you can install the development
+Although `PathoSurveilR` is not on CRAN yet, you can install the development
 version from the source code on Github:
 
 ``` r
 install.packages("devtools")
-devtools::install_github("grunwaldlab/psminer")
+devtools::install_github("grunwaldlab/PathoSurveilR")
 ```
 
 ## Introduction
 
-Most functions in the `psminer` package have the same way of accepting
+Most functions in the `PathoSurveilR` package have the same way of accepting
 input. Given one or more directory paths, functions will find their
 needed input in any `pathogensurveillance` output directories that are
 in the given directories. For example, an output directory of
@@ -25,15 +25,15 @@ in the given directories. For example, an output directory of
 computer can be found like so:
 
 ``` r
-library(psminer)
-path <- system.file('extdata/ps_output', package = 'psminer')
+library(PathoSurveilR)
+path <- system.file('extdata/ps_output', package = 'PathoSurveilR')
 print(path)
 ```
 
-    ## [1] "/home/fosterz/R/x86_64-pc-linux-gnu-library/4.4/psminer/extdata/ps_output"
+    ## [1] "/home/fosterz/R/x86_64-pc-linux-gnu-library/4.4/PathoSurveilR/extdata/ps_output"
 
 This path can then be used as the only required input for nearly every
-function in `psminer`. For example, here is how to get the multigene
+function in `PathoSurveilR`. For example, here is how to get the multigene
 phylogeny plot, which contains core gene phylogenies for prokaryotes and
 busco phylogenies for eukaryotes:
 
@@ -418,7 +418,7 @@ paths respectively:
 estimated_ani_matrix_path(path)
 ```
 
-    ## [1] "/home/fosterz/R/x86_64-pc-linux-gnu-library/4.4/psminer/extdata/ps_output/sourmash_ani_matrix.csv"
+    ## [1] "/home/fosterz/R/x86_64-pc-linux-gnu-library/4.4/PathoSurveilR/extdata/ps_output/sourmash_ani_matrix.csv"
 
 ``` r
 core_tree_path_data(path)
@@ -471,7 +471,7 @@ sendsketch_parsed(path)
 core_tree_parsed(path)
 ```
 
-    ## $`/home/fosterz/R/x86_64-pc-linux-gnu-library/4.4/psminer/extdata/ps_output/core_gene_trees/all_cluster_1.treefile`
+    ## $`/home/fosterz/R/x86_64-pc-linux-gnu-library/4.4/PathoSurveilR/extdata/ps_output/core_gene_trees/all_cluster_1.treefile`
     ## 
     ## Phylogenetic tree with 5 tips and 4 internal nodes.
     ## 
@@ -482,7 +482,7 @@ core_tree_parsed(path)
     ## 
     ## Rooted; includes branch length(s).
     ## 
-    ## $`/home/fosterz/R/x86_64-pc-linux-gnu-library/4.4/psminer/extdata/ps_output/core_gene_trees/all_cluster_2.treefile`
+    ## $`/home/fosterz/R/x86_64-pc-linux-gnu-library/4.4/PathoSurveilR/extdata/ps_output/core_gene_trees/all_cluster_2.treefile`
     ## 
     ## Phylogenetic tree with 21 tips and 20 internal nodes.
     ## 
@@ -495,9 +495,9 @@ core_tree_parsed(path)
 
 Functions that use the same data always start with the same words, so if
 you know what data out want to look at, you can see all the ways that
-`psminer` can interact with it by typing `psminer::` in an IDE like
+`PathoSurveilR` can interact with it by typing `PathoSurveilR::` in an IDE like
 RStudio followed by the data type name and hit `<TAB>` to see
-autocomplete suggestions. For example `psminer::estimated_ani_` +
+autocomplete suggestions. For example `PathoSurveilR::estimated_ani_` +
 `<TAB>` will show all of these functions:
 
 - `estimated_ani_heatmap`
@@ -513,7 +513,7 @@ License](https://github.com/grunwaldlab/metacoder/blob/master/LICENSE).
 
 ## Credits
 
-The following people contributed to `psminer`: Zachary S.L. Foster,
+The following people contributed to `PathoSurveilR`: Zachary S.L. Foster,
 Martha Sudermann, Camilo Parada-Rojas, Logan K. Blair, Fernanda I.
 Bocardo, Ricardo Alcalá-Briseño, Jeﬀ H. Chang, and Niklaus J. Grünwald.
 
